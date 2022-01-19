@@ -109,11 +109,14 @@ public class Command {
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
-    return Arrays.stream(subcommands).filter(command -> command.canPerformedBy(sender)).toList();
+    return Arrays.stream(subcommands)
+       .filter(command -> command.canPerformedBy(sender)).toList();
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
-    return Arrays.stream(subcommands).filter(command -> command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender)).findFirst().orElse(null);
+    return Arrays.stream(subcommands)
+       .filter(command -> command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender))
+       .findFirst().orElse(null);
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
@@ -167,7 +170,9 @@ public class Command {
         } else {
           return Component.text("<" + x.argumentName() + ">", argument);
         }
-      }).reduce(Component.empty(), (a, x) -> a.append(Component.space()).append(x)).append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))));
+      }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
+         .append(x))
+         .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))));
     }
     
     if (description != null) {
@@ -185,7 +190,9 @@ public class Command {
       sender.sendMessage("");
       
       for (Component component : toSend) {
-        sender.sendMessage(component.clickEvent(ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component).strip())));
+        sender.sendMessage(component.clickEvent(
+           ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component).strip()))
+        );
       }
     }
   }
