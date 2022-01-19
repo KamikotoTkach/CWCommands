@@ -15,17 +15,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Command {
+  static TextColor text = TextColor.fromHexString("#00a6f0");
+  static TextColor argument = TextColor.fromHexString("#00baff");
+  static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
+  static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
+  static TextColor writtenColor = TextColor.fromHexString("#007ab5");
+  static TextColor permissionColor = TextColor.fromHexString("#004669");
+  
   final String name;
-  final String permission;
-  Command[] subcommands = new Command[]{};
-  List<ArgumentSet> argumentSets = new ArrayList<>();
+  final List<ArgumentSet> argumentSets = new ArrayList<>();
   boolean isSubcommand = false;
+  String description;
+  String permission;
   Help help;
-  private Command parent = null;
-  private String description;
+  Command parent = null;
+  Command[] subcommands = new Command[]{};
   
   public Command(String name) {
-    this(name, "");
+    this(name, null);
   }
   
   public Command(String name, String permission) {
@@ -38,16 +45,16 @@ public class Command {
     arguments(new ArgumentSet(executor, permission));
   }
   
-  @Deprecated
-  public static void initialize(JavaPlugin plugin) {
-    Bukkit.getLogger().warning("initialize() is deprecated");
-  }
-  
   public Command subCommands(Command... subcommands) {
+    
     this.subcommands = subcommands;
     for (Command subcommand : subcommands) {
       subcommand.isSubcommand = true;
       subcommand.parent = this;
+      
+      if (permission != null) {
+        subcommand.permission = permission + "." + subcommand.name;
+      }
     }
     return this;
   }
@@ -102,27 +109,20 @@ public class Command {
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
-    return Arrays.stream(subcommands)
-       .filter(command -> command.canPerformedBy(sender))
-       .toList();
+    return Arrays.stream(subcommands).filter(command -> command.canPerformedBy(sender)).toList();
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
-    return Arrays.stream(subcommands)
-       .filter(command -> command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender))
-       .findFirst().orElse(null);
+    return Arrays.stream(subcommands).filter(command -> command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender)).findFirst().orElse(null);
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
-    return argumentSets.stream()
-       .filter(arg -> arg.canPerformedBy(sender))
-       .toList();
+    return argumentSets.stream().filter(arg -> arg.canPerformedBy(sender)).toList();
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(args) && set.canPerformedBy(sender))
-        return true;
+      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) return true;
     }
     return false;
   }
@@ -135,12 +135,6 @@ public class Command {
     help.sendTo(sender, args);
   }
   
-  static TextColor text = TextColor.fromHexString("#00a6f0");
-  static TextColor argument = TextColor.fromHexString("#00baff");
-  static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
-  static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
-  static TextColor writtenColor = TextColor.fromHexString("#007ab5");
-  
   private void sendAutoHelp(CommandSender sender) {
     StringBuilder writtenString = new StringBuilder();
     writtenString.insert(0, name);
@@ -151,6 +145,7 @@ public class Command {
       rootCommand = rootCommand.parent;
       writtenString.insert(0, rootCommand.name + " ");
     }
+    
     writtenString.insert(0, "  /");
     
     Component written = Component.text(writtenString.toString()).color(writtenColor);
@@ -159,7 +154,8 @@ public class Command {
     List<Command> subcommands = getSubcommandsFor(sender);
     
     for (Command subcommand : subcommands) {
-      toSend.add(written.append(Component.text(" "+subcommand.name, subcommandColor)));
+      toSend.add(written.append(Component.text(" " + subcommand.name + " ", subcommandColor))
+         .append(Component.text(subcommand.permission, permissionColor)));
     }
     
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
