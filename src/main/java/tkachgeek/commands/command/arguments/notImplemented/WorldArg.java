@@ -1,4 +1,6 @@
 package tkachgeek.commands.command.arguments.notImplemented;
 
-public class WorldArg {
+import tkachgeek.commands.command.arguments.ListArg;
+
+public class WorldArg extends ListArg {
 }
