@@ -15,17 +15,24 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Command {
+  static TextColor text = TextColor.fromHexString("#00a6f0");
+  static TextColor argument = TextColor.fromHexString("#00baff");
+  static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
+  static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
+  static TextColor writtenColor = TextColor.fromHexString("#007ab5");
+  static TextColor permissionColor = TextColor.fromHexString("#055080");
+  
   final String name;
-  final String permission;
-  Command[] subcommands = new Command[]{};
-  List<ArgumentSet> argumentSets = new ArrayList<>();
+  final List<ArgumentSet> argumentSets = new ArrayList<>();
   boolean isSubcommand = false;
+  String description;
+  String permission;
   Help help;
-  private Command parent = null;
-  private String description;
+  Command parent = null;
+  Command[] subcommands = new Command[]{};
   
   public Command(String name) {
-    this(name, "");
+    this(name, null);
   }
   
   public Command(String name, String permission) {
@@ -38,22 +45,41 @@ public class Command {
     arguments(new ArgumentSet(executor, permission));
   }
   
-  @Deprecated
-  public static void initialize(JavaPlugin plugin) {
-    Bukkit.getLogger().warning("initialize() is deprecated");
-  }
-  
   public Command subCommands(Command... subcommands) {
     this.subcommands = subcommands;
     for (Command subcommand : subcommands) {
       subcommand.isSubcommand = true;
       subcommand.parent = this;
     }
+    
     return this;
+  }
+  
+  protected void updatePermissions(String permissions) {
+    if (!isSubcommand || permission == null) {
+      permission = permissions + "." + name;
+    } else {
+      if (!permission.isEmpty()) {
+        permission = permissions + "." + permission;
+      }
+    }
+    
+    for (Command subcommand : subcommands) {
+      subcommand.updatePermissions(permission);
+    }
+    
+    if (!permission.isEmpty()) {
+      for (ArgumentSet argumentSet : argumentSets) {
+        argumentSet.permission = permission + "." + argumentSet.permission;
+      }
+    }
   }
   
   public void register(JavaPlugin plugin) {
     if (isSubcommand) return;
+    if (permission != null) {
+      updatePermissions(permission);
+    }
     try {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
@@ -103,8 +129,7 @@ public class Command {
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
     return Arrays.stream(subcommands)
-       .filter(command -> command.canPerformedBy(sender))
-       .toList();
+       .filter(command -> command.canPerformedBy(sender)).toList();
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
@@ -114,15 +139,12 @@ public class Command {
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
-    return argumentSets.stream()
-       .filter(arg -> arg.canPerformedBy(sender))
-       .toList();
+    return argumentSets.stream().filter(arg -> arg.canPerformedBy(sender)).toList();
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(args) && set.canPerformedBy(sender))
-        return true;
+      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) return true;
     }
     return false;
   }
@@ -135,12 +157,6 @@ public class Command {
     help.sendTo(sender, args);
   }
   
-  static TextColor text = TextColor.fromHexString("#00a6f0");
-  static TextColor argument = TextColor.fromHexString("#00baff");
-  static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
-  static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
-  static TextColor writtenColor = TextColor.fromHexString("#007ab5");
-  
   private void sendAutoHelp(CommandSender sender) {
     StringBuilder writtenString = new StringBuilder();
     writtenString.insert(0, name);
@@ -151,6 +167,7 @@ public class Command {
       rootCommand = rootCommand.parent;
       writtenString.insert(0, rootCommand.name + " ");
     }
+    
     writtenString.insert(0, "  /");
     
     Component written = Component.text(writtenString.toString()).color(writtenColor);
@@ -159,19 +176,23 @@ public class Command {
     List<Command> subcommands = getSubcommandsFor(sender);
     
     for (Command subcommand : subcommands) {
-      toSend.add(written.append(Component.text(" "+subcommand.name, subcommandColor)));
+      toSend.add(written.append(Component.text(" " + subcommand.name + " ", subcommandColor))
+         .append(sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
     }
     
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
       toSend.add(written.append(Arrays.stream(argumentSet.arguments).map(x -> {
-        if (x.isOptional()) {
-          return Component.text("[" + x.argumentName() + "]", argumentOptional);
-        } else if (x instanceof ExactStringArg) {
-          return Component.text(x.argumentName(), subcommandColor);
-        } else {
-          return Component.text("<" + x.argumentName() + ">", argument);
-        }
-      }).reduce(Component.empty(), (a, x) -> a.append(Component.space()).append(x)).append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))));
+           if (x.isOptional()) {
+             return Component.text("[" + x.argumentName() + "]", argumentOptional);
+           } else if (x instanceof ExactStringArg) {
+             return Component.text(x.argumentName(), subcommandColor);
+           } else {
+             return Component.text("<" + x.argumentName() + ">", argument);
+           }
+         }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
+            .append(x))
+         .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))
+         .append(sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty())));
     }
     
     if (description != null) {
@@ -189,7 +210,9 @@ public class Command {
       sender.sendMessage("");
       
       for (Component component : toSend) {
-        sender.sendMessage(component.clickEvent(ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component).strip())));
+        sender.sendMessage(component.clickEvent(
+           ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component).strip()))
+        );
       }
     }
   }

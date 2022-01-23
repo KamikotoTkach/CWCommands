@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class ArgumentSet {
   protected final Argument[] arguments;
   final Executor executor;
-  final String permission;
+  String permission;
   boolean spacedLastArgument = false;
   boolean blockForPlayers = false;
   boolean blockForNonPlayers = false;
