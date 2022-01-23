@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.*;
 
 public class TabCompleter implements org.bukkit.command.TabCompleter {
-  private static int maxLinesPerCompletions = Integer.MAX_VALUE;
+  private static int maxLinesPerCompletions = 64;
   private final Command command;
   
   public TabCompleter(Command command) {
@@ -26,47 +26,56 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
     
     args = args.length > deep ? Arrays.copyOfRange(args, deep, args.length) : new String[]{};
     List<String> complete = new ArrayList<>();
-    if(args.length == 0) return complete;
+    if (args.length == 0) return complete;
     
     List<String> arguments = new ArrayList<>(Arrays.asList(args));
     if (foundedCommand != null) {
       if (arguments.size() == 1) {
         complete.addAll(foundedCommand.getSubcommandsFor(sender).stream()
            .map(cmd -> cmd.name)
-           .filter(cmdName -> cmdName.toLowerCase().startsWith(arguments.get(0).toLowerCase()))
            .toList());
       }
-      foundedCommand.getArgumentSetsFor(sender).stream()
+      complete.addAll(foundedCommand.getArgumentSetsFor(sender).stream()
          .flatMap(set -> set.getCompletesFor(arguments, sender).stream())
+         .toList());
+      complete = complete.stream()
+         .parallel()
          .map(x -> new AbstractMap.SimpleEntry<>(x, 0))
          .peek(entry -> {
            if (arguments.get(0).length() == 0) {
              entry.setValue(1);
              return;
            }
+           
            int score = 0;
+           
            int commandCharPointer = 0;
            int argumentCharPointer = 0;
+           
            boolean applyMultiplier = true;
+           
+           String argumentToLowerCase = arguments.get(0).toLowerCase();
+           String writtenToLowerCase = entry.getKey().toLowerCase();
+           
            while (commandCharPointer < entry.getKey().length() && argumentCharPointer < arguments.get(0).length()) {
-             if (entry.getKey().toLowerCase().charAt(commandCharPointer++) == arguments.get(0).toLowerCase().charAt(argumentCharPointer)) {
-               score++;
+             if (writtenToLowerCase.charAt(commandCharPointer++) == argumentToLowerCase.charAt(argumentCharPointer)) {
+               score += applyMultiplier ? 3 : 1;
                argumentCharPointer++;
-               if (applyMultiplier) score += 3;
                applyMultiplier = true;
              } else {
                applyMultiplier = false;
              }
            }
            if (argumentCharPointer != arguments.get(0).length()) {
-             score /= (arguments.get(0).length() - argumentCharPointer) + 1;
+             score /= 2;
            }
            entry.setValue(score);
          })
-         //.filter(x -> x.getValue() > 0)
-         //.parallel()
+         .filter(x -> x.getValue() > 0)
          .sorted(Comparator.comparingInt(AbstractMap.SimpleEntry::getValue))
-         .forEach(x -> complete.add(x.getKey()));
+         .limit(maxLinesPerCompletions)
+         .map(AbstractMap.SimpleEntry::getKey)
+         .toList();
     }
     return complete;
   }

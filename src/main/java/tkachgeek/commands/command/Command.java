@@ -20,7 +20,7 @@ public class Command {
   static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
   static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
   static TextColor writtenColor = TextColor.fromHexString("#007ab5");
-  static TextColor permissionColor = TextColor.fromHexString("#004669");
+  static TextColor permissionColor = TextColor.fromHexString("#055080");
   
   final String name;
   final List<ArgumentSet> argumentSets = new ArrayList<>();
@@ -46,21 +46,40 @@ public class Command {
   }
   
   public Command subCommands(Command... subcommands) {
-    
     this.subcommands = subcommands;
     for (Command subcommand : subcommands) {
       subcommand.isSubcommand = true;
       subcommand.parent = this;
-      
-      if (permission != null) {
-        subcommand.permission = permission + "." + subcommand.name;
+    }
+    
+    return this;
+  }
+  
+  protected void updatePermissions(String permissions) {
+    if (!isSubcommand || permission == null) {
+      permission = permissions + "." + name;
+    } else {
+      if (!permission.isEmpty()) {
+        permission = permissions + "." + permission;
       }
     }
-    return this;
+    
+    for (Command subcommand : subcommands) {
+      subcommand.updatePermissions(permission);
+    }
+    
+    if (!permission.isEmpty()) {
+      for (ArgumentSet argumentSet : argumentSets) {
+        argumentSet.permission = permission + "." + argumentSet.permission;
+      }
+    }
   }
   
   public void register(JavaPlugin plugin) {
     if (isSubcommand) return;
+    if (permission != null) {
+      updatePermissions(permission);
+    }
     try {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
@@ -158,21 +177,22 @@ public class Command {
     
     for (Command subcommand : subcommands) {
       toSend.add(written.append(Component.text(" " + subcommand.name + " ", subcommandColor))
-         .append(Component.text(subcommand.permission, permissionColor)));
+         .append(sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
     }
     
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
       toSend.add(written.append(Arrays.stream(argumentSet.arguments).map(x -> {
-        if (x.isOptional()) {
-          return Component.text("[" + x.argumentName() + "]", argumentOptional);
-        } else if (x instanceof ExactStringArg) {
-          return Component.text(x.argumentName(), subcommandColor);
-        } else {
-          return Component.text("<" + x.argumentName() + ">", argument);
-        }
-      }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
-         .append(x))
-         .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))));
+           if (x.isOptional()) {
+             return Component.text("[" + x.argumentName() + "]", argumentOptional);
+           } else if (x instanceof ExactStringArg) {
+             return Component.text(x.argumentName(), subcommandColor);
+           } else {
+             return Component.text("<" + x.argumentName() + ">", argument);
+           }
+         }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
+            .append(x))
+         .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))
+         .append(sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty())));
     }
     
     if (description != null) {
