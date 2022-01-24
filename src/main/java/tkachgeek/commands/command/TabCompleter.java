@@ -42,7 +42,7 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
          .parallel()
          .map(x -> new AbstractMap.SimpleEntry<>(x, 0))
          .peek(entry -> {
-           if (arguments.get(0).length() == 0) {
+           if (arguments.get(arguments.size()-1).length() == 0) {
              entry.setValue(1);
              return;
            }
