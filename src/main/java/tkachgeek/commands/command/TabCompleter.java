@@ -54,10 +54,10 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
            
            boolean applyMultiplier = true;
            
-           String argumentToLowerCase = arguments.get(0).toLowerCase();
+           String argumentToLowerCase = arguments.get(arguments.size()-1).toLowerCase();
            String writtenToLowerCase = entry.getKey().toLowerCase();
            
-           while (commandCharPointer < entry.getKey().length() && argumentCharPointer < arguments.get(0).length()) {
+           while (commandCharPointer < writtenToLowerCase.length() && argumentCharPointer < argumentToLowerCase.length()) {
              if (writtenToLowerCase.charAt(commandCharPointer++) == argumentToLowerCase.charAt(argumentCharPointer)) {
                score += applyMultiplier ? 3 : 1;
                argumentCharPointer++;
