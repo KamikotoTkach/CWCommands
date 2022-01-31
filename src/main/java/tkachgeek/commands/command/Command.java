@@ -10,6 +10,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executor;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -56,12 +57,17 @@ public class Command {
   }
   
   protected void updatePermissions(String permissions) {
-    if (!isSubcommand || permission == null) {
-      permission = permissions + "." + name;
-    } else {
-      if (!permission.isEmpty()) {
-        permission = permissions + "." + permission;
+    
+    if (isSubcommand) {
+      if (permission == null) {
+        permission = permissions + "." + name;
+      } else {
+        if (!permission.isEmpty()) {
+          permission = permissions + "." + permission;
+        }
       }
+    } else if (permission != null) {
+      permission = name;
     }
     
     for (Command subcommand : subcommands) {
@@ -77,9 +83,9 @@ public class Command {
   
   public void register(JavaPlugin plugin) {
     if (isSubcommand) return;
-    if (permission != null) {
-      updatePermissions(permission);
-    }
+    
+    updatePermissions(permission);
+    
     try {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
@@ -172,27 +178,29 @@ public class Command {
     
     Component written = Component.text(writtenString.toString()).color(writtenColor);
     
-    List<Component> toSend = new ArrayList<>();
+    List<AbstractMap.SimpleEntry<Component, Component>> toSend = new ArrayList<>();
     List<Command> subcommands = getSubcommandsFor(sender);
     
     for (Command subcommand : subcommands) {
-      toSend.add(written.append(Component.text(" " + subcommand.name + " ", subcommandColor))
-         .append(sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
+      toSend.add(new AbstractMap.SimpleEntry<>(
+         written.append(Component.text(" " + subcommand.name + " ", subcommandColor)),
+         sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
     }
     
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
-      toSend.add(written.append(Arrays.stream(argumentSet.arguments).map(x -> {
-           if (x.isOptional()) {
-             return Component.text("[" + x.argumentName() + "]", argumentOptional);
-           } else if (x instanceof ExactStringArg) {
-             return Component.text(x.argumentName(), subcommandColor);
-           } else {
-             return Component.text("<" + x.argumentName() + ">", argument);
-           }
-         }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
-            .append(x))
-         .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))
-         .append(sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty())));
+      toSend.add(new AbstractMap.SimpleEntry<>(
+         written.append(Arrays.stream(argumentSet.arguments).map(x -> {
+              if (x.isOptional()) {
+                return Component.text("[" + x.argumentName() + "]", argumentOptional);
+              } else if (x instanceof ExactStringArg) {
+                return Component.text(x.argumentName(), subcommandColor);
+              } else {
+                return Component.text("<" + x.argumentName() + ">", argument);
+              }
+            }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
+               .append(x))
+            .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))),
+         sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty()));
     }
     
     if (description != null) {
@@ -209,9 +217,9 @@ public class Command {
       sender.sendMessage(Component.text("Возможные продолжения команды:", text));
       sender.sendMessage("");
       
-      for (Component component : toSend) {
-        sender.sendMessage(component.clickEvent(
-           ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component).strip()))
+      for (AbstractMap.SimpleEntry<Component, Component> component : toSend) {
+        sender.sendMessage(component.getKey().clickEvent(
+           ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component.getKey()).strip())).append(component.getValue())
         );
       }
     }

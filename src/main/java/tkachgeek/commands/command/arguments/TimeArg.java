@@ -31,7 +31,7 @@ public class TimeArg extends Argument {
   public List<String> completions(CommandSender sender, List<String> written) {
     String last = written.get(written.size() - 1);
     
-    if (last.length() == 5 || !last.matches(completions.get(last.length()).getKey())) {
+    if (last.length() >= 5 || !last.matches(completions.get(last.length()).getKey())) {
       return new ArrayList<>();
     }
     return completions.get(last.length()).getValue().stream().map(x -> last + x).toList();
