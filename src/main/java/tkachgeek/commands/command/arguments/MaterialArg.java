@@ -6,9 +6,10 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class MaterialArg extends Argument {
-  static List<String> materials = Arrays.stream(Material.values()).map(Enum::name).toList();
+  static List<String> materials = Arrays.stream(Material.values()).map(Enum::name).collect(Collectors.toList());
   
   @Override
   public boolean valid(String raw) {

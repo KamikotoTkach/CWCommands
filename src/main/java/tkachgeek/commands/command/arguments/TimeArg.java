@@ -7,6 +7,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class TimeArg extends Argument {
   static List<AbstractMap.SimpleEntry<String, List<String>>> completions = new ArrayList<>() {{
@@ -34,7 +35,7 @@ public class TimeArg extends Argument {
     if (last.length() >= 5 || !last.matches(completions.get(last.length()).getKey())) {
       return new ArrayList<>();
     }
-    return completions.get(last.length()).getValue().stream().map(x -> last + x).toList();
+    return completions.get(last.length()).getValue().stream().map(x -> last + x).collect(Collectors.toList());
   }
   
   @Override

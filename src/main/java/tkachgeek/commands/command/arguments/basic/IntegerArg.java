@@ -6,6 +6,7 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class IntegerArg extends Argument {
@@ -51,7 +52,7 @@ public class IntegerArg extends Argument {
         return Collections.singletonList(min + " -> " + max);
       }
       case LIST -> {
-        return IntStream.range(min, max).limit(1000).mapToObj(Integer::toString).toList();
+        return IntStream.range(min, max).limit(1000).mapToObj(Integer::toString).collect(Collectors.toList());
       }
     }
     return Collections.emptyList();

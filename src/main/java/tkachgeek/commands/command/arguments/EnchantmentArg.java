@@ -6,9 +6,10 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class EnchantmentArg extends Argument {
-  static List<String> enchants = Arrays.stream(Enchantment.values()).map(x->x.getKey().value()).toList();
+  static List<String> enchants = Arrays.stream(Enchantment.values()).map(x->x.getKey().value()).collect(Collectors.toList());
   @Override
   public boolean valid(String raw) {
     return enchants.contains(raw);

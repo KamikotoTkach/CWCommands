@@ -6,6 +6,7 @@ import org.bukkit.entity.HumanEntity;
 import tkachgeek.commands.command.Argument;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OnlinePlayers extends Argument {
   public OnlinePlayers() {
@@ -18,7 +19,7 @@ public class OnlinePlayers extends Argument {
   
   @Override
   public List<String> completions(CommandSender sender) {
-    return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).toList();
+    return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).collect(Collectors.toList());
   }
   
   @Override

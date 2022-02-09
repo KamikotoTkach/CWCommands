@@ -6,9 +6,10 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class PotionEffectArg extends Argument {
-  static List<String> effects = Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getName).toList();
+  static List<String> effects = Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getName).collect(Collectors.toList());
   
   @Override
   public boolean valid(String raw) {

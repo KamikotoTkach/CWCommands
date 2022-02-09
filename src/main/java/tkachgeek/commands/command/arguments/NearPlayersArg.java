@@ -8,6 +8,7 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class NearPlayersArg extends Argument {
   int radius;
@@ -29,16 +30,18 @@ public class NearPlayersArg extends Argument {
   
   @Override
   public List<String> completions(CommandSender sender) {
-    if (sender instanceof Player completeFor) {
+    if (sender instanceof Player) {
+      Player completeFor = (Player) sender;
+      
       return Bukkit.getOnlinePlayers().stream()
          .parallel()
          .filter(player -> radius <= 0 || completeFor.getLocation().distance(player.getLocation()) < radius && !player.equals(completeFor))
          .sorted(Comparator.comparingDouble(x -> x.getLocation().distance(completeFor.getLocation())))
          .limit(limit <= 0 ? Integer.MAX_VALUE : limit)
          .map(Player::getName)
-         .toList();
+         .collect(Collectors.toList());
     } else {
-      return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).limit(limit <= 0 ? Integer.MAX_VALUE : limit).toList();
+      return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).limit(limit <= 0 ? Integer.MAX_VALUE : limit).collect(Collectors.toList());
     }
   }
   

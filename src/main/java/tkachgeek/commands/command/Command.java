@@ -14,6 +14,7 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Command {
   static TextColor text = TextColor.fromHexString("#00a6f0");
@@ -76,6 +77,7 @@ public class Command {
     
     if (!permission.isEmpty()) {
       for (ArgumentSet argumentSet : argumentSets) {
+        if(argumentSet.permission!= null && !argumentSet.permission.isEmpty())
         argumentSet.permission = permission + "." + argumentSet.permission;
       }
     }
@@ -135,7 +137,7 @@ public class Command {
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
     return Arrays.stream(subcommands)
-       .filter(command -> command.canPerformedBy(sender)).toList();
+       .filter(command -> command.canPerformedBy(sender)).collect(Collectors.toList());
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
@@ -145,7 +147,7 @@ public class Command {
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
-    return argumentSets.stream().filter(arg -> arg.canPerformedBy(sender)).toList();
+    return argumentSets.stream().filter(arg -> arg.canPerformedBy(sender)).collect(Collectors.toList());
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {

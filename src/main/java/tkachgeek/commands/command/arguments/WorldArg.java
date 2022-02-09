@@ -6,9 +6,10 @@ import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class WorldArg extends Argument {
-  static List<String> worlds = Bukkit.getWorlds().stream().map(World::getName).toList();
+  static List<String> worlds = Bukkit.getWorlds().stream().map(World::getName).collect(Collectors.toList());
   
   @Override
   public boolean valid(String raw) {

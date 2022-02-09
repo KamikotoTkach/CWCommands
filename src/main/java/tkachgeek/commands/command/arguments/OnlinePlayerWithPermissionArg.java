@@ -6,6 +6,7 @@ import org.bukkit.entity.HumanEntity;
 import tkachgeek.commands.command.Argument;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class OnlinePlayerWithPermissionArg extends Argument {
   String permission;
@@ -27,7 +28,7 @@ public class OnlinePlayerWithPermissionArg extends Argument {
   
   @Override
   public List<String> completions(CommandSender sender) {
-    return Bukkit.getOnlinePlayers().stream().filter(x -> x.hasPermission(permission)).map(HumanEntity::getName).toList();
+    return Bukkit.getOnlinePlayers().stream().filter(x -> x.hasPermission(permission)).map(HumanEntity::getName).collect(Collectors.toList());
   }
   
   @Override

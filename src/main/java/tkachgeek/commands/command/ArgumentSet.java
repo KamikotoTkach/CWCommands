@@ -20,7 +20,7 @@ public class ArgumentSet {
   boolean spacedLastArgument = false;
   boolean blockForPlayers = false;
   boolean blockForNonPlayers = false;
-  Predicate<CommandSender> canExecute = (x) -> true;
+  Predicate<CommandSender> canExecute = x -> true;
   int optionalStart;
   
   public ArgumentSet(Executor executor, String permission, Argument... arguments) {
@@ -129,7 +129,7 @@ public class ArgumentSet {
              List<String> parts = List.of(x.split(" "));
              return String.join(" ", parts.subList(finalSkip, parts.size()));
            } else return x;
-         }).toList();
+         }).collect(Collectors.toList());
     }
     return completes;
   }

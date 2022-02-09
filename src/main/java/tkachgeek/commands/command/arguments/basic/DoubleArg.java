@@ -6,6 +6,7 @@ import tkachgeek.commands.command.CompletionStyle;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 public class DoubleArg extends Argument {
@@ -59,7 +60,7 @@ public class DoubleArg extends Argument {
       case LIST -> {
         return DoubleStream.iterate(min, d -> d <= max, d -> d + step)
            .limit(1000)
-           .mapToObj(Double::toString).toList();
+           .mapToObj(Double::toString).collect(Collectors.toList());
       }
     }
     return Collections.emptyList();

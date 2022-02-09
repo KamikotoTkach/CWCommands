@@ -4,6 +4,7 @@ import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class TabCompleter implements org.bukkit.command.TabCompleter {
   private static int maxLinesPerCompletions = 64;
@@ -33,11 +34,11 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
       if (arguments.size() == 1) {
         complete.addAll(foundedCommand.getSubcommandsFor(sender).stream()
            .map(cmd -> cmd.name)
-           .toList());
+           .collect(Collectors.toList()));
       }
       complete.addAll(foundedCommand.getArgumentSetsFor(sender).stream()
          .flatMap(set -> set.getCompletesFor(arguments, sender).stream())
-         .toList());
+         .collect(Collectors.toList()));
       complete = complete.stream()
          .parallel()
          .map(x -> new AbstractMap.SimpleEntry<>(x, 0))
@@ -75,7 +76,7 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
          .sorted(Comparator.comparingInt(AbstractMap.SimpleEntry::getValue))
          .limit(maxLinesPerCompletions)
          .map(AbstractMap.SimpleEntry::getKey)
-         .toList();
+         .collect(Collectors.toList());
     }
     return complete;
   }

@@ -13,8 +13,8 @@ public class CommandParser implements CommandExecutor {
   public CommandParser(Command command) {
     node = command;
   }
-
-  static public AbstractMap.SimpleEntry<Command, Integer> parse(Command parentCommand, CommandSender sender, String... args) {
+  
+  public static AbstractMap.SimpleEntry<Command, Integer> parse(Command parentCommand, CommandSender sender, String... args) {
     int deep = 0;
     
     while (args.length > 0) {
