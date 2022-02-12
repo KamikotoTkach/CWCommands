@@ -87,4 +87,8 @@ public abstract class Argument {
   public boolean isOptional() {
     return optional;
   }
+  
+  public boolean isPresented() {
+    return raw != null;
+  }
 }

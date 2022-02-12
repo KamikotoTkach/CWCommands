@@ -67,7 +67,7 @@ public class Command {
           permission = permissions + "." + permission;
         }
       }
-    } else if (permission != null) {
+    } else if (permission == null) {
       permission = name;
     }
     
@@ -75,10 +75,13 @@ public class Command {
       subcommand.updatePermissions(permission);
     }
     
-    if (!permission.isEmpty()) {
+    if (permission != null && !permission.isEmpty()) {
       for (ArgumentSet argumentSet : argumentSets) {
-        if(argumentSet.permission!= null && !argumentSet.permission.isEmpty())
-        argumentSet.permission = permission + "." + argumentSet.permission;
+        if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
+          argumentSet.permission = permissions + "." + argumentSet.permission;
+        } else {
+          argumentSet.permission = "";
+        }
       }
     }
   }
