@@ -69,10 +69,13 @@ public class Command {
       }
     } else if (permission == null) {
       permission = name;
+      permissions = permission;
+  
     }
     
+    
     for (Command subcommand : subcommands) {
-      subcommand.updatePermissions(permission);
+      subcommand.updatePermissions(permissions);
     }
     
     if (permission != null && !permission.isEmpty()) {
