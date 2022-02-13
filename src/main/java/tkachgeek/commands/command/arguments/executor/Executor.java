@@ -30,6 +30,7 @@ public abstract class Executor {
   public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
     parser = new ArgumentParser(args, argumentSet);
     this.sender = sender;
+    
     try {
       if (sender instanceof Player) {
         executeForPlayer();

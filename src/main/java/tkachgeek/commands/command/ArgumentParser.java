@@ -13,6 +13,7 @@ public class ArgumentParser {
       copy[args.length - 1] = String.join(" ", Arrays.copyOfRange(raw, args.length - 1, raw.length));
       raw = copy;
     }
+    
     for (int i = 0; i < raw.length; i++) {
       args[i].raw = raw[i];
     }

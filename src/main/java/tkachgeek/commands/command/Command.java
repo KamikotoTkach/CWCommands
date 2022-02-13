@@ -70,9 +70,7 @@ public class Command {
     } else if (permission == null) {
       permission = name;
       permissions = permission;
-  
     }
-    
     
     for (Command subcommand : subcommands) {
       subcommand.updatePermissions(permissions);
@@ -104,6 +102,7 @@ public class Command {
   
   public Command arguments(ArgumentSet... arguments) {
     this.argumentSets.addAll(List.of(arguments));
+    
     for (ArgumentSet set : arguments) {
       if (set.optionalStart > 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) {
@@ -111,6 +110,7 @@ public class Command {
         }
       }
     }
+    
     return this;
   }
   

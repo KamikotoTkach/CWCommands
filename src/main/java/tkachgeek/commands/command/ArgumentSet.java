@@ -15,21 +15,27 @@ import java.util.stream.Collectors;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
-  final Executor executor;
+  protected final Executor executor;
+  
+  Predicate<CommandSender> canExecute = x -> true;
+  
   String permission;
+  
   boolean spacedLastArgument = false;
   boolean blockForPlayers = false;
   boolean blockForNonPlayers = false;
-  Predicate<CommandSender> canExecute = x -> true;
+  
   int optionalStart;
   
   public ArgumentSet(Executor executor, String permission, Argument... arguments) {
     this.arguments = arguments;
     this.executor = executor;
     this.permission = permission;
+    
     int pos = 0;
     int len = arguments.length - 1;
     int optionalStart = -1;
+    
     for (Argument argument : arguments) {
       if (argument instanceof SpacedArgument) {
         if (pos != len) {
@@ -38,6 +44,7 @@ public class ArgumentSet {
           spacedLastArgument = true;
         }
       }
+      
       if (argument.isOptional()) {
         if (optionalStart == -1) {
           optionalStart = pos;
@@ -50,6 +57,7 @@ public class ArgumentSet {
       }
       pos++;
     }
+    
     this.optionalStart = optionalStart;
   }
   
