@@ -27,7 +27,7 @@ public class ArgumentSet {
   
   int optionalStart;
   
-  public ArgumentSet(Executor executor, String permission, Argument... arguments) {
+  public  ArgumentSet(Executor executor, String permission, Argument... arguments) {
     this.arguments = arguments;
     this.executor = executor;
     this.permission = permission;

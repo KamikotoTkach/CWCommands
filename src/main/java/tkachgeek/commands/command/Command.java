@@ -47,6 +47,15 @@ public class Command {
     arguments(new ArgumentSet(executor, permission));
   }
   
+  public void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor) {
+    Command.text = text;
+    Command.permissionColor = permissionColor;
+    Command.subcommandColor = subcommandColor;
+    Command.writtenColor = writtenColor;
+    Command.argumentOptional = argumentOptional;
+    Command.argument = argument;
+  }
+  
   public Command subCommands(Command... subcommands) {
     this.subcommands = subcommands;
     for (Command subcommand : subcommands) {
@@ -61,14 +70,14 @@ public class Command {
     
     if (isSubcommand) {
       if (permission == null) {
-        permission = permissions + "." + name;
+        permission = permissions + "." + name; //если подкоманда и пермишен не указан
       } else {
         if (!permission.isEmpty()) {
-          permission = permissions + "." + permission;
+          permission = permissions + "." + permission; //если не подкоманда и пермишен указан
         }
       }
     } else if (permission == null) {
-      permission = name;
+      permission = name; //если не подкоманда и пермишен не указан
       permissions = permission;
     }
     
@@ -79,9 +88,9 @@ public class Command {
     if (permission != null && !permission.isEmpty()) {
       for (ArgumentSet argumentSet : argumentSets) {
         if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
-          argumentSet.permission = permissions + "." + argumentSet.permission;
+          argumentSet.permission = permissions + "." + argumentSet.permission; //если пермишен указан и не пустой
         } else {
-          argumentSet.permission = "";
+          argumentSet.permission = ""; //если пермишен не указан или пустой
         }
       }
     }
@@ -96,7 +105,7 @@ public class Command {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
     } catch (Exception e) {
-      Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " в виду её отсутствия в plugin.yml");
+      Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
   }
   
@@ -105,7 +114,7 @@ public class Command {
     
     for (ArgumentSet set : arguments) {
       if (set.optionalStart > 0) {
-        for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) {
+        for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
           argumentSets.add(new ArgumentSet(set.executor, set.permission, Arrays.copyOfRange(set.arguments, 0, i)));
         }
       }
@@ -133,7 +142,7 @@ public class Command {
   }
   
   protected void onExecute(CommandSender sender, String[] args) {
-    for (ArgumentSet set : argumentSets) {
+    for (ArgumentSet set : argumentSets) {//STREAM: find first and prepare
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
         set.executor.prepare(sender, args, set);
         return;
@@ -142,22 +151,36 @@ public class Command {
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
-    return Arrays.stream(subcommands)
-       .filter(command -> command.canPerformedBy(sender)).collect(Collectors.toList());
+    List<Command> list = new ArrayList<>();//STREAM: filter #canPerformedBy & toList
+    for (Command command : subcommands) {
+      if (command.canPerformedBy(sender)) {
+        list.add(command);
+      }
+    }
+    return list;
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
-    return Arrays.stream(subcommands)
-       .filter(command -> command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender))
-       .findFirst().orElse(null);
+    for (Command command : subcommands) {//STREAM: find first
+      if (command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender)) {
+        return command;
+      }
+    }
+    return null;
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
-    return argumentSets.stream().filter(arg -> arg.canPerformedBy(sender)).collect(Collectors.toList());
+    List<ArgumentSet> list = new ArrayList<>();
+    for (ArgumentSet arg : argumentSets) { //STREAM: filter #canPerformedBy & toList
+      if (arg.canPerformedBy(sender)) {
+        list.add(arg);
+      }
+    }
+    return list;
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
-    for (ArgumentSet set : argumentSets) {
+    for (ArgumentSet set : argumentSets) { //STREAM: anyMatch
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) return true;
     }
     return false;
@@ -190,25 +213,24 @@ public class Command {
     List<Command> subcommands = getSubcommandsFor(sender);
     
     for (Command subcommand : subcommands) {
-      toSend.add(new AbstractMap.SimpleEntry<>(
-         written.append(Component.text(" " + subcommand.name + " ", subcommandColor)),
-         sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
+      toSend.add(new AbstractMap.SimpleEntry<>(written.append(Component.text(" " + subcommand.name + " ", subcommandColor)), sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
     }
     
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
-      toSend.add(new AbstractMap.SimpleEntry<>(
-         written.append(Arrays.stream(argumentSet.arguments).map(x -> {
-              if (x.isOptional()) {
-                return Component.text("[" + x.argumentName() + "]", argumentOptional);
-              } else if (x instanceof ExactStringArg) {
-                return Component.text(x.argumentName(), subcommandColor);
-              } else {
-                return Component.text("<" + x.argumentName() + ">", argument);
-              }
-            }).reduce(Component.empty(), (a, x) -> a.append(Component.space())
-               .append(x))
-            .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))),
-         sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty()));
+      toSend.add(new AbstractMap.SimpleEntry<>(written.append(
+         Arrays.stream(argumentSet.arguments)
+               .map(x -> {
+                 if (x.isOptional()) {
+                   return Component.text("[" + x.argumentName() + "]", argumentOptional);
+                 } else if (x instanceof ExactStringArg) {
+                   return Component.text(x.argumentName(), subcommandColor);
+                 } else {
+                   return Component.text("<" + x.argumentName() + ">", argument);
+                 }
+               })
+               .reduce(Component.empty(), (a, x) -> a.append(Component.space())
+                                                     .append(x))
+               .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))), sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty()));
     }
     
     if (description != null) {
@@ -226,9 +248,11 @@ public class Command {
       sender.sendMessage("");
       
       for (AbstractMap.SimpleEntry<Component, Component> component : toSend) {
-        sender.sendMessage(component.getKey().clickEvent(
-           ClickEvent.suggestCommand(PlainTextComponentSerializer.plainText().serialize(component.getKey()).strip())).append(component.getValue())
-        );
+        sender.sendMessage(component.getKey().clickEvent(ClickEvent.suggestCommand(
+                                       PlainTextComponentSerializer.plainText()
+                                                                   .serialize(component.getKey())
+                                                                   .strip()))
+                                    .append(component.getValue()));
       }
     }
   }
