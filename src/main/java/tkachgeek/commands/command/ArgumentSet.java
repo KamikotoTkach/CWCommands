@@ -9,6 +9,7 @@ import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -27,7 +28,7 @@ public class ArgumentSet {
   
   int optionalStart;
   
-  public  ArgumentSet(Executor executor, String permission, Argument... arguments) {
+  public ArgumentSet(Executor executor, String permission, Argument... arguments) {
     this.arguments = arguments;
     this.executor = executor;
     this.permission = permission;
@@ -39,7 +40,8 @@ public class ArgumentSet {
     for (Argument argument : arguments) {
       if (argument instanceof SpacedArgument) {
         if (pos != len) {
-          Logger.getGlobal().warning("Аргумент " + argument.getClass().getName() + " должен быть последним в списке аргументов");
+          Logger.getGlobal()
+                .warning("Аргумент " + argument.getClass().getName() + " должен быть последним в списке аргументов");
         } else {
           spacedLastArgument = true;
         }
@@ -67,9 +69,11 @@ public class ArgumentSet {
   }
   
   private void sendBlockedArgumentWarning() {
-    Bukkit.getLogger().warning("Набор агрументов " + Arrays.stream(arguments)
-       .map(Argument::argumentName)
-       .collect(Collectors.joining(", ")) + " не может быть выполнен");
+    StringJoiner joiner = new StringJoiner(", ");
+    for (Argument argument : arguments) {
+      joiner.add(argument.argumentName());
+    }
+    Bukkit.getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
   }
   
   public ArgumentSet blockForPlayers() {
@@ -131,7 +135,9 @@ public class ArgumentSet {
       
       int finalSkip = skip;
       
-      return arguments[written.size() - 1].completions(sender, written).stream()
+      return arguments[written.size() - 1] //todo: на циклы переписать
+         .completions(sender, written)
+         .stream()
          .map(x -> {
            if (finalSkip > 0) {
              List<String> parts = List.of(x.split(" "));

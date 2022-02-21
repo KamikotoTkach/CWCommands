@@ -6,13 +6,14 @@ import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import tkachgeek.commands.command.Argument;
 
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class NearPlayersArg extends Argument {
   int radius;
   int limit;
+  
   /**
    * При радиусе <=0 он не считается,<br>
    * при limit <= 0 он Integer.MAX_VALUE.<br>
@@ -30,19 +31,32 @@ public class NearPlayersArg extends Argument {
   
   @Override
   public List<String> completions(CommandSender sender) {
+    List<Player> players = new ArrayList<>();
+    
     if (sender instanceof Player) {
       Player completeFor = (Player) sender;
       
-      return Bukkit.getOnlinePlayers().stream()
-         .parallel()
-         .filter(player -> radius <= 0 || completeFor.getLocation().distance(player.getLocation()) < radius && !player.equals(completeFor))
-         .sorted(Comparator.comparingDouble(x -> x.getLocation().distance(completeFor.getLocation())))
-         .limit(limit <= 0 ? Integer.MAX_VALUE : limit)
-         .map(Player::getName)
-         .collect(Collectors.toList());
+      for (Player player : Bukkit.getOnlinePlayers()) {
+        if (radius <= 0 || completeFor.getLocation()
+                                      .distance(player.getLocation()) < radius && !player.equals(completeFor)) {
+          players.add(player);
+        }
+      }
+      
+      players.sort(Comparator.comparingDouble(x -> x.getLocation().distance(completeFor.getLocation())));
     } else {
-      return Bukkit.getOnlinePlayers().stream().map(HumanEntity::getName).limit(limit <= 0 ? Integer.MAX_VALUE : limit).collect(Collectors.toList());
+      players = new ArrayList<>(Bukkit.getOnlinePlayers());
     }
+    
+    List<String> list = new ArrayList<>();
+    long limit1 = limit <= 0 ? Integer.MAX_VALUE : limit;
+    
+    for (Player player : players) {
+      if (limit1-- == 0) break;
+      list.add(player.getName());
+    }
+    
+    return list;
   }
   
   @Override
