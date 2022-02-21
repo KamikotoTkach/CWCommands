@@ -132,18 +132,15 @@ public class ArgumentSet {
       for (int i = 0; i < written.size() - 1; i++) {
         if (!arguments[i].valid(written.get(i), written)) return completes;
       }
-      
-      int finalSkip = skip;
-      
-      return arguments[written.size() - 1] //todo: на циклы переписать
-         .completions(sender, written)
-         .stream()
-         .map(x -> {
-           if (finalSkip > 0) {
-             List<String> parts = List.of(x.split(" "));
-             return String.join(" ", parts.subList(finalSkip, parts.size()));
-           } else return x;
-         }).collect(Collectors.toList());
+  
+      List<String> result = new ArrayList<>();
+      for(var st : arguments[written.size() - 1].completions(sender, written)) {
+        if (skip > 0) {
+          List<String> parts = List.of(st.split(" "));
+          result.add(String.join(" ", parts.subList(skip, parts.size())));
+        } else result.add(st);
+      }
+      return result;
     }
     return completes;
   }
