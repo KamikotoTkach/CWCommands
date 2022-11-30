@@ -59,6 +59,7 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
     //Benchmark.stage("TabComplete", "gettedSuggestions");
     
     List<String> suggestions = StringUtils.getSuggestions(complete, arguments.get(arguments.size() - 1), maxLinesPerCompletions);
+    
     for (String suggestion : suggestions) {
       sender.sendMessage(suggestion);
     }

@@ -14,7 +14,6 @@ import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Command {
   static TextColor text = TextColor.fromHexString("#00a6f0");
@@ -23,6 +22,7 @@ public class Command {
   static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
   static TextColor writtenColor = TextColor.fromHexString("#007ab5");
   static TextColor permissionColor = TextColor.fromHexString("#055080");
+  static TextColor comment = TextColor.fromHexString("#8adaff");
   
   final String name;
   final List<ArgumentSet> argumentSets = new ArrayList<>();
@@ -34,7 +34,7 @@ public class Command {
   Command[] subcommands = new Command[]{};
   
   public Command(String name) {
-    this(name, null);
+    this.name = name;
   }
   
   public Command(String name, String permission) {
@@ -45,6 +45,15 @@ public class Command {
   public Command(String name, String permission, Executor executor) {
     this(name, permission);
     arguments(new ArgumentSet(executor, permission));
+  }
+  
+  public Command(String name, Executor executor) {
+    this(name);
+    arguments(new ArgumentSet(executor, name));
+  }
+  public Command(String name, Executor executor, Argument... arguments) {
+    this(name);
+    arguments(new ArgumentSet(executor, name, arguments));
   }
   
   public void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor) {
@@ -231,6 +240,10 @@ public class Command {
                .reduce(Component.empty(), (a, x) -> a.append(Component.space())
                                                      .append(x))
                .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))), sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty()));
+      if (argumentSet.hasHelp()) {
+        toSend.add(new AbstractMap.SimpleEntry<>(Component.text("↳ ").append(argumentSet.help).color(comment), Component.empty()));
+        toSend.add(new AbstractMap.SimpleEntry<>(Component.empty(), Component.empty()));
+      }
     }
     
     if (description != null) {

@@ -1,5 +1,6 @@
 package tkachgeek.commands.command;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -12,7 +13,6 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
@@ -27,6 +27,8 @@ public class ArgumentSet {
   boolean blockForNonPlayers = false;
   
   int optionalStart;
+  
+  Component help;
   
   public ArgumentSet(Executor executor, String permission, Argument... arguments) {
     this.arguments = arguments;
@@ -88,6 +90,11 @@ public class ArgumentSet {
     return this;
   }
   
+  public ArgumentSet help(Component help) {
+    this.help = help;
+    return this;
+  }
+  
   protected boolean isArgumentsFit(String... args) {
     
     if (args.length != arguments.length && !spacedLastArgument) return false;
@@ -132,9 +139,9 @@ public class ArgumentSet {
       for (int i = 0; i < written.size() - 1; i++) {
         if (!arguments[i].valid(written.get(i), written)) return completes;
       }
-  
+      
       List<String> result = new ArrayList<>();
-      for(var st : arguments[written.size() - 1].completions(sender, written)) {
+      for (var st : arguments[written.size() - 1].completions(sender, written)) {
         if (skip > 0) {
           List<String> parts = List.of(st.split(" "));
           result.add(String.join(" ", parts.subList(skip, parts.size())));
@@ -143,5 +150,9 @@ public class ArgumentSet {
       return result;
     }
     return completes;
+  }
+  
+  public boolean hasHelp() {
+    return help != null;
   }
 }
