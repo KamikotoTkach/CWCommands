@@ -253,7 +253,8 @@ public class Command {
       }
       sender.sendMessage("");
     }
-    
+  
+    sender.sendMessage("");
     if (toSend.isEmpty()) {
       sender.sendMessage(Component.text("Для вас нет доступных продолжений этой команды", text));
     } else {
