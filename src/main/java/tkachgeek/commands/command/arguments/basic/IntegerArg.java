@@ -14,22 +14,25 @@ public class IntegerArg extends Argument {
   int max = Integer.MAX_VALUE;
   CompletionStyle style = CompletionStyle.PLACEHOLDER;
   String placeholder = "Целое число";
-  public IntegerArg(int min, int max) {
+  
+  public IntegerArg setMin(int min) {
     this.min = min;
+    return this;
+  }
+  
+  public IntegerArg setMax(int max) {
     this.max = max;
+    return this;
   }
   
-  public IntegerArg(int min, int max, CompletionStyle completionStyle) {
-    this(min, max);
-    this.style = completionStyle;
+  public IntegerArg setStyle(CompletionStyle style) {
+    this.style = style;
+    return this;
   }
   
-  public IntegerArg() {
-  
-  }
-  
-  public IntegerArg(String placeholder) {
+  public IntegerArg setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
+    return this;
   }
   
   @Override

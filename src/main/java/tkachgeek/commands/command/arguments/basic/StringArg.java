@@ -15,26 +15,29 @@ public class StringArg extends Argument {
   protected String placeholder = "Произвольная строка";
   Pattern pattern;
   
-  public StringArg(int minLen, int maxLen) {
-    this.min = minLen;
-    this.max = maxLen;
+  public StringArg setMin(int min) {
+    this.min = min;
+    return this;
   }
   
-  public StringArg(int minLen, int maxLen, CompletionStyle completionStyle) {
-    this(minLen, maxLen);
-    this.style = completionStyle;
+  public StringArg setMax(int max) {
+    this.max = max;
+    return this;
   }
   
-  public StringArg() {
-  
+  public StringArg setStyle(CompletionStyle style) {
+    this.style = style;
+    return this;
   }
   
-  public StringArg(Pattern pattern) {
-    this.pattern = pattern;
-  }
-  
-  public StringArg(String placeholder) {
+  public StringArg setPlaceholder(String placeholder) {
     this.placeholder = placeholder;
+    return this;
+  }
+  
+  public StringArg setPattern(Pattern pattern) {
+    this.pattern = pattern;
+    return this;
   }
   
   @Override

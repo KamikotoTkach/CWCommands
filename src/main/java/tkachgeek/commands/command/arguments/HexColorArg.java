@@ -6,7 +6,7 @@ import java.util.regex.Pattern;
 
 public class HexColorArg extends StringArg {
   public HexColorArg() {
-    super(Pattern.compile("#[0-9A-F]{6}|#[0-9A-F]{3}", Pattern.CASE_INSENSITIVE));
+    setPattern(Pattern.compile("#[0-9A-F]{6}|#[0-9A-F]{3}", Pattern.CASE_INSENSITIVE));
   }
   
   public HexColorArg(String placeholder) {

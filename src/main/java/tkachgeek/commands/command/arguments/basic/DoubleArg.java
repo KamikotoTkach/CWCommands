@@ -14,26 +14,29 @@ public class DoubleArg extends Argument {
   double max = Double.MAX_VALUE;
   CompletionStyle style = CompletionStyle.PLACEHOLDER;
   double step = 1.0;
-  String placeholder = "Дробное число";
-  public DoubleArg(double min, double max) {
+  
+  public DoubleArg setMin(double min) {
     this.min = min;
+    return this;
+  }
+  
+  public DoubleArg setMax(double max) {
     this.max = max;
+    return this;
   }
   
-  public DoubleArg(double min, double max, CompletionStyle completionStyle, double step) {
-    this(min, max);
-    this.style = completionStyle;
+  public DoubleArg setStyle(CompletionStyle style) {
+    this.style = style;
+    return this;
+  }
+  
+  public DoubleArg setStep(double step) {
     this.step = step;
-  }
-  public DoubleArg(double min, double max, double step) {
-    this(min, max);
-    this.style = CompletionStyle.DIAPASON;
-    this.step = step;
+    return this;
   }
   
-  public DoubleArg() {
+  String placeholder = "Дробное число";
   
-  }
   public DoubleArg(String placeholder) {
    this.placeholder = placeholder;
   }
