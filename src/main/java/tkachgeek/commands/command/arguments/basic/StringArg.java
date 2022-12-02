@@ -15,6 +15,13 @@ public class StringArg extends Argument {
   protected String placeholder = "Произвольная строка";
   Pattern pattern;
   
+  public StringArg(String placeholder) {
+    this.placeholder = placeholder;
+  }
+  
+  public StringArg() {
+  }
+  
   public StringArg setMin(int min) {
     this.min = min;
     return this;

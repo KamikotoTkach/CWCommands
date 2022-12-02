@@ -15,6 +15,12 @@ public class IntegerArg extends Argument {
   CompletionStyle style = CompletionStyle.PLACEHOLDER;
   String placeholder = "Целое число";
   
+  public IntegerArg() {
+  }
+  
+  public IntegerArg(String placeholder) {
+    this.placeholder = placeholder;
+  }
   public IntegerArg setMin(int min) {
     this.min = min;
     return this;

@@ -41,6 +41,9 @@ public class DoubleArg extends Argument {
    this.placeholder = placeholder;
   }
   
+  public DoubleArg() {
+  }
+  
   @Override
   public boolean valid(String raw) {
     try {
