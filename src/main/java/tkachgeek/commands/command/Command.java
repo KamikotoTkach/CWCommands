@@ -84,9 +84,6 @@ public class Command {
         permission = permissions + "." + name; //если подкоманда и пермишен не указан
       } else {
         if (!permission.isEmpty()) {
-          if (permission.startsWith("$")) { //если пермишен начинается с $
-            permission = permission.substring(1);
-          }
           permission = permissions + "." + permission; //если не подкоманда и пермишен указан
         }
       }
@@ -102,9 +99,6 @@ public class Command {
     if (permission != null && !permission.isEmpty()) {
       for (ArgumentSet argumentSet : argumentSets) {
         if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
-          if(argumentSet.permission.startsWith("$")) {
-            argumentSet.permission = argumentSet.permission.substring(1); //если пермишен начинается с $
-          }
           argumentSet.permission = permissions + "." + argumentSet.permission; //если пермишен указан и не пустой
         } else {
           argumentSet.permission = ""; //если пермишен не указан или пустой

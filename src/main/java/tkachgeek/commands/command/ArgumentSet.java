@@ -144,7 +144,9 @@ public class ArgumentSet {
       for (var st : arguments[written.size() - 1].completions(sender, written)) {
         if (skip > 0) {
           List<String> parts = List.of(st.split(" "));
-          result.add(String.join(" ", parts.subList(skip, parts.size())));
+          if (skip < parts.size()) {
+            result.add(String.join(" ", parts.subList(skip, parts.size())));
+          }
         } else result.add(st);
       }
       return result;
