@@ -56,13 +56,14 @@ public class Command {
     arguments(new ArgumentSet(executor, name, arguments));
   }
   
-  public void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor) {
+  public void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor, TextColor comment) {
     Command.text = text;
     Command.permissionColor = permissionColor;
     Command.subcommandColor = subcommandColor;
     Command.writtenColor = writtenColor;
     Command.argumentOptional = argumentOptional;
     Command.argument = argument;
+    Command.comment = comment;
   }
   
   public Command subCommands(Command... subcommands) {
