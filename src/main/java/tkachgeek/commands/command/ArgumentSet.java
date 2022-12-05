@@ -4,6 +4,8 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
+import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 
@@ -42,8 +44,7 @@ public class ArgumentSet {
     for (Argument argument : arguments) {
       if (argument instanceof SpacedArgument) {
         if (pos != len) {
-          Logger.getGlobal()
-                .warning("Аргумент " + argument.getClass().getName() + " должен быть последним в списке аргументов");
+          Logger.getGlobal().warning("Аргумент " + argument.getClass().getName() + " должен быть последним в списке аргументов");
         } else {
           spacedLastArgument = true;
         }
@@ -63,6 +64,18 @@ public class ArgumentSet {
     }
     
     this.optionalStart = optionalStart;
+  }
+  
+  public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
+    this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
+  }
+  
+  @NotNull
+  private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
+    Argument[] args = new Argument[arguments.length + 1];
+    args[0] = exactStringArg;
+    System.arraycopy(arguments, 0, args, 1, arguments.length);
+    return args;
   }
   
   public ArgumentSet canExecute(Predicate<CommandSender> canExecute) {
