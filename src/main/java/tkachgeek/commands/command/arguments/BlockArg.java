@@ -23,6 +23,6 @@ public class BlockArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Тип блока";
+    return "блок";
   }
 }

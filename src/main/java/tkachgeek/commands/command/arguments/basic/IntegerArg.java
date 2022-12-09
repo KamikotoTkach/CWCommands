@@ -1,8 +1,8 @@
 package tkachgeek.commands.command.arguments.basic;
 
 import org.bukkit.command.CommandSender;
-import tkachgeek.commands.command.CompletionStyle;
 import tkachgeek.commands.command.Argument;
+import tkachgeek.commands.command.CompletionStyle;
 
 import java.util.Collections;
 import java.util.List;
@@ -21,6 +21,7 @@ public class IntegerArg extends Argument {
   public IntegerArg(String placeholder) {
     this.placeholder = placeholder;
   }
+  
   public IntegerArg setMin(int min) {
     this.min = min;
     return this;
@@ -70,5 +71,18 @@ public class IntegerArg extends Argument {
   @Override
   public String argumentName() {
     return placeholder;
+  }
+  
+  @Override
+  protected String hint() {
+    StringBuilder builder = new StringBuilder();
+    
+    boolean minFlag = min != Integer.MIN_VALUE;
+    if (minFlag) {
+      builder.append("От ").append(min);
+    }
+    if (max != Integer.MAX_VALUE) builder.append(minFlag ? " до " : "До ").append(max);
+    
+    return builder.toString();
   }
 }

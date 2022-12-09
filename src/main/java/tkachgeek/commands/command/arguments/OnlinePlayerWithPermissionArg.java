@@ -2,25 +2,23 @@ package tkachgeek.commands.command.arguments;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import tkachgeek.commands.command.Argument;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class OnlinePlayerWithPermissionArg extends Argument {
   String permission;
-  String name = null;
+  String argumentName = null;
   
   public OnlinePlayerWithPermissionArg(String permission) {
     this.permission = permission;
   }
   
-  public OnlinePlayerWithPermissionArg(String permission, String name) {
+  public OnlinePlayerWithPermissionArg(String permission, String argumentName) {
     this.permission = permission;
-    this.name = permission;
+    this.argumentName = permission;
   }
   
   @Override
@@ -41,6 +39,6 @@ public class OnlinePlayerWithPermissionArg extends Argument {
   
   @Override
   public String argumentName() {
-    return name == null ? "Игрок с " + permission : name;
+    return argumentName == null ? "Игрок с " + permission : argumentName;
   }
 }

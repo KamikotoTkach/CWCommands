@@ -88,4 +88,8 @@ public abstract class Argument {
     return optional;
   }
   
+  protected String hint() {
+    return "";
+  }
+  
 }

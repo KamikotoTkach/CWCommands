@@ -40,6 +40,11 @@ public class TimeArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Время";
+    return "время";
+  }
+  
+  @Override
+  public String hint() {
+    return "Часы:минуты";
   }
 }

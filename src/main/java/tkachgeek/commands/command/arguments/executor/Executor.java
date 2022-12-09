@@ -15,6 +15,18 @@ public abstract class Executor {
     return parser.get(index);
   }
   
+  protected double doubl(int index) {
+    return arg(index).toDouble();
+  }
+  
+  protected int integ(int index) {
+    return arg(index).toInt();
+  }
+  
+  protected String str(int index) {
+    return arg(index).toString();
+  }
+  
   protected final int argumentsAmount() {
     return parser.args.length;
   }
@@ -47,7 +59,6 @@ public abstract class Executor {
   public void executeForNonPlayer() {
     executeForPlayer();
   }
-  
   
   public void errorHandler(Exception exception) {
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());

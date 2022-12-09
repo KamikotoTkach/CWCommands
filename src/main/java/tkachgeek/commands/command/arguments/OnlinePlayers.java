@@ -28,6 +28,6 @@ public class OnlinePlayers extends Argument {
   
   @Override
   public String argumentName() {
-    return "Онлайн игрок";
+    return "игрок в сети";
   }
 }

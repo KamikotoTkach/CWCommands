@@ -61,6 +61,6 @@ public class NearPlayersArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Ближайший игрок";
+    return "ближайший игрок";
   }
 }

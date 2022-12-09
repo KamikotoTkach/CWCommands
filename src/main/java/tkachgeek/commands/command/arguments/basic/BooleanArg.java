@@ -57,4 +57,9 @@ public class BooleanArg extends Argument {
   public String argumentName() {
     return "Логическое значение";
   }
+  
+  @Override
+  protected String hint() {
+    return trueValue + " или " + falseValue;
+  }
 }

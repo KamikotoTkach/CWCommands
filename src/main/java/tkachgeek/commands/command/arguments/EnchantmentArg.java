@@ -22,6 +22,6 @@ public class EnchantmentArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Название зачарования";
+    return "зачарование";
   }
 }

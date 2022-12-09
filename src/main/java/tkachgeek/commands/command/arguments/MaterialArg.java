@@ -23,6 +23,6 @@ public class MaterialArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Материал";
+    return "материал";
   }
 }

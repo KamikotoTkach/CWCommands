@@ -76,4 +76,17 @@ public class DoubleArg extends Argument {
   public String argumentName() {
     return placeholder;
   }
+  
+  @Override
+  protected String hint() {
+    StringBuilder builder = new StringBuilder();
+    
+    boolean minFlag = min != Double.MIN_VALUE;
+    if (minFlag) {
+      builder.append("От ").append(min);
+    }
+    if (max != Double.MAX_VALUE) builder.append(minFlag ? " до " : "До ").append(max);
+    
+    return builder.toString();
+  }
 }

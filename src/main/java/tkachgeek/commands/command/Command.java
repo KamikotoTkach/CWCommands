@@ -2,6 +2,7 @@ package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.event.HoverEvent;
 import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
@@ -99,7 +100,7 @@ public class Command {
     if (permission != null && !permission.isEmpty()) {
       for (ArgumentSet argumentSet : argumentSets) {
         if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
-          argumentSet.permission = permissions + "." + argumentSet.permission; //если пермишен указан и не пустой
+          argumentSet.permission = permission + "." + argumentSet.permission; //если пермишен указан и не пустой
         } else {
           argumentSet.permission = ""; //если пермишен не указан или пустой
         }
@@ -236,7 +237,11 @@ public class Command {
                  } else if (x instanceof ExactStringArg) {
                    return Component.text(x.argumentName(), subcommandColor);
                  } else {
-                   return Component.text("<" + x.argumentName() + ">", argument);
+                   if (!x.hint().isEmpty()) {
+                     return Component.text("<" + x.argumentName() + ">", argument).hoverEvent(HoverEvent.showText(Component.text(x.hint(), comment)));
+                   } else {
+                     return Component.text("<" + x.argumentName() + ">", argument);
+                   }
                  }
                })
                .reduce(Component.empty(), (a, x) -> a.append(Component.space())

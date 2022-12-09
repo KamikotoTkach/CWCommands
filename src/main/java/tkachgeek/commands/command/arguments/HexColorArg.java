@@ -16,6 +16,6 @@ public class HexColorArg extends StringArg {
   
   @Override
   public String argumentName() {
-    return "HEX Цвет";
+    return "HEX";
   }
 }

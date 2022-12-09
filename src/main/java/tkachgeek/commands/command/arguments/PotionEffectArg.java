@@ -23,6 +23,6 @@ public class PotionEffectArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Эффект зелья";
+    return "эффект";
   }
 }

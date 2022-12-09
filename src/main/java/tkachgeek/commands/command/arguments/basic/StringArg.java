@@ -9,10 +9,11 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 public class StringArg extends Argument {
-  int min = 1;
-  int max = 10000;
-  CompletionStyle style = CompletionStyle.PLACEHOLDER;
+  static final int INITIAL_MAX_STRING_LENGTH = 10000;
   protected String placeholder = "Произвольная строка";
+  int min = 1;
+  int max = INITIAL_MAX_STRING_LENGTH;
+  CompletionStyle style = CompletionStyle.PLACEHOLDER;
   Pattern pattern;
   
   public StringArg(String placeholder) {
@@ -69,5 +70,14 @@ public class StringArg extends Argument {
   @Override
   public String argumentName() {
     return placeholder;
+  }
+  
+  @Override
+  protected String hint() {
+    StringBuilder builder = new StringBuilder();
+    builder.append("От ").append(min);
+    if (max != INITIAL_MAX_STRING_LENGTH) builder.append(" до ").append(max);
+    builder.append(" символов");
+    return builder.toString();
   }
 }
