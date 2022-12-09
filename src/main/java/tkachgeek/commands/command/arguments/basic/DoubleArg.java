@@ -48,7 +48,7 @@ public class DoubleArg extends Argument {
   public boolean valid(String raw) {
     try {
       double parsed = Double.parseDouble(raw);
-      return parsed >= min && parsed <= max;
+      return parsed >= min && parsed < max;
     } catch (NumberFormatException ignored) {
     }
     return false;

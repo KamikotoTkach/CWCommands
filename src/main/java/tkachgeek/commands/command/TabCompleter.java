@@ -47,6 +47,7 @@ public class TabCompleter implements org.bukkit.command.TabCompleter {
     if (arguments.size() == 1) {
       for (Command cmd : foundedCommand.getSubcommandsFor(sender)) {
         complete.add(cmd.name);
+        complete.addAll(cmd.aliases);
       }
     }
     

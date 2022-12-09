@@ -29,6 +29,6 @@ public class ListArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Набор значений";
+    return "набор значений";
   }
 }

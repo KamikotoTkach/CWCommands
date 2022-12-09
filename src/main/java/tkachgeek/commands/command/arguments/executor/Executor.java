@@ -15,15 +15,15 @@ public abstract class Executor {
     return parser.get(index);
   }
   
-  protected double doubl(int index) {
+  protected double argD(int index) {
     return arg(index).toDouble();
   }
   
-  protected int integ(int index) {
+  protected int argI(int index) {
     return arg(index).toInt();
   }
   
-  protected String str(int index) {
+  protected String argS(int index) {
     return arg(index).toString();
   }
   

@@ -27,6 +27,7 @@ public class Command {
   
   final String name;
   final List<ArgumentSet> argumentSets = new ArrayList<>();
+  List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
   String description;
   String permission;
@@ -38,8 +39,13 @@ public class Command {
     this.name = name;
   }
   
+  public Command(String name, List<String> aliases) {
+    this(name);
+    aliases(aliases);
+  }
+  
   public Command(String name, String permission) {
-    this.name = name;
+    this(name);
     this.permission = permission;
   }
   
@@ -58,7 +64,7 @@ public class Command {
     arguments(new ArgumentSet(executor, name, arguments));
   }
   
-  public void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor, TextColor comment) {
+  public static void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor, TextColor comment) {
     Command.text = text;
     Command.permissionColor = permissionColor;
     Command.subcommandColor = subcommandColor;
@@ -66,6 +72,16 @@ public class Command {
     Command.argumentOptional = argumentOptional;
     Command.argument = argument;
     Command.comment = comment;
+  }
+  
+  public Command aliases(List<String> aliases) {
+    this.aliases = aliases;
+    return this;
+  }
+  
+  public Command aliases(String... aliases) {
+    this.aliases = List.of(aliases);
+    return this;
   }
   
   public Command subCommands(Command... subcommands) {
@@ -76,36 +92,6 @@ public class Command {
     }
     
     return this;
-  }
-  
-  protected void updatePermissions(String permissions) {
-    
-    if (isSubcommand) {
-      if (permission == null) {
-        permission = permissions + "." + name; //если подкоманда и пермишен не указан
-      } else {
-        if (!permission.isEmpty()) {
-          permission = permissions + "." + permission; //если не подкоманда и пермишен указан
-        }
-      }
-    } else if (permission == null) {
-      permission = name; //если не подкоманда и пермишен не указан
-      permissions = permission;
-    }
-    
-    for (Command subcommand : subcommands) {
-      subcommand.updatePermissions(permissions);
-    }
-    
-    if (permission != null && !permission.isEmpty()) {
-      for (ArgumentSet argumentSet : argumentSets) {
-        if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
-          argumentSet.permission = permission + "." + argumentSet.permission; //если пермишен указан и не пустой
-        } else {
-          argumentSet.permission = ""; //если пермишен не указан или пустой
-        }
-      }
-    }
   }
   
   public void register(JavaPlugin plugin) {
@@ -145,6 +131,36 @@ public class Command {
     return this;
   }
   
+  protected void updatePermissions(String permissions) {
+    
+    if (isSubcommand) {
+      if (permission == null) {
+        permission = permissions + "." + name; //если подкоманда и пермишен не указан
+      } else {
+        if (!permission.isEmpty()) {
+          permission = permissions + "." + permission; //если не подкоманда и пермишен указан
+        }
+      }
+    } else if (permission == null) {
+      permission = name; //если не подкоманда и пермишен не указан
+      permissions = permission;
+    }
+    
+    for (Command subcommand : subcommands) {
+      subcommand.updatePermissions(permissions);
+    }
+    
+    if (permission != null && !permission.isEmpty()) {
+      for (ArgumentSet argumentSet : argumentSets) {
+        if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
+          argumentSet.permission = permission + "." + argumentSet.permission; //если пермишен указан и не пустой
+        } else {
+          argumentSet.permission = ""; //если пермишен не указан или пустой
+        }
+      }
+    }
+  }
+  
   protected void onError(CommandSender sender, String[] args) {
     helpFor(sender, args);
   }
@@ -173,8 +189,8 @@ public class Command {
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
-    for (Command command : subcommands) {//STREAM: find first
-      if (command.name.equalsIgnoreCase(arg) && command.canPerformedBy(sender)) {
+    for (Command command : subcommands) {
+      if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg)) && command.canPerformedBy(sender)) {
         return command;
       }
     }

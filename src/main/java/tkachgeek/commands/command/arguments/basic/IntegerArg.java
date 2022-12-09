@@ -46,7 +46,7 @@ public class IntegerArg extends Argument {
   public boolean valid(String raw) {
     try {
       int parsed = Integer.parseInt(raw);
-      return parsed >= min && parsed <= max;
+      return parsed >= min && parsed < max;
     } catch (NumberFormatException ignored) {
     }
     return false;
