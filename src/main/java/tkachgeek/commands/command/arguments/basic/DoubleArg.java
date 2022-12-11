@@ -3,6 +3,7 @@ package tkachgeek.commands.command.arguments.basic;
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;
 import tkachgeek.commands.command.CompletionStyle;
+import tkachgeek.tkachutils.numbers.NumbersUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -14,6 +15,14 @@ public class DoubleArg extends Argument {
   double max = Double.MAX_VALUE;
   CompletionStyle style = CompletionStyle.PLACEHOLDER;
   double step = 1.0;
+  String placeholder = "дробное число";
+  
+  public DoubleArg(String placeholder) {
+    this.placeholder = placeholder;
+  }
+  
+  public DoubleArg() {
+  }
   
   public DoubleArg setMin(double min) {
     this.min = min;
@@ -35,18 +44,11 @@ public class DoubleArg extends Argument {
     return this;
   }
   
-  String placeholder = "Дробное число";
-  
-  public DoubleArg(String placeholder) {
-   this.placeholder = placeholder;
-  }
-  
-  public DoubleArg() {
-  }
-  
   @Override
   public boolean valid(String raw) {
     try {
+      if (!NumbersUtils.isNumber(raw)) return false;
+      
       double parsed = Double.parseDouble(raw);
       return parsed >= min && parsed < max;
     } catch (NumberFormatException ignored) {
@@ -65,8 +67,8 @@ public class DoubleArg extends Argument {
       }
       case LIST -> {
         return DoubleStream.iterate(min, d -> d <= max, d -> d + step)
-           .limit(1000)
-           .mapToObj(Double::toString).collect(Collectors.toList());
+                           .limit(1000)
+                           .mapToObj(Double::toString).collect(Collectors.toList());
       }
     }
     return Collections.emptyList();

@@ -19,6 +19,6 @@ public class EmptyArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "Любое значение";
+    return "любое значение";
   }
 }

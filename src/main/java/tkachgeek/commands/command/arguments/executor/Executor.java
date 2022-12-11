@@ -64,4 +64,8 @@ public abstract class Executor {
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
   }
+  
+  public boolean isPresent(int index) {
+    return argumentsAmount()>index;
+  }
 }

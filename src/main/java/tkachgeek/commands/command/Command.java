@@ -1,17 +1,14 @@
 package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.event.ClickEvent;
-import net.kyori.adventure.text.event.HoverEvent;
+import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
-import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
-import tkachgeek.commands.command.arguments.ExactStringArg;
+import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executor;
 
-import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -223,6 +220,56 @@ public class Command {
   }
   
   private void sendAutoHelp(CommandSender sender) {
+    Component written = Component.text(getPathToRoot()).color(writtenColor);
+    
+    List<Component> toSend = new ArrayList<>();
+    
+    for (Command subcommand : getSubcommandsFor(sender)) {
+      toSend.add(written
+                    .append(Component.text(" " + subcommand.name + " ", subcommandColor))
+                    .append(sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty())
+      );
+    }
+    
+    for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
+      for (Component component : argumentSet.getHelp(sender)) {
+        toSend.add(written.append(component));
+      }
+      
+      if (argumentSet.hasHelp()) {
+        toSend.add(Component.text("↳ ").append(argumentSet.help).color(comment));
+        toSend.add(Component.empty());
+      }
+    }
+  
+    sendDescription(sender);
+  
+    sender.sendMessage("");
+    
+    if (toSend.isEmpty()) {
+      sender.sendMessage(Component.text("Для вас нет доступных продолжений этой команды", text));
+    } else {
+      sender.sendMessage(Component.text("Возможные продолжения команды:", text));
+      sender.sendMessage("");
+      
+      for (Component row : toSend) {
+        sender.sendMessage(row);
+      }
+    }
+  }
+  
+  private void sendDescription(CommandSender sender) {
+    if (description != null) {
+      sender.sendMessage("");
+      for (String part : description.split("\n")) {
+        sender.sendMessage(Component.text(part, text));
+      }
+      sender.sendMessage("");
+    }
+  }
+  
+  @NotNull
+  private String getPathToRoot() {
     StringBuilder writtenString = new StringBuilder();
     writtenString.insert(0, name);
     
@@ -234,63 +281,6 @@ public class Command {
     }
     
     writtenString.insert(0, "  /");
-    
-    Component written = Component.text(writtenString.toString()).color(writtenColor);
-    
-    List<AbstractMap.SimpleEntry<Component, Component>> toSend = new ArrayList<>();
-    List<Command> subcommands = getSubcommandsFor(sender);
-    
-    for (Command subcommand : subcommands) {
-      toSend.add(new AbstractMap.SimpleEntry<>(written.append(Component.text(" " + subcommand.name + " ", subcommandColor)), sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty()));
-    }
-    
-    for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
-      toSend.add(new AbstractMap.SimpleEntry<>(written.append(
-         Arrays.stream(argumentSet.arguments)
-               .map(x -> {
-                 if (x.isOptional()) {
-                   return Component.text("[" + x.argumentName() + "]", argumentOptional);
-                 } else if (x instanceof ExactStringArg) {
-                   return Component.text(x.argumentName(), subcommandColor);
-                 } else {
-                   if (!x.hint().isEmpty()) {
-                     return Component.text("<" + x.argumentName() + ">", argument).hoverEvent(HoverEvent.showText(Component.text(x.hint(), comment)));
-                   } else {
-                     return Component.text("<" + x.argumentName() + ">", argument);
-                   }
-                 }
-               })
-               .reduce(Component.empty(), (a, x) -> a.append(Component.space())
-                                                     .append(x))
-               .append(Component.text(argumentSet.spacedLastArgument ? "..." : ""))), sender.isOp() ? Component.text(" " + argumentSet.permission, permissionColor) : Component.empty()));
-      if (argumentSet.hasHelp()) {
-        toSend.add(new AbstractMap.SimpleEntry<>(Component.text("↳ ").append(argumentSet.help).color(comment), Component.empty()));
-        toSend.add(new AbstractMap.SimpleEntry<>(Component.empty(), Component.empty()));
-      }
-    }
-    
-    if (description != null) {
-      sender.sendMessage("");
-      for (String part : description.split("\n")) {
-        sender.sendMessage(Component.text(part, text));
-      }
-      sender.sendMessage("");
-    }
-    
-    sender.sendMessage("");
-    if (toSend.isEmpty()) {
-      sender.sendMessage(Component.text("Для вас нет доступных продолжений этой команды", text));
-    } else {
-      sender.sendMessage(Component.text("Возможные продолжения команды:", text));
-      sender.sendMessage("");
-      
-      for (AbstractMap.SimpleEntry<Component, Component> component : toSend) {
-        sender.sendMessage(component.getKey().clickEvent(ClickEvent.suggestCommand(
-                                       PlainTextComponentSerializer.plainText()
-                                                                   .serialize(component.getKey())
-                                                                   .strip()))
-                                    .append(component.getValue()));
-      }
-    }
+    return writtenString.toString();
   }
 }

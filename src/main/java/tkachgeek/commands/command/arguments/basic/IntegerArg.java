@@ -3,6 +3,7 @@ package tkachgeek.commands.command.arguments.basic;
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;
 import tkachgeek.commands.command.CompletionStyle;
+import tkachgeek.tkachutils.numbers.NumbersUtils;
 
 import java.util.Collections;
 import java.util.List;
@@ -45,6 +46,8 @@ public class IntegerArg extends Argument {
   @Override
   public boolean valid(String raw) {
     try {
+      if (!NumbersUtils.isInteger(raw)) return false;
+      
       int parsed = Integer.parseInt(raw);
       return parsed >= min && parsed < max;
     } catch (NumberFormatException ignored) {
@@ -61,7 +64,7 @@ public class IntegerArg extends Argument {
       case DIAPASON -> {
         return Collections.singletonList(min + " -> " + max);
       }
-      case LIST -> {
+      case LIST -> { //todo: add cache
         return IntStream.range(min, max).limit(1000).mapToObj(Integer::toString).collect(Collectors.toList());
       }
     }

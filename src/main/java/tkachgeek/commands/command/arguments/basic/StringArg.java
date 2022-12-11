@@ -10,7 +10,7 @@ import java.util.regex.Pattern;
 
 public class StringArg extends Argument {
   static final int INITIAL_MAX_STRING_LENGTH = 10000;
-  protected String placeholder = "Произвольная строка";
+  protected String placeholder = "текст";
   int min = 1;
   int max = INITIAL_MAX_STRING_LENGTH;
   CompletionStyle style = CompletionStyle.PLACEHOLDER;

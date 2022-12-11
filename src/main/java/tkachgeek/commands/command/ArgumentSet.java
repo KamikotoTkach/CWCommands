@@ -1,6 +1,7 @@
 package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -15,6 +16,8 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
+
+import static tkachgeek.commands.command.Command.permissionColor;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
@@ -169,5 +172,17 @@ public class ArgumentSet {
   
   public boolean hasHelp() {
     return help != null;
+  }
+  
+  public List<Component> getHelp(CommandSender sender) {
+    List<Component> toSend = new ArrayList<>(3);
+    TextComponent argumentsAccumulator = Component.empty();
+    for (Argument arg : arguments) {
+      argumentsAccumulator = argumentsAccumulator.append(Component.space()).append(arg.toComponent());
+    }
+    toSend.add(argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
+                                   .append(sender.isOp() ? Component.text(" " + permission, permissionColor) : Component.empty()));
+    
+    return toSend;
   }
 }

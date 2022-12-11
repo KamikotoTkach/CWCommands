@@ -1,13 +1,19 @@
 package tkachgeek.commands.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.jetbrains.annotations.NotNull;
+import tkachgeek.commands.command.arguments.ExactStringArg;
 
 import java.util.List;
 
 public abstract class Argument {
   protected String raw;
   private boolean optional;
+  private String _default = null;
   
   protected Argument(String raw) {
     this.raw = raw;
@@ -15,6 +21,21 @@ public abstract class Argument {
   
   public Argument() {
   
+  }
+  
+  @NotNull
+  public TextComponent toComponent() {
+    if (isOptional()) {
+      return Component.text("[" + argumentName() + "]", Command.argumentOptional);
+    } else if (this instanceof ExactStringArg) {
+      return Component.text(argumentName(), Command.subcommandColor);
+    } else {
+      TextComponent component = Component.text("<" + argumentName() + ">", Command.argument);
+      if (hint().isEmpty()) {
+        return component;
+      }
+      return component.hoverEvent(HoverEvent.showText(Component.text(hint(), Command.comment)));
+    }
   }
   
   public abstract boolean valid(String raw);
@@ -32,6 +53,11 @@ public abstract class Argument {
   public Argument optional() {
     optional = true;
     return this;
+  }
+  
+  public Argument optional(String _default) {
+    this._default = _default;
+    return optional();
   }
   
   public abstract String argumentName();
@@ -88,8 +114,11 @@ public abstract class Argument {
     return optional;
   }
   
+  public String getDefault() {
+    return _default;
+  }
+  
   protected String hint() {
     return "";
   }
-  
 }
