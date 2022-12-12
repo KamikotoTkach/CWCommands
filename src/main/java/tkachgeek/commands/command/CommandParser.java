@@ -4,7 +4,6 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 
 public class CommandParser implements CommandExecutor {
@@ -46,19 +45,20 @@ public class CommandParser implements CommandExecutor {
     }
     return true;
   }
+  
   static class Result {
     Command command;
     int deep;
-  
+    
     public Result(Command command, int deep) {
       this.command = command;
       this.deep = deep;
     }
-  
+    
     public Command getCommand() {
       return command;
     }
-  
+    
     public int getDeep() {
       return deep;
     }

@@ -30,6 +30,8 @@ public class Command {
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
+  //not null ONLY in ROOT command, OTHERWISE NULL
+  JavaPlugin plugin;
   
   public Command(String name) {
     this.name = name;
@@ -91,6 +93,7 @@ public class Command {
   }
   
   public void register(JavaPlugin plugin) {
+    this.plugin = plugin;
     if (isSubcommand) return;
     
     updatePermissions(permission);
@@ -175,8 +178,7 @@ public class Command {
   protected void onExecute(CommandSender sender, String[] args) {
     for (ArgumentSet set : argumentSets) {
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
-        set.executor.prepare(sender, args, set);
-        return;
+        set.execute(sender, args, this);
       }
     }
   }
@@ -288,5 +290,10 @@ public class Command {
     
     writtenString.insert(0, "  /");
     return writtenString.toString();
+  }
+  
+  Command getRootCommand() {
+    if (isSubcommand) return parent.getRootCommand();
+    return this;
   }
 }
