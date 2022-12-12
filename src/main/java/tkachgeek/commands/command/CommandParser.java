@@ -14,7 +14,7 @@ public class CommandParser implements CommandExecutor {
     node = command;
   }
   
-  public static AbstractMap.SimpleEntry<Command, Integer> parse(Command parentCommand, CommandSender sender, String... args) {
+  public static Result parse(Command parentCommand, CommandSender sender, String... args) {
     int deep = 0;
     
     while (args.length > 0) {
@@ -27,23 +27,40 @@ public class CommandParser implements CommandExecutor {
         break;
       }
     }
-    return new AbstractMap.SimpleEntry<>(parentCommand, deep);
+    return new Result(parentCommand, deep);
   }
   
   @Override
   public boolean onCommand(@NotNull CommandSender sender, org.bukkit.command.@NotNull Command command, @NotNull String label, String[] args) {
-    AbstractMap.SimpleEntry<Command, Integer> parseResult = parse(node, sender, args);
+    Result parseResult = parse(node, sender, args);
     
-    Command cmd = parseResult.getKey();
-    int deep = parseResult.getValue();
+    Command foundedCommand = parseResult.getCommand();
+    int deep = parseResult.getDeep();
     
     args = args.length > deep ? Arrays.copyOfRange(args, deep, args.length) : new String[]{};
     
-    if (cmd.hasArgumentSet(sender, args)) {
-      cmd.onExecute(sender, args);
+    if (foundedCommand.hasArgumentSet(sender, args)) {
+      foundedCommand.onExecute(sender, args);
     } else {
-      cmd.onError(sender, args);
+      foundedCommand.onError(sender, args);
     }
     return true;
+  }
+  static class Result {
+    Command command;
+    int deep;
+  
+    public Result(Command command, int deep) {
+      this.command = command;
+      this.deep = deep;
+    }
+  
+    public Command getCommand() {
+      return command;
+    }
+  
+    public int getDeep() {
+      return deep;
+    }
   }
 }

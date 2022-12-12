@@ -1,7 +1,6 @@
 package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -110,7 +109,12 @@ public class Command {
     for (ArgumentSet set : arguments) {
       if (set.optionalStart > 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
-          argumentSets.add(new ArgumentSet(set.executor, set.permission, Arrays.copyOfRange(set.arguments, 0, i)));
+          ArgumentSet newArgumentSet = new ArgumentSet(set.executor, set.permission, Arrays.copyOfRange(set.arguments, 0, i));
+          newArgumentSet.spacedLastArgument = set.spacedLastArgument;
+          newArgumentSet.help = set.help;
+          newArgumentSet.blockForNonPlayers = set.blockForNonPlayers;
+          newArgumentSet.blockForPlayers = set.blockForPlayers;
+          argumentSets.add(newArgumentSet);
         }
       }
     }
@@ -136,6 +140,8 @@ public class Command {
       } else {
         if (!permission.isEmpty()) {
           permission = permissions + "." + permission; //если не подкоманда и пермишен указан
+        } else {
+          return; //если главный пермишен пустой, то мы их не авто-проставляем
         }
       }
     } else if (permission == null) {
@@ -167,7 +173,7 @@ public class Command {
   }
   
   protected void onExecute(CommandSender sender, String[] args) {
-    for (ArgumentSet set : argumentSets) {//STREAM: find first and prepare
+    for (ArgumentSet set : argumentSets) {
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
         set.executor.prepare(sender, args, set);
         return;
@@ -176,7 +182,7 @@ public class Command {
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
-    List<Command> list = new ArrayList<>();//STREAM: filter #canPerformedBy & toList
+    List<Command> list = new ArrayList<>();
     for (Command command : subcommands) {
       if (command.canPerformedBy(sender)) {
         list.add(command);
@@ -196,7 +202,7 @@ public class Command {
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
     List<ArgumentSet> list = new ArrayList<>();
-    for (ArgumentSet arg : argumentSets) { //STREAM: filter #canPerformedBy & toList
+    for (ArgumentSet arg : argumentSets) {
       if (arg.canPerformedBy(sender)) {
         list.add(arg);
       }
@@ -205,7 +211,7 @@ public class Command {
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
-    for (ArgumentSet set : argumentSets) { //STREAM: anyMatch
+    for (ArgumentSet set : argumentSets) {
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) return true;
     }
     return false;
@@ -220,7 +226,7 @@ public class Command {
   }
   
   private void sendAutoHelp(CommandSender sender) {
-    Component written = Component.text(getPathToRoot()).color(writtenColor);
+    Component written = Component.text(getFullCommandPath()).color(writtenColor);
     
     List<Component> toSend = new ArrayList<>();
     
@@ -241,9 +247,9 @@ public class Command {
         toSend.add(Component.empty());
       }
     }
-  
+    
     sendDescription(sender);
-  
+    
     sender.sendMessage("");
     
     if (toSend.isEmpty()) {
@@ -269,7 +275,7 @@ public class Command {
   }
   
   @NotNull
-  private String getPathToRoot() {
+  private String getFullCommandPath() {
     StringBuilder writtenString = new StringBuilder();
     writtenString.insert(0, name);
     
