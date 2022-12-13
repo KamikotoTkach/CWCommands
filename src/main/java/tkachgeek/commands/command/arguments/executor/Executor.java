@@ -10,19 +10,27 @@ import tkachgeek.commands.command.ArgumentSet;
 public abstract class Executor {
   ArgumentParser parser;
   CommandSender sender;
-  
+  /**
+   * Получает аргумент по индексу, если его нет - null
+   */
   protected final Argument arg(int index) {
     return parser.get(index);
   }
-  
+  /**
+   * Получает аргумент и кастует его в double, если его нет - эксепшен
+   */
   protected double argD(int index) {
     return arg(index).toDouble();
   }
-  
+  /**
+   * Получает аргумент и кастует его в int, если его нет - эксепшен
+   */
   protected int argI(int index) {
     return arg(index).toInt();
   }
-  
+  /**
+   * Получает аргумент и кастует его в строку, если его нет - эксепшен
+   */
   protected String argS(int index) {
     return arg(index).toString();
   }
@@ -30,7 +38,9 @@ public abstract class Executor {
   protected final int argumentsAmount() {
     return parser.args.length;
   }
-  
+  /**
+   * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
+   */
   protected final Player player() {
     return (Player) sender;
   }
@@ -53,18 +63,24 @@ public abstract class Executor {
       errorHandler(exception);
     }
   }
-  
+  /**
+   * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
+   */
   public abstract void executeForPlayer();
   
   public void executeForNonPlayer() {
     executeForPlayer();
   }
-  
+  /**
+   * Переопределение обработчика ошибок
+   */
   public void errorHandler(Exception exception) {
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
   }
-  
+  /**
+   * Проверяет есть ли аргумент под таким индексом
+   */
   public boolean isPresent(int index) {
     return argumentsAmount()>index;
   }

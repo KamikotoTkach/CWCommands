@@ -30,58 +30,82 @@ public class Command {
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
-  //not null ONLY in ROOT command, OTHERWISE NULL
+  //присваивается только в рут-команде
   JavaPlugin plugin;
-  
+  /**
+   * Автоматически устанавливается пермишен name
+   */
   public Command(String name) {
     this.name = name;
   }
-  
+  /**
+   * Автоматически устанавливается пермишен name и устанавливаются алиасы
+   */
   public Command(String name, List<String> aliases) {
     this(name);
     aliases(aliases);
   }
-  
+  /**
+   * Указывайте пермишен "" для того, чтобы пермишены рекурсивно не генерировались
+   */
   public Command(String name, String permission) {
     this(name);
     this.permission = permission;
   }
-  
+  /**
+   * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
+   */
   public Command(String name, String permission, Executor executor) {
     this(name, permission);
     arguments(new ArgumentSet(executor, permission));
   }
-  
+  /**
+   * Шоткат для сингл-аргументсета в команде без аргументов
+   */
   public Command(String name, Executor executor) {
     this(name);
     arguments(new ArgumentSet(executor, name));
   }
   
+  /**
+   * Шоткат для сингл-аргументсета в команде с любыми аргументами
+   */
   public Command(String name, Executor executor, Argument... arguments) {
     this(name);
     arguments(new ArgumentSet(executor, name, arguments));
   }
   
+  /**
+   * Устанавливает цветовое оформление для хелпа и других сообщений. Статична, нужно переписать
+   */
   public static void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor, TextColor comment) {
-    Command.text = text;
+    Command.argumentOptional = argumentOptional;
     Command.permissionColor = permissionColor;
     Command.subcommandColor = subcommandColor;
     Command.writtenColor = writtenColor;
-    Command.argumentOptional = argumentOptional;
     Command.argument = argument;
     Command.comment = comment;
+    Command.text = text;
   }
-  
+  /**
+   * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
+   */
   public Command aliases(List<String> aliases) {
     this.aliases = aliases;
     return this;
   }
   
+  /**
+   * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
+   */
   public Command aliases(String... aliases) {
     this.aliases = List.of(aliases);
     return this;
   }
   
+  /**
+   * Добавляет подкоманды в команду. Можно использовать несколько раз
+   */
   public Command subCommands(Command... subcommands) {
     this.subcommands = subcommands;
     for (Command subcommand : subcommands) {
@@ -92,6 +116,9 @@ public class Command {
     return this;
   }
   
+  /**
+   * Регистрирует команду. Вызывать только раз.
+   */
   public void register(JavaPlugin plugin) {
     this.plugin = plugin;
     if (isSubcommand) return;
@@ -105,7 +132,9 @@ public class Command {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
   }
-  
+  /**
+   * Добавляет аргументсеты в команду или подкоманду
+   */
   public Command arguments(ArgumentSet... arguments) {
     this.argumentSets.addAll(List.of(arguments));
     
@@ -125,11 +154,17 @@ public class Command {
     return this;
   }
   
+  /**
+   * Устанавливает свой хелп вместо авто-генерируемого
+   */
   public Command help(Help help) {
     this.help = help;
     return this;
   }
   
+  /**
+   * Устанавливает краткое описание команды для автогенерируемого хелпа
+   */
   public Command description(String shortDescription) {
     this.description = shortDescription;
     return this;

@@ -39,7 +39,11 @@ public class ArgumentSet {
   Component help;
   private String confirmableString = Strings.EMPTY;
   private long timeToConfirm = 0;
-  
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть
+   */
   public ArgumentSet(Executor executor, String permission, Argument... arguments) {
     this.arguments = arguments;
     this.executor = executor;
@@ -73,7 +77,12 @@ public class ArgumentSet {
     
     this.optionalStart = optionalStart;
   }
-  
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть<br>
+   * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
+   */
   public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
     this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
@@ -85,7 +94,9 @@ public class ArgumentSet {
     System.arraycopy(arguments, 0, args, 1, arguments.length);
     return args;
   }
-  
+  /**
+   * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения экзекутора
+   */
   public ArgumentSet canExecute(Predicate<CommandSender> canExecute) {
     this.canExecute = canExecute;
     return this;
@@ -98,24 +109,32 @@ public class ArgumentSet {
     }
     Bukkit.getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
   }
-  
+  /**
+   * Запретить и скрыть для игроков
+   */
   public ArgumentSet blockForPlayers() {
     blockForPlayers = true;
     if (blockForNonPlayers) sendBlockedArgumentWarning();
     return this;
   }
-  
+  /**
+   * Запретить и скрыть для не-игроков
+   */
   public ArgumentSet blockForNonPlayers() {
     blockForNonPlayers = true;
     if (blockForPlayers) sendBlockedArgumentWarning();
     return this;
   }
-  
+  /**
+   * Текст для описания аргументсета в авто-хелпе
+   */
   public ArgumentSet help(Component help) {
     this.help = help;
     return this;
   }
-  
+  /**
+   * Строка, которую нужно написать в чат (или нажать на сообщение), чтобы подтвердить выполнение команды
+   */
   public ArgumentSet confirmWith(String confirmableString, long timeToConfirm) {
     this.confirmableString = confirmableString;
     this.timeToConfirm = timeToConfirm;

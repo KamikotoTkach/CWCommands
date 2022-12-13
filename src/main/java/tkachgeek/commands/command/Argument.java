@@ -3,6 +3,7 @@ package tkachgeek.commands.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -20,9 +21,11 @@ public abstract class Argument {
   }
   
   public Argument() {
-  
   }
   
+  /**
+   * Оформление аргумента в авто-хелпе
+   */
   @NotNull
   public TextComponent toComponent() {
     if (isOptional()) {
@@ -50,16 +53,25 @@ public abstract class Argument {
     return completions(sender);
   }
   
+  /**
+   * Делает аргумент опциональным. Должен быть в конце, если таких несколько - все в конце
+   */
   public Argument optional() {
     optional = true;
     return this;
   }
   
+  /**
+   * Пока не работает вроде как
+   */
   public Argument optional(String _default) {
     this._default = _default;
     return optional();
   }
   
+  /**
+   * Название аргумента в хелпе
+   */
   public abstract String argumentName();
   
   public boolean valid() {
@@ -114,11 +126,17 @@ public abstract class Argument {
     return optional;
   }
   
+  /**
+   * Пока не работает
+   */
   public String getDefault() {
     return _default;
   }
   
+  /**
+   * Подсказка при наведении на аргумент в авто-хелпе
+   */
   protected String hint() {
-    return "";
+    return Strings.EMPTY;
   }
 }
