@@ -10,24 +10,28 @@ import tkachgeek.commands.command.ArgumentSet;
 public abstract class Executor {
   ArgumentParser parser;
   CommandSender sender;
+  
   /**
    * Получает аргумент по индексу, если его нет - null
    */
   protected final Argument arg(int index) {
     return parser.get(index);
   }
+  
   /**
    * Получает аргумент и кастует его в double, если его нет - эксепшен
    */
   protected double argD(int index) {
     return arg(index).toDouble();
   }
+  
   /**
    * Получает аргумент и кастует его в int, если его нет - эксепшен
    */
   protected int argI(int index) {
     return arg(index).toInt();
   }
+  
   /**
    * Получает аргумент и кастует его в строку, если его нет - эксепшен
    */
@@ -38,6 +42,7 @@ public abstract class Executor {
   protected final int argumentsAmount() {
     return parser.args.length;
   }
+  
   /**
    * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
    */
@@ -63,25 +68,35 @@ public abstract class Executor {
       errorHandler(exception);
     }
   }
+  
   /**
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */
-  public abstract void executeForPlayer();
+  public abstract void executeForPlayer() throws InternalException;
   
-  public void executeForNonPlayer() {
+  public void executeForNonPlayer() throws InternalException {
     executeForPlayer();
   }
+  
   /**
    * Переопределение обработчика ошибок
    */
   public void errorHandler(Exception exception) {
+    if (exception instanceof InternalException) {
+      sender.sendMessage(((InternalException) exception).getComponentMessage());
+      return;
+    }
+    
+    sender.sendMessage(exception.getLocalizedMessage());
+    
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
   }
+  
   /**
    * Проверяет есть ли аргумент под таким индексом
    */
   public boolean isPresent(int index) {
-    return argumentsAmount()>index;
+    return argumentsAmount() > index;
   }
 }

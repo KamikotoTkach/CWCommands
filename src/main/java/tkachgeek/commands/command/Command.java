@@ -22,7 +22,7 @@ public class Command {
   static TextColor comment = TextColor.fromHexString("#8adaff");
   
   final String name;
-  final List<ArgumentSet> argumentSets = new ArrayList<>();
+  protected List<ArgumentSet> argumentSets = new ArrayList<>();
   List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
   String description;
