@@ -8,11 +8,14 @@ import java.util.List;
 
 public class ListArg extends Argument {
   final List<String> acceptableStrings;
+  private final String name;
   
-  public ListArg(List<String> acceptableStrings) {
+  public ListArg(String name, List<String> acceptableStrings) {
+    this.name = name;
     this.acceptableStrings = acceptableStrings;
   }
-  public ListArg(String... acceptableStrings) {
+  public ListArg(String name, String... acceptableStrings) {
+    this.name = name;
     this.acceptableStrings = Arrays.asList(acceptableStrings);
   }
 
@@ -29,6 +32,6 @@ public class ListArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "набор значений";
+    return name;
   }
 }
