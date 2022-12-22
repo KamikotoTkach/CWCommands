@@ -7,6 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executor;
+import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
+import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
+import tkachgeek.commands.command.permissions.ProcessResult;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -31,13 +34,16 @@ public class Command {
   Command parent = null;
   Command[] subcommands = new Command[]{};
   //присваивается только в рут-команде
+  PermissionGenerationStrategy strategy = null;
   JavaPlugin plugin;
+  
   /**
    * Автоматически устанавливается пермишен name
    */
   public Command(String name) {
     this.name = name;
   }
+  
   /**
    * Автоматически устанавливается пермишен name и устанавливаются алиасы
    */
@@ -45,6 +51,7 @@ public class Command {
     this(name);
     aliases(aliases);
   }
+  
   /**
    * Указывайте пермишен "" для того, чтобы пермишены рекурсивно не генерировались
    */
@@ -52,6 +59,7 @@ public class Command {
     this(name);
     this.permission = permission;
   }
+  
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
    */
@@ -59,6 +67,7 @@ public class Command {
     this(name, permission);
     arguments(new ArgumentSet(executor, permission));
   }
+  
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов
    */
@@ -87,6 +96,7 @@ public class Command {
     Command.comment = comment;
     Command.text = text;
   }
+  
   /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
    */
@@ -117,11 +127,22 @@ public class Command {
   }
   
   /**
+   * @param strategy стратегия генерации пермишенов
+   *                 Использовать только в рут-команде
+   */
+  public Command setPermissionGenerationStrategy(PermissionGenerationStrategy strategy) {
+    this.strategy = strategy;
+    return this;
+  }
+  
+  /**
    * Регистрирует команду. Вызывать только раз.
    */
   public void register(JavaPlugin plugin) {
     this.plugin = plugin;
     if (isSubcommand) return;
+    
+    if (strategy == null) strategy = new DefaultPermissionGenerationStrategy();
     
     updatePermissions(permission);
     
@@ -132,6 +153,7 @@ public class Command {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
   }
+  
   /**
    * Добавляет аргументсеты в команду или подкоманду
    */
@@ -171,34 +193,23 @@ public class Command {
   }
   
   protected void updatePermissions(String permissions) {
+    ProcessResult result;
     
     if (isSubcommand) {
-      if (permission == null) {
-        permission = permissions + "." + name; //если подкоманда и пермишен не указан
-      } else {
-        if (!permission.isEmpty()) {
-          permission = permissions + "." + permission; //если не подкоманда и пермишен указан
-        } else {
-          return; //если главный пермишен пустой, то мы их не авто-проставляем
-        }
-      }
-    } else if (permission == null) {
-      permission = name; //если не подкоманда и пермишен не указан
-      permissions = permission;
+      result = getStrategy().processSubCommand(permissions, permission, name);
+    } else {
+      result = getStrategy().processCommand(permission, name);
     }
+    
+    permissions = result.getNextPermissions();
+    permission = result.getPermission();
     
     for (Command subcommand : subcommands) {
       subcommand.updatePermissions(permissions);
     }
     
-    if (permission != null && !permission.isEmpty()) {
-      for (ArgumentSet argumentSet : argumentSets) {
-        if (argumentSet.permission != null && !argumentSet.permission.isEmpty()) {
-          argumentSet.permission = permission + "." + argumentSet.permission; //если пермишен указан и не пустой
-        } else {
-          argumentSet.permission = ""; //если пермишен не указан или пустой
-        }
-      }
+    for (ArgumentSet argumentSet : argumentSets) {
+      argumentSet.permission = getStrategy().processArgumentSet(permissions, argumentSet.permission, permission);
     }
   }
   
@@ -330,5 +341,9 @@ public class Command {
   Command getRootCommand() {
     if (isSubcommand) return parent.getRootCommand();
     return this;
+  }
+  
+  PermissionGenerationStrategy getStrategy() {
+    return getRootCommand().strategy;
   }
 }

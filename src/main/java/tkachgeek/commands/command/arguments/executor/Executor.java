@@ -72,9 +72,9 @@ public abstract class Executor {
   /**
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */
-  public abstract void executeForPlayer() throws InternalException;
+  public abstract void executeForPlayer() throws MessageReturn;
   
-  public void executeForNonPlayer() throws InternalException {
+  public void executeForNonPlayer() throws MessageReturn {
     executeForPlayer();
   }
   
@@ -82,8 +82,8 @@ public abstract class Executor {
    * Переопределение обработчика ошибок
    */
   public void errorHandler(Exception exception) {
-    if (exception instanceof InternalException) {
-      sender.sendMessage(((InternalException) exception).getComponentMessage());
+    if (exception instanceof MessageReturn) {
+      sender.sendMessage(((MessageReturn) exception).getComponentMessage());
       return;
     }
     

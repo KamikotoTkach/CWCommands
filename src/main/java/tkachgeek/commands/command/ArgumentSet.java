@@ -39,6 +39,7 @@ public class ArgumentSet {
   Component help;
   private String confirmableString = Strings.EMPTY;
   private long timeToConfirm = 0;
+  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -77,6 +78,7 @@ public class ArgumentSet {
     
     this.optionalStart = optionalStart;
   }
+  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -87,6 +89,10 @@ public class ArgumentSet {
     this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
   
+  public ArgumentSet(Executor executor, Argument... arguments) {
+    this(executor, Strings.EMPTY, arguments);
+  }
+  
   @NotNull
   private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
     Argument[] args = new Argument[arguments.length + 1];
@@ -94,6 +100,7 @@ public class ArgumentSet {
     System.arraycopy(arguments, 0, args, 1, arguments.length);
     return args;
   }
+  
   /**
    * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения экзекутора
    */
@@ -109,6 +116,7 @@ public class ArgumentSet {
     }
     Bukkit.getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
   }
+  
   /**
    * Запретить и скрыть для игроков
    */
@@ -117,6 +125,7 @@ public class ArgumentSet {
     if (blockForNonPlayers) sendBlockedArgumentWarning();
     return this;
   }
+  
   /**
    * Запретить и скрыть для не-игроков
    */
@@ -125,6 +134,7 @@ public class ArgumentSet {
     if (blockForPlayers) sendBlockedArgumentWarning();
     return this;
   }
+  
   /**
    * Текст для описания аргументсета в авто-хелпе
    */
@@ -132,6 +142,7 @@ public class ArgumentSet {
     this.help = help;
     return this;
   }
+  
   /**
    * Строка, которую нужно написать в чат (или нажать на сообщение), чтобы подтвердить выполнение команды
    */

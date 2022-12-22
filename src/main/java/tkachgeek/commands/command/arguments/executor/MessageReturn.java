@@ -2,10 +2,10 @@ package tkachgeek.commands.command.arguments.executor;
 
 import net.kyori.adventure.text.Component;
 
-public class InternalException extends Exception {
+public class MessageReturn extends Exception {
   private final Component componentMessage;
   
-  public InternalException(Component message) {
+  public MessageReturn(Component message) {
     this.componentMessage = message;
   }
   
