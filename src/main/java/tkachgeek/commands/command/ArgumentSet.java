@@ -243,4 +243,19 @@ public class ArgumentSet {
       executor.prepare(sender, args, this);
     }
   }
+  
+  @Override
+  public String toString() {
+    return executor.getClass().getSimpleName() + ": " + getArgumentsString() +
+       (spacedLastArgument ? "..." : "");
+  }
+  
+  private String getArgumentsString() {
+    StringBuilder result = new StringBuilder();
+    for (Argument arg : arguments) {
+      result.append(arg.toReadableString()).append(", ");
+    }
+    result.delete(result.length()-2, result.length());
+    return "[" + result + "]";
+  }
 }

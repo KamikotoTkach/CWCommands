@@ -74,6 +74,8 @@ public class StringArg extends Argument {
   
   @Override
   protected String hint() {
+    if(pattern != null) return pattern.pattern();
+    
     StringBuilder builder = new StringBuilder();
     builder.append("От ").append(min);
     if (max != INITIAL_MAX_STRING_LENGTH) builder.append(" до ").append(max);

@@ -37,6 +37,8 @@ public class Command {
   PermissionGenerationStrategy strategy = null;
   JavaPlugin plugin;
   
+  DebugMode debug = DebugMode.NONE;
+  
   /**
    * Автоматически устанавливается пермишен name
    */
@@ -192,13 +194,24 @@ public class Command {
     return this;
   }
   
+  public Command debug(DebugMode mode) {
+    this.debug = mode;
+    return this;
+  }
+  
   protected void updatePermissions(String permissions) {
     ProcessResult result;
     
     if (isSubcommand) {
       result = getStrategy().processSubCommand(permissions, permission, name);
+      
+      if (debug.is(DebugMode.DETAILED))
+        debug.print("Подкоманде " + name + " установлены права " + result.getPermission() + "");
     } else {
       result = getStrategy().processCommand(permission, name);
+      
+      if (debug.is(DebugMode.DETAILED))
+        debug.print("Команде " + name + " установлены права " + result.getPermission() + "");
     }
     
     permissions = result.getNextPermissions();
@@ -210,6 +223,9 @@ public class Command {
     
     for (ArgumentSet argumentSet : argumentSets) {
       argumentSet.permission = getStrategy().processArgumentSet(permissions, argumentSet.permission, permission);
+      
+      if (debug.is(DebugMode.DETAILED))
+        debug.print("Аргументсету " + permissions + "/" + argumentSet + " установлены права " + argumentSet.permission);
     }
   }
   
@@ -218,18 +234,38 @@ public class Command {
   }
   
   protected boolean canPerformedBy(CommandSender sender) {
-    return permission != null && (sender.hasPermission(permission) || permission.isEmpty()) || sender.isOp();
+    boolean result = permission != null && (sender.hasPermission(permission) || permission.isEmpty()) || sender.isOp();
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("Проверка " + sender.getName() + " на возможность выполнения " + this.name + ": " + (result ? " успешно" : "провал"));
+    return result;
   }
   
   protected void onExecute(CommandSender sender, String[] args) {
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("Попытка выполнения " + this.name + " с " + Arrays.toString(args) + " для " + sender.getName());
+    
     for (ArgumentSet set : argumentSets) {
       if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
+        
+        if (debug.is(DebugMode.MAIN)) debug.print("Выполнение " + set);
+        
+        var start = System.nanoTime();
         set.execute(sender, args, this);
+        if (debug.is(DebugMode.MAIN))
+          debug.print("Выполнение " + set + " заняло " + (System.nanoTime() - start) + "ns (" + (System.nanoTime() - start) / 1000000 + "ms)");
+        return;
+      } else {
+        if (debug.is(DebugMode.DETAILED)) debug.print("Провальная проверка " + set + " на возможность выполнения");
       }
     }
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender) {
+    
+    if (debug.is(DebugMode.DETAILED)) debug.print("Получение списка подкоманд для " + sender.getName() + "");
+    
     List<Command> list = new ArrayList<>();
     for (Command command : subcommands) {
       if (command.canPerformedBy(sender)) {
@@ -240,6 +276,10 @@ public class Command {
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("Получение списка подкоманд для " + sender.getName() + " с " + arg + "");
+    
     for (Command command : subcommands) {
       if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg)) && command.canPerformedBy(sender)) {
         return command;
@@ -249,6 +289,9 @@ public class Command {
   }
   
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
+    
+    if (debug.is(DebugMode.DETAILED)) debug.print("Получение списка аргументсетов для " + sender.getName());
+    
     List<ArgumentSet> list = new ArrayList<>();
     for (ArgumentSet arg : argumentSets) {
       if (arg.canPerformedBy(sender)) {
@@ -259,17 +302,33 @@ public class Command {
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("Поиск аргументсета в " + this.name + " с " + Arrays.toString(args) + " для " + sender.getName());
+    
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) return true;
+      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
+        
+        if (debug.is(DebugMode.DETAILED)) debug.print("Найдено");
+        return true;
+      }
     }
+    
+    if (debug.is(DebugMode.DETAILED)) debug.print("Нет совпадений");
+    
     return false;
   }
   
   protected void helpFor(CommandSender sender, String[] args) {
     if (help == null) {
+      
+      if (debug.is(DebugMode.DETAILED)) debug.print("Генерация автохелпа для " + sender.getName() + " в " + this.name);
       sendAutoHelp(sender);
       return;
     }
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("Вывод кастомного хелпа для " + sender.getName() + " в " + this.name + "");
     help.sendTo(sender, args);
   }
   

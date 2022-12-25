@@ -14,7 +14,6 @@ import java.util.List;
 public abstract class Argument {
   protected String raw;
   private boolean optional;
-  private String _default = null;
   
   protected Argument(String raw) {
     this.raw = raw;
@@ -40,6 +39,19 @@ public abstract class Argument {
       return component.hoverEvent(HoverEvent.showText(Component.text(hint(), Command.comment)));
     }
   }
+  public String toReadableString() {
+    if (isOptional()) {
+      return "[" + argumentName() + "]";
+    } else if (this instanceof ExactStringArg) {
+      return argumentName();
+    } else {
+      var args = "<" + argumentName() + ">";
+      if (hint().isEmpty()) {
+        return args;
+      }
+      return args;
+    }
+  }
   
   public abstract boolean valid(String raw);
   
@@ -61,13 +73,6 @@ public abstract class Argument {
     return this;
   }
   
-  /**
-   * Пока не работает вроде как
-   */
-  public Argument optional(String _default) {
-    this._default = _default;
-    return optional();
-  }
   
   /**
    * Название аргумента в хелпе
@@ -126,12 +131,6 @@ public abstract class Argument {
     return optional;
   }
   
-  /**
-   * Пока не работает
-   */
-  public String getDefault() {
-    return _default;
-  }
   
   /**
    * Подсказка при наведении на аргумент в авто-хелпе
