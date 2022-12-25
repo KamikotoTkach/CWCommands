@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import static tkachgeek.commands.command.Command.permissionColor;
+import static tkachgeek.commands.command.Command.text;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
@@ -140,6 +141,10 @@ public class ArgumentSet {
    */
   public ArgumentSet help(Component help) {
     this.help = help;
+    return this;
+  }
+  public ArgumentSet help(String help) {
+    this.help = Component.text(help);
     return this;
   }
   
