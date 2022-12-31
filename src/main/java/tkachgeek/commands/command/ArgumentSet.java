@@ -3,7 +3,6 @@ package tkachgeek.commands.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +37,7 @@ public class ArgumentSet {
   int optionalStart;
   
   Component help;
-  private String confirmableString = Strings.EMPTY;
+  private String confirmableString = "";
   private long timeToConfirm = 0;
   
   /**
@@ -91,7 +90,7 @@ public class ArgumentSet {
   }
   
   public ArgumentSet(Executor executor, Argument... arguments) {
-    this(executor, Strings.EMPTY, arguments);
+    this(executor, "", arguments);
   }
   
   @NotNull
