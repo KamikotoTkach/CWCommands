@@ -10,6 +10,7 @@ import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.ProcessResult;
+import tkachgeek.tkachutils.messages.MessagesUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -360,13 +361,13 @@ public class Command {
     sender.sendMessage("");
     
     if (toSend.isEmpty()) {
-      sender.sendMessage(Component.text("Для вас нет доступных продолжений этой команды", text));
+      MessagesUtils.send(sender, Component.text("Для вас нет доступных продолжений этой команды", text));
     } else {
-      sender.sendMessage(Component.text("Возможные продолжения команды:", text));
+      MessagesUtils.send(sender, Component.text("Возможные продолжения команды:", text));
       sender.sendMessage("");
       
       for (Component row : toSend) {
-        sender.sendMessage(row);
+        MessagesUtils.send(sender, row);
       }
     }
   }
@@ -375,7 +376,7 @@ public class Command {
     if (description != null) {
       sender.sendMessage("");
       for (String part : description.split("\n")) {
-        sender.sendMessage(Component.text(part, text));
+        MessagesUtils.send(sender, Component.text(part, text));
       }
       sender.sendMessage("");
     }

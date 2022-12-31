@@ -12,6 +12,7 @@ import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
+import tkachgeek.tkachutils.messages.MessagesUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -21,7 +22,6 @@ import java.util.function.Predicate;
 import java.util.logging.Logger;
 
 import static tkachgeek.commands.command.Command.permissionColor;
-import static tkachgeek.commands.command.Command.text;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
@@ -234,7 +234,7 @@ public class ArgumentSet {
   
   public void execute(CommandSender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
-      sender.sendMessage(Component.text("Введите ", Command.text)
+      MessagesUtils.send(sender, Component.text("Введите ", Command.text)
                                   .append(Component.text(confirmableString, Command.comment))
                                   .append(Component.text(" для подтверждения", Command.text))
                                   .clickEvent(ClickEvent.runCommand(confirmableString))
@@ -242,7 +242,7 @@ public class ArgumentSet {
       
       ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
                 .success(() -> executor.prepare(sender, args, this))
-                .expired(() -> sender.sendMessage(Component.text("Время подтверждения вышло", Command.text)))
+                .expired(() -> MessagesUtils.send(sender, Component.text("Время подтверждения вышло", Command.text)))
                 .register(command.getRootCommand().plugin);
     } else {
       executor.prepare(sender, args, this);

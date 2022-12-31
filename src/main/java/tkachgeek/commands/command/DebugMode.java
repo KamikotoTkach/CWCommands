@@ -1,13 +1,12 @@
 package tkachgeek.commands.command;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 
 public enum DebugMode {
   NONE, MAIN, DETAILED;
   
   public void print(String text) {
-      Bukkit.broadcast(Component.text(text));
+      Bukkit.broadcastMessage(text);
     }
   
   public boolean is(DebugMode mode) {
