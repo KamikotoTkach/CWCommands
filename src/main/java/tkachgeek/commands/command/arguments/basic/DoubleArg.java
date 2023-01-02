@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
 public class DoubleArg extends Argument {
-    double min = Double.MIN_VALUE;
+    double min = -Double.MAX_VALUE;
     double max = Double.MAX_VALUE;
     CompletionStyle style = CompletionStyle.PLACEHOLDER;
     double step = 1.0;
