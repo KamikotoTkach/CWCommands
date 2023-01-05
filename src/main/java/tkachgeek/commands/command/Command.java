@@ -6,6 +6,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
@@ -66,7 +67,7 @@ public class Command {
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
    */
-  public Command(String name, String permission, Executor executor) {
+  public Command(String name, String permission, Executable executor) {
     this(name, permission);
     arguments(new ArgumentSet(executor, permission));
   }
@@ -74,7 +75,7 @@ public class Command {
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов
    */
-  public Command(String name, Executor executor) {
+  public Command(String name, Executable executor) {
     this(name);
     arguments(new ArgumentSet(executor, name));
   }
@@ -82,7 +83,7 @@ public class Command {
   /**
    * Шоткат для сингл-аргументсета в команде с любыми аргументами
    */
-  public Command(String name, Executor executor, Argument... arguments) {
+  public Command(String name, Executable executor, Argument... arguments) {
     this(name);
     arguments(new ArgumentSet(executor, name, arguments));
   }

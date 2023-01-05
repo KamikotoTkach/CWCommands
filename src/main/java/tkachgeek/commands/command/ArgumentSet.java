@@ -8,7 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.ExactStringArg;
-import tkachgeek.commands.command.arguments.executor.Executor;
+import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.MessagesUtils;
@@ -24,7 +24,7 @@ import static tkachgeek.commands.command.Command.permissionColor;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
-  protected final Executor executor;
+  protected final Executable executor;
   
   Predicate<CommandSender> canExecute = x -> true;
   
@@ -45,7 +45,7 @@ public class ArgumentSet {
    * Аргументы optional должны быть последние в списке<br>
    * Аргументов может не быть
    */
-  public ArgumentSet(Executor executor, String permission, Argument... arguments) {
+  public ArgumentSet(Executable executor, String permission, Argument... arguments) {
     this.arguments = arguments;
     this.executor = executor;
     this.permission = permission;
@@ -85,14 +85,13 @@ public class ArgumentSet {
    * Аргументов может не быть<br>
    * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
    */
-  public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
+  public ArgumentSet(Executable executor, ExactStringArg exactStringArg, Argument... arguments) {
     this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
   
-  public ArgumentSet(Executor executor, Argument... arguments) {
+  public ArgumentSet(Executable executor, Argument... arguments) {
     this(executor, "", arguments);
   }
-  
   @NotNull
   private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
     Argument[] args = new Argument[arguments.length + 1];
@@ -142,6 +141,7 @@ public class ArgumentSet {
     this.help = help;
     return this;
   }
+  
   public ArgumentSet help(String help) {
     this.help = Component.text(help);
     return this;
@@ -259,7 +259,7 @@ public class ArgumentSet {
     for (Argument arg : arguments) {
       result.append(arg.toReadableString()).append(", ");
     }
-    result.delete(result.length()-2, result.length());
+    result.delete(result.length() - 2, result.length());
     return "[" + result + "]";
   }
 }
