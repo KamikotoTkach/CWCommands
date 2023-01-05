@@ -8,7 +8,7 @@ import tkachgeek.commands.command.ArgumentParser;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.config.minilocale.MessageReturn;
 
-public abstract class Executor {
+public abstract class Executor implements Executable {
   ArgumentParser parser;
   CommandSender sender;
   
@@ -74,7 +74,6 @@ public abstract class Executor {
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */
   public abstract void executeForPlayer() throws MessageReturn;
-  
   public void executeForNonPlayer() throws MessageReturn {
     executeForPlayer();
   }
