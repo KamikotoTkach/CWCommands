@@ -3,7 +3,6 @@ package tkachgeek.commands.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
-import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
@@ -136,6 +135,6 @@ public abstract class Argument {
    * Подсказка при наведении на аргумент в авто-хелпе
    */
   protected String hint() {
-    return Strings.EMPTY;
+    return "";
   }
 }

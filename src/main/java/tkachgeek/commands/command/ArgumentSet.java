@@ -3,16 +3,15 @@ package tkachgeek.commands.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
-import org.apache.logging.log4j.util.Strings;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executable;
-import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
+import tkachgeek.tkachutils.messages.MessagesUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,7 +37,7 @@ public class ArgumentSet {
   int optionalStart;
   
   Component help;
-  private String confirmableString = Strings.EMPTY;
+  private String confirmableString = "";
   private long timeToConfirm = 0;
   
   /**
@@ -91,9 +90,8 @@ public class ArgumentSet {
   }
   
   public ArgumentSet(Executable executor, Argument... arguments) {
-    this(executor, Strings.EMPTY, arguments);
+    this(executor, "", arguments);
   }
-  
   @NotNull
   private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
     Argument[] args = new Argument[arguments.length + 1];
@@ -235,7 +233,7 @@ public class ArgumentSet {
   
   public void execute(CommandSender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
-      sender.sendMessage(Component.text("Введите ", Command.text)
+      MessagesUtils.send(sender, Component.text("Введите ", Command.text)
                                   .append(Component.text(confirmableString, Command.comment))
                                   .append(Component.text(" для подтверждения", Command.text))
                                   .clickEvent(ClickEvent.runCommand(confirmableString))
@@ -243,7 +241,7 @@ public class ArgumentSet {
       
       ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
                 .success(() -> executor.prepare(sender, args, this))
-                .expired(() -> sender.sendMessage(Component.text("Время подтверждения вышло", Command.text)))
+                .expired(() -> MessagesUtils.send(sender, Component.text("Время подтверждения вышло", Command.text)))
                 .register(command.getRootCommand().plugin);
     } else {
       executor.prepare(sender, args, this);
