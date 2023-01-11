@@ -1,4 +1,4 @@
-package tkachgeek.commands.command.arguments;
+package tkachgeek.commands.command.arguments.bukkit;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.enchantments.Enchantment;

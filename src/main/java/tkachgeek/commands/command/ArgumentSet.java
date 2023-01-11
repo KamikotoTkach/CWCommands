@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import tkachgeek.commands.command.arguments.ComplexArg;
 import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
@@ -46,7 +47,7 @@ public class ArgumentSet {
    * Аргументов может не быть
    */
   public ArgumentSet(Executable executor, String permission, Argument... arguments) {
-    this.arguments = arguments;
+    this.arguments = unboxComplexArgs(arguments);
     this.executor = executor;
     this.permission = permission;
     
@@ -77,6 +78,21 @@ public class ArgumentSet {
     }
     
     this.optionalStart = optionalStart;
+  }
+  
+  private Argument[] unboxComplexArgs(Argument[] arguments) {
+    List<Argument> args = new ArrayList<>();
+    
+    for (Argument argument : arguments) {
+      if(argument instanceof ComplexArg) {
+        ComplexArg ca = (ComplexArg) argument;
+        args.addAll(ca.getArgs());
+      } else {
+        args.add(argument);
+      }
+    }
+    
+    return args.toArray(new Argument[0]);
   }
   
   /**

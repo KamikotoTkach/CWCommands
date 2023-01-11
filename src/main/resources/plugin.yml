@@ -2,3 +2,5 @@ name: Commands
 main: tkachgeek.commands.command.plugin.main
 version: 1.0
 api-version: 1.14
+commands:
+  commandsTest:

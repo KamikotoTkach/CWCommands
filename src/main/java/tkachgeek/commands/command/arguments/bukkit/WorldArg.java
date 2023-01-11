@@ -1,4 +1,4 @@
-package tkachgeek.commands.command.arguments;
+package tkachgeek.commands.command.arguments.bukkit;
 
 import org.bukkit.Bukkit;
 import org.bukkit.World;

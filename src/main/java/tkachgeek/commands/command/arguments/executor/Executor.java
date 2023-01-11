@@ -7,6 +7,7 @@ import tkachgeek.commands.command.Argument;
 import tkachgeek.commands.command.ArgumentParser;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.text.SpacesHider;
 
 public abstract class Executor implements Executable {
   ArgumentParser parser;
@@ -38,6 +39,9 @@ public abstract class Executor implements Executable {
    */
   protected String argS(int index) {
     return arg(index).toString();
+  }
+  protected String argWithSpaces(int index) {
+    return SpacesHider.restore(arg(index).toString());
   }
   
   protected final int argumentsAmount() {

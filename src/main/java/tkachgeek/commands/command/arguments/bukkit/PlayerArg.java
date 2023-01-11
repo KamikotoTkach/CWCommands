@@ -1,4 +1,4 @@
-package tkachgeek.commands.command.arguments;
+package tkachgeek.commands.command.arguments.bukkit;
 
 public class PlayerArg extends OnlinePlayers {
   @Override

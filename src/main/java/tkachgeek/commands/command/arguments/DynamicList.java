@@ -1,4 +1,4 @@
-package tkachgeek.commands.command.arguments.notTested;
+package tkachgeek.commands.command.arguments;
 
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;

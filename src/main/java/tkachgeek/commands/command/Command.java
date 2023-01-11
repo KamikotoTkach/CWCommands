@@ -7,7 +7,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executable;
-import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.ProcessResult;
@@ -30,8 +29,8 @@ public class Command {
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
   List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
-  String description;
-  String permission;
+  String description = "";
+  String permission = "";
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
@@ -144,8 +143,8 @@ public class Command {
    */
   public void register(JavaPlugin plugin) {
     this.plugin = plugin;
-    if (isSubcommand) return;
     
+    if (isSubcommand) return;
     if (strategy == null) strategy = new DefaultPermissionGenerationStrategy();
     
     updatePermissions(permission);
@@ -153,6 +152,11 @@ public class Command {
     try {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
+      
+      if (!description.isEmpty()) plugin.getCommand(name).setDescription(description);
+      if (!aliases.isEmpty()) plugin.getCommand(name).setAliases(aliases);
+      if (!permission.isEmpty())
+        plugin.getCommand(name).setPermission(strategy.processCommand(permission, name).getPermission());
     } catch (Exception e) {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
