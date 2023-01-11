@@ -10,7 +10,7 @@ public abstract class ArgumentWithOffset extends Argument {
   
   @Override
   public boolean valid(String raw) {
-    return false;
+    return true;
   }
   
   @Override
