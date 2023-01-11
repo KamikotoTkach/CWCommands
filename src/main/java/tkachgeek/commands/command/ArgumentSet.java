@@ -10,6 +10,7 @@ import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.ComplexArg;
 import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executable;
+import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.MessagesUtils;
@@ -40,6 +41,15 @@ public class ArgumentSet {
   Component help;
   private String confirmableString = "";
   private long timeToConfirm = 0;
+  
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть
+   */
+  public ArgumentSet(Executor executor, String permission, Argument... arguments) {
+    this((Executable) executor, permission, arguments);
+  }
   
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
@@ -80,21 +90,6 @@ public class ArgumentSet {
     this.optionalStart = optionalStart;
   }
   
-  private Argument[] unboxComplexArgs(Argument[] arguments) {
-    List<Argument> args = new ArrayList<>();
-    
-    for (Argument argument : arguments) {
-      if(argument instanceof ComplexArg) {
-        ComplexArg ca = (ComplexArg) argument;
-        args.addAll(ca.getArgs());
-      } else {
-        args.add(argument);
-      }
-    }
-    
-    return args.toArray(new Argument[0]);
-  }
-  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -104,16 +99,55 @@ public class ArgumentSet {
   public ArgumentSet(Executable executor, ExactStringArg exactStringArg, Argument... arguments) {
     this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
-  
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть<br>
+   * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
+   */
+  public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
+    this((Executable) executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
+  }
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть<br>
+   * Шоткат, автоматически устанавливающий пермишен в пустую строку
+   */
   public ArgumentSet(Executable executor, Argument... arguments) {
     this(executor, "", arguments);
   }
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть<br>
+   * Шоткат, автоматически устанавливающий пермишен в пустую строку
+   */
+  public ArgumentSet(Executor executor, Argument... arguments) {
+    this((Executable) executor, "", arguments);
+  }
+  
   @NotNull
   private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
     Argument[] args = new Argument[arguments.length + 1];
     args[0] = exactStringArg;
     System.arraycopy(arguments, 0, args, 1, arguments.length);
     return args;
+  }
+  
+  private Argument[] unboxComplexArgs(Argument[] arguments) {
+    List<Argument> args = new ArrayList<>();
+    
+    for (Argument argument : arguments) {
+      if (argument instanceof ComplexArg) {
+        ComplexArg ca = (ComplexArg) argument;
+        args.addAll(ca.getArgs());
+      } else {
+        args.add(argument);
+      }
+    }
+    
+    return args.toArray(new Argument[0]);
   }
   
   /**
@@ -250,9 +284,9 @@ public class ArgumentSet {
   public void execute(CommandSender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
       MessagesUtils.send(sender, Component.text("Введите ", Command.text)
-                                  .append(Component.text(confirmableString, Command.comment))
-                                  .append(Component.text(" для подтверждения", Command.text))
-                                  .clickEvent(ClickEvent.runCommand(confirmableString))
+                                          .append(Component.text(confirmableString, Command.comment))
+                                          .append(Component.text(" для подтверждения", Command.text))
+                                          .clickEvent(ClickEvent.runCommand(confirmableString))
       );
       
       ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)

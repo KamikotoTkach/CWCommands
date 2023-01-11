@@ -7,6 +7,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executable;
+import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.ProcessResult;
@@ -68,7 +69,12 @@ public class Command {
    */
   public Command(String name, String permission, Executable executor) {
     this(name, permission);
-    arguments(new ArgumentSet(executor, permission));
+  }
+  /**
+   * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
+   */
+  public Command(String name, String permission, Executor executor) {
+    this(name, permission, (Executable) executor);
   }
   
   /**
@@ -78,6 +84,12 @@ public class Command {
     this(name);
     arguments(new ArgumentSet(executor, name));
   }
+  /**
+   * Шоткат для сингл-аргументсета в команде без аргументов
+   */
+  public Command(String name, Executor executor) {
+    this(name, (Executable) executor);
+  }
   
   /**
    * Шоткат для сингл-аргументсета в команде с любыми аргументами
@@ -85,6 +97,12 @@ public class Command {
   public Command(String name, Executable executor, Argument... arguments) {
     this(name);
     arguments(new ArgumentSet(executor, name, arguments));
+  }
+  /**
+   * Шоткат для сингл-аргументсета в команде с любыми аргументами
+   */
+  public Command(String name, Executor executor, Argument... arguments) {
+    this(name, (Executable) executor, arguments);
   }
   
   /**
@@ -98,7 +116,7 @@ public class Command {
     Command.argument = argument;
     Command.comment = comment;
     Command.text = text;
-  }
+  } //todo: вынести из статика, сделать генерацию суб-цветов из основного
   
   /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
