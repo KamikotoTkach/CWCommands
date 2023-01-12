@@ -305,6 +305,7 @@ public class ArgumentSet {
   }
   
   private String getArgumentsString() {
+    if(arguments.length == 0) return "[]";
     StringBuilder result = new StringBuilder();
     for (Argument arg : arguments) {
       result.append(arg.toReadableString()).append(", ");

@@ -3,6 +3,7 @@ package tkachgeek.commands.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -13,6 +14,7 @@ import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.ProcessResult;
 import tkachgeek.tkachutils.messages.MessagesUtils;
 
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -69,6 +71,7 @@ public class Command {
    */
   public Command(String name, String permission, Executable executor) {
     this(name, permission);
+    arguments(new ArgumentSet(executor, name));
   }
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
@@ -81,7 +84,7 @@ public class Command {
    * Шоткат для сингл-аргументсета в команде без аргументов
    */
   public Command(String name, Executable executor) {
-    this(name);
+    this(name, name);
     arguments(new ArgumentSet(executor, name));
   }
   /**
@@ -171,14 +174,16 @@ public class Command {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
       
-      if (!description.isEmpty()) plugin.getCommand(name).setDescription(description);
-      if (!aliases.isEmpty()) plugin.getCommand(name).setAliases(aliases);
+      if (!description.isEmpty()) plugin.getCommand(name).setDescription(description);//может быть не работает, как и алиасы
+
       if (!permission.isEmpty())
         plugin.getCommand(name).setPermission(strategy.processCommand(permission, name).getPermission());
     } catch (Exception e) {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
   }
+  
+
   
   /**
    * Добавляет аргументсеты в команду или подкоманду
@@ -302,7 +307,7 @@ public class Command {
   protected Command getSubcommandFor(String arg, CommandSender sender) {
     
     if (debug.is(DebugMode.DETAILED))
-      debug.print("Получение списка подкоманд для " + sender.getName() + " с " + arg + "");
+      debug.print("Получение списка подкоманд для " + sender.getName() + " по введённому [" + arg + "]");
     
     for (Command command : subcommands) {
       if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg)) && command.canPerformedBy(sender)) {
