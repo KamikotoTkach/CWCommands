@@ -5,8 +5,8 @@ import tkachgeek.commands.command.Argument;
 
 import java.util.List;
 
-public abstract class ArgumentWithOffset extends Argument {
-  int offset = 0;
+public abstract class BindedArgument extends Argument {
+  int bind = 0;
   
   @Override
   public boolean valid(String raw) {
@@ -18,19 +18,19 @@ public abstract class ArgumentWithOffset extends Argument {
     return null;
   }
   
-  public ArgumentWithOffset offset(int offset) {
-    this.offset = offset;
+  public BindedArgument bind(int bind) {
+    this.bind = bind;
     return this;
   }
   
   @Override
   public boolean valid(String raw, List<String> arguments) {
-    return valid(raw, arguments.get(arguments.size() + offset - 1));
+    return valid(raw, arguments.get(bind));
   }
   
   @Override
   public List<String> completions(CommandSender sender, List<String> written) {
-    return completions(sender, written.get(written.size() + offset - 1));
+    return completions(sender, written.get(bind));
   }
   
   public abstract boolean valid(String raw, String offsetValue);
