@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.ExactStringArg;
+import tkachgeek.commands.command.color.ColorGenerationStrategy;
 
 import java.util.List;
 
@@ -25,17 +26,17 @@ public abstract class Argument {
    * Оформление аргумента в авто-хелпе
    */
   @NotNull
-  public TextComponent toComponent() {
+  public TextComponent toComponent(ColorGenerationStrategy color, boolean canPerformedBy) {
     if (isOptional()) {
-      return Component.text("[" + argumentName() + "]", Command.argumentOptional);
+      return Component.text("[" + argumentName() + "]", color.optional(canPerformedBy));
     } else if (this instanceof ExactStringArg) {
-      return Component.text(argumentName(), Command.subcommandColor);
+      return Component.text(argumentName(), color.subcommand(canPerformedBy));
     } else {
-      TextComponent component = Component.text("<" + argumentName() + ">", Command.argument);
+      TextComponent component = Component.text("<" + argumentName() + ">", color.argument(canPerformedBy));
       if (hint().isEmpty()) {
         return component;
       }
-      return component.hoverEvent(HoverEvent.showText(Component.text(hint(), Command.comment)));
+      return component.hoverEvent(HoverEvent.showText(Component.text(hint(), color.accent(canPerformedBy))));
     }
   }
   public String toReadableString() {

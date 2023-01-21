@@ -1,35 +1,28 @@
 package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.executor.Executor;
+import tkachgeek.commands.command.color.ColorGenerationStrategy;
+import tkachgeek.commands.command.color.DefaultColorGenerationStrategy;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 import tkachgeek.commands.command.permissions.ProcessResult;
 import tkachgeek.tkachutils.messages.MessagesUtils;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Command {
-  static TextColor text = TextColor.fromHexString("#00a6f0");
-  static TextColor argument = TextColor.fromHexString("#00baff");
-  static TextColor argumentOptional = TextColor.fromHexString("#02d7ff");
-  static TextColor subcommandColor = TextColor.fromHexString("#0098dc");
-  static TextColor writtenColor = TextColor.fromHexString("#007ab5");
-  static TextColor permissionColor = TextColor.fromHexString("#055080");
-  static TextColor comment = TextColor.fromHexString("#8adaff");
-  
   final String name;
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
+  ColorGenerationStrategy color = null;
+  PermissionGenerationStrategy permissions = null;
   List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
   String description = "";
@@ -38,16 +31,17 @@ public class Command {
   Command parent = null;
   Command[] subcommands = new Command[]{};
   //присваивается только в рут-команде
-  PermissionGenerationStrategy strategy = null;
   JavaPlugin plugin;
   
   DebugMode debug = DebugMode.NONE;
+  private boolean ignoreExecutionPossibility = true;
   
   /**
    * Автоматически устанавливается пермишен name
    */
   public Command(String name) {
     this.name = name;
+    this.permission = name;
   }
   
   /**
@@ -73,6 +67,7 @@ public class Command {
     this(name, permission);
     arguments(new ArgumentSet(executor, name));
   }
+  
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
    */
@@ -84,9 +79,10 @@ public class Command {
    * Шоткат для сингл-аргументсета в команде без аргументов
    */
   public Command(String name, Executable executor) {
-    this(name, name);
+    this(name);
     arguments(new ArgumentSet(executor, name));
   }
+  
   /**
    * Шоткат для сингл-аргументсета в команде без аргументов
    */
@@ -101,6 +97,7 @@ public class Command {
     this(name);
     arguments(new ArgumentSet(executor, name, arguments));
   }
+  
   /**
    * Шоткат для сингл-аргументсета в команде с любыми аргументами
    */
@@ -108,18 +105,17 @@ public class Command {
     this(name, (Executable) executor, arguments);
   }
   
+  public Command setIgnoreExecutionPossibility(boolean ignoreExecutionPossibility) {
+    this.ignoreExecutionPossibility = ignoreExecutionPossibility;
+    return this;
+  }
+  
   /**
    * Устанавливает цветовое оформление для хелпа и других сообщений. Статична, нужно переписать
    */
-  public static void setColorScheme(TextColor text, TextColor argument, TextColor argumentOptional, TextColor subcommandColor, TextColor writtenColor, TextColor permissionColor, TextColor comment) {
-    Command.argumentOptional = argumentOptional;
-    Command.permissionColor = permissionColor;
-    Command.subcommandColor = subcommandColor;
-    Command.writtenColor = writtenColor;
-    Command.argument = argument;
-    Command.comment = comment;
-    Command.text = text;
-  } //todo: вынести из статика, сделать генерацию суб-цветов из основного
+  public void setColorScheme(ColorGenerationStrategy colorGenerationStrategy) {
+    this.color = colorGenerationStrategy;
+  }
   
   /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
@@ -151,22 +147,14 @@ public class Command {
   }
   
   /**
-   * @param strategy стратегия генерации пермишенов
-   *                 Использовать только в рут-команде
-   */
-  public Command setPermissionGenerationStrategy(PermissionGenerationStrategy strategy) {
-    this.strategy = strategy;
-    return this;
-  }
-  
-  /**
    * Регистрирует команду. Вызывать только раз.
    */
   public void register(JavaPlugin plugin) {
     this.plugin = plugin;
     
     if (isSubcommand) return;
-    if (strategy == null) strategy = new DefaultPermissionGenerationStrategy();
+    if (permissions == null) permissions = new DefaultPermissionGenerationStrategy();
+    if (color == null) color = new DefaultColorGenerationStrategy();
     
     updatePermissions(permission);
     
@@ -174,16 +162,15 @@ public class Command {
       plugin.getCommand(name).setTabCompleter(new TabCompleter(this));
       plugin.getCommand(name).setExecutor(new CommandParser(this));
       
-      if (!description.isEmpty()) plugin.getCommand(name).setDescription(description);//может быть не работает, как и алиасы
-
+      if (!description.isEmpty())
+        plugin.getCommand(name).setDescription(description);//может быть не работает, как и алиасы
+      
       if (!permission.isEmpty())
-        plugin.getCommand(name).setPermission(strategy.processCommand(permission, name).getPermission());
+        plugin.getCommand(name).setPermission(permissions.processCommand(permission, name).getPermission());
     } catch (Exception e) {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
   }
-  
-
   
   /**
    * Добавляет аргументсеты в команду или подкоманду
@@ -232,12 +219,12 @@ public class Command {
     ProcessResult result;
     
     if (isSubcommand) {
-      result = getStrategy().processSubCommand(permissions, permission, name);
+      result = getPermissions().processSubCommand(permissions, permission, name);
       
       if (debug.is(DebugMode.DETAILED))
         debug.print("Подкоманде " + name + " установлены права " + result.getPermission() + "");
     } else {
-      result = getStrategy().processCommand(permission, name);
+      result = getPermissions().processCommand(permission, name);
       
       if (debug.is(DebugMode.DETAILED))
         debug.print("Команде " + name + " установлены права " + result.getPermission() + "");
@@ -251,7 +238,7 @@ public class Command {
     }
     
     for (ArgumentSet argumentSet : argumentSets) {
-      argumentSet.permission = getStrategy().processArgumentSet(permissions, argumentSet.permission, permission);
+      argumentSet.permission = getPermissions().processArgumentSet(permissions, argumentSet.permission, permission);
       
       if (debug.is(DebugMode.DETAILED))
         debug.print("Аргументсету " + permissions + "/" + argumentSet + " установлены права " + argumentSet.permission);
@@ -291,17 +278,21 @@ public class Command {
     }
   }
   
-  protected List<Command> getSubcommandsFor(CommandSender sender) {
+  protected List<Command> getSubcommandsFor(CommandSender sender, boolean ignoreExecutionPossibility) {
     
     if (debug.is(DebugMode.DETAILED)) debug.print("Получение списка подкоманд для " + sender.getName() + "");
     
     List<Command> list = new ArrayList<>();
     for (Command command : subcommands) {
-      if (command.canPerformedBy(sender)) {
+      if (ignoreExecutionPossibility || command.canPerformedBy(sender)) {
         list.add(command);
       }
     }
     return list;
+  }
+  
+  protected List<Command> getSubcommandsFor(CommandSender sender) {
+    return getSubcommandsFor(sender, false);
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
@@ -317,17 +308,21 @@ public class Command {
     return null;
   }
   
-  protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
+  protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender, boolean ignoreExecutionPossibility) {
     
     if (debug.is(DebugMode.DETAILED)) debug.print("Получение списка аргументсетов для " + sender.getName());
     
     List<ArgumentSet> list = new ArrayList<>();
     for (ArgumentSet arg : argumentSets) {
-      if (arg.canPerformedBy(sender)) {
+      if (ignoreExecutionPossibility || arg.canPerformedBy(sender)) {
         list.add(arg);
       }
     }
     return list;
+  }
+  
+  protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
+    return getArgumentSetsFor(sender, false);
   }
   
   protected boolean hasArgumentSet(CommandSender sender, String... args) {
@@ -358,40 +353,51 @@ public class Command {
     
     if (debug.is(DebugMode.DETAILED))
       debug.print("Вывод кастомного хелпа для " + sender.getName() + " в " + this.name + "");
+    
     help.sendTo(sender, args);
   }
   
   private void sendAutoHelp(CommandSender sender) {
-    Component written = Component.text(getFullCommandPath()).color(writtenColor);
+    ColorGenerationStrategy color = getColorGenerationStrategy();
+    
+    Component written = Component.text(getFullCommandPath());
     
     List<Component> toSend = new ArrayList<>();
     
-    for (Command subcommand : getSubcommandsFor(sender)) {
-      toSend.add(written
-                    .append(Component.text(" " + subcommand.name + " ", subcommandColor))
-                    .append(sender.isOp() ? Component.text(" " + subcommand.permission, permissionColor) : Component.empty())
+    for (Command subcommand : getSubcommandsFor(sender, ignoreExecutionPossibility)) {
+      boolean canPerformedBy = subcommand.canPerformedBy(sender);
+      
+      toSend.add(written.color(color.written(canPerformedBy))
+                        .append(Component.text(" " + subcommand.name + " ", color.subcommand(canPerformedBy)))
+                        .append(sender.isOp() ? Component.text(" " + subcommand.permission, color.permissions(canPerformedBy)) : Component.empty())
       );
     }
-    
-    for (ArgumentSet argumentSet : getArgumentSetsFor(sender)) {
-      for (Component component : argumentSet.getHelp(sender)) {
-        toSend.add(written.append(component));
-      }
+    boolean previousHasEmptyLine = false;
+    for (ArgumentSet argumentSet : getArgumentSetsFor(sender, ignoreExecutionPossibility)) {
+      boolean canPerformedBy = argumentSet.canPerformedBy(sender);
+      boolean hasHelp = argumentSet.hasHelp();
       
-      if (argumentSet.hasHelp()) {
-        toSend.add(Component.text("↳ ").append(argumentSet.help).color(comment));
+      if (!previousHasEmptyLine && hasHelp) toSend.add(Component.empty());
+      
+      toSend.add(written.color(color.written(canPerformedBy)).append(argumentSet.getHelp(sender, color)));
+      
+      if (hasHelp) {
+        toSend.add(Component.text("↳ ").append(argumentSet.help).color(color.accent(canPerformedBy)));
         toSend.add(Component.empty());
+        previousHasEmptyLine = true;
+      } else {
+        previousHasEmptyLine = false;
       }
     }
     
-    sendDescription(sender);
+    sendDescription(sender, color);
     
     sender.sendMessage("");
     
     if (toSend.isEmpty()) {
-      MessagesUtils.send(sender, Component.text("Для вас нет доступных продолжений этой команды", text));
+      MessagesUtils.send(sender, Component.text("Для вас нет доступных продолжений этой команды", color.main()));
     } else {
-      MessagesUtils.send(sender, Component.text("Возможные продолжения команды:", text));
+      MessagesUtils.send(sender, Component.text("Возможные продолжения команды:", color.main()));
       sender.sendMessage("");
       
       for (Component row : toSend) {
@@ -400,11 +406,15 @@ public class Command {
     }
   }
   
-  private void sendDescription(CommandSender sender) {
+  private ColorGenerationStrategy getColorGenerationStrategy() {
+    return getRootCommand().color;
+  }
+  
+  private void sendDescription(CommandSender sender, ColorGenerationStrategy color) {
     if (description != null) {
       sender.sendMessage("");
       for (String part : description.split("\n")) {
-        MessagesUtils.send(sender, Component.text(part, text));
+        MessagesUtils.send(sender, Component.text(part, color.main()));
       }
       sender.sendMessage("");
     }
@@ -431,7 +441,16 @@ public class Command {
     return this;
   }
   
-  PermissionGenerationStrategy getStrategy() {
-    return getRootCommand().strategy;
+  PermissionGenerationStrategy getPermissions() {
+    return getRootCommand().permissions;
+  }
+  
+  /**
+   * @param strategy стратегия генерации пермишенов
+   *                 Использовать только в рут-команде
+   */
+  public Command setPermissions(PermissionGenerationStrategy strategy) {
+    this.permissions = strategy;
+    return this;
   }
 }

@@ -1,4 +1,4 @@
-package tkachgeek.commands.command.arguments;
+package tkachgeek.commands.command.arguments.datetime;
 
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;

@@ -12,6 +12,7 @@ import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
+import tkachgeek.commands.command.color.ColorGenerationStrategy;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.MessagesUtils;
 
@@ -21,8 +22,6 @@ import java.util.List;
 import java.util.StringJoiner;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
-
-import static tkachgeek.commands.command.Command.permissionColor;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
@@ -99,6 +98,7 @@ public class ArgumentSet {
   public ArgumentSet(Executable executor, ExactStringArg exactStringArg, Argument... arguments) {
     this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
+  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -108,6 +108,7 @@ public class ArgumentSet {
   public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
     this((Executable) executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
+  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -117,6 +118,7 @@ public class ArgumentSet {
   public ArgumentSet(Executable executor, Argument... arguments) {
     this(executor, "", arguments);
   }
+  
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -269,29 +271,30 @@ public class ArgumentSet {
     return help != null;
   }
   
-  public List<Component> getHelp(CommandSender sender) {
-    List<Component> toSend = new ArrayList<>(3);
+  public Component getHelp(CommandSender sender, ColorGenerationStrategy color) {
+    boolean canPerformedBy = canPerformedBy(sender);
     TextComponent argumentsAccumulator = Component.empty();
-    for (Argument arg : arguments) {
-      argumentsAccumulator = argumentsAccumulator.append(Component.space()).append(arg.toComponent());
-    }
-    toSend.add(argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
-                                   .append(sender.isOp() ? Component.text(" " + permission, permissionColor) : Component.empty()));
     
-    return toSend;
+    for (Argument arg : arguments) {
+      argumentsAccumulator = argumentsAccumulator.append(Component.space()).append(arg.toComponent(color, canPerformedBy));
+    }
+    
+    return (argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
+                                   .append(sender.isOp() ? Component.text(" " + permission, color.permissions(canPerformedBy)) : Component.empty()));
+    
   }
   
   public void execute(CommandSender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
-      MessagesUtils.send(sender, Component.text("Введите ", Command.text)
-                                          .append(Component.text(confirmableString, Command.comment))
-                                          .append(Component.text(" для подтверждения", Command.text))
+      MessagesUtils.send(sender, Component.text("Введите ", command.color.main())
+                                          .append(Component.text(confirmableString, command.color.accent(true)))
+                                          .append(Component.text(" для подтверждения", command.color.main()))
                                           .clickEvent(ClickEvent.runCommand(confirmableString))
       );
       
       ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
                 .success(() -> executor.prepare(sender, args, this))
-                .expired(() -> MessagesUtils.send(sender, Component.text("Время подтверждения вышло", Command.text)))
+                .expired(() -> MessagesUtils.send(sender, Component.text("Время подтверждения вышло", command.color.main())))
                 .register(command.getRootCommand().plugin);
     } else {
       executor.prepare(sender, args, this);
@@ -305,7 +308,7 @@ public class ArgumentSet {
   }
   
   private String getArgumentsString() {
-    if(arguments.length == 0) return "[]";
+    if (arguments.length == 0) return "[]";
     StringBuilder result = new StringBuilder();
     for (Argument arg : arguments) {
       result.append(arg.toReadableString()).append(", ");
