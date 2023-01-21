@@ -129,6 +129,20 @@ public class ArgumentSet {
     this((Executable) executor, "", arguments);
   }
   
+  public ArgumentSet(ArgumentSet toClone, Argument... newArgs) {
+    this.arguments = newArgs;
+    this.executor = toClone.executor;
+    this.canExecute = toClone.canExecute;
+    this.permission = toClone.permission;
+    this.spacedLastArgument = toClone.spacedLastArgument;
+    this.blockForPlayers = toClone.blockForPlayers;
+    this.blockForNonPlayers = toClone.blockForNonPlayers;
+    this.optionalStart = toClone.optionalStart;
+    this.help = toClone.help;
+    this.confirmableString = toClone.confirmableString;
+    this.timeToConfirm = toClone.timeToConfirm;
+  }
+  
   @NotNull
   private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
     Argument[] args = new Argument[arguments.length + 1];
@@ -316,4 +330,6 @@ public class ArgumentSet {
     result.delete(result.length() - 2, result.length());
     return "[" + result + "]";
   }
+  
+  
 }

@@ -179,14 +179,11 @@ public class Command {
     this.argumentSets.addAll(List.of(arguments));
     
     for (ArgumentSet set : arguments) {
+      argumentSets.add(set);
+      
       if (set.optionalStart > 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
-          ArgumentSet newArgumentSet = new ArgumentSet(set.executor, set.permission, Arrays.copyOfRange(set.arguments, 0, i));
-          newArgumentSet.spacedLastArgument = set.spacedLastArgument;
-          newArgumentSet.help = set.help;
-          newArgumentSet.blockForNonPlayers = set.blockForNonPlayers;
-          newArgumentSet.blockForPlayers = set.blockForPlayers;
-          argumentSets.add(newArgumentSet);
+          argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)));
         }
       }
     }
