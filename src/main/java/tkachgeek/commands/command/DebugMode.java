@@ -3,7 +3,7 @@ package tkachgeek.commands.command;
 import org.bukkit.Bukkit;
 
 public enum DebugMode {
-  NONE, MAIN, DETAILED;
+  NONE, REDUCED, DETAILED;
   
   public void print(String text) {
       Bukkit.broadcastMessage(text);
