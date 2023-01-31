@@ -147,7 +147,7 @@ public abstract class Argument {
          return this.getClass().getDeclaredConstructor().newInstance();
       } catch (Exception ignored) {
          throw new MessageReturn(
-               Message.getInstance("§c не удалось получить новый экземпляр аргумента §4" + this.argumentName()).get()
+               Message.getInstance("Не удалось получить новый экземпляр аргумента " + this.argumentName()).get()
          );
       }
    }
