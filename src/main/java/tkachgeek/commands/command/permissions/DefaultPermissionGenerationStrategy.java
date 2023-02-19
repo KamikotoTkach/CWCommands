@@ -19,8 +19,8 @@ public class DefaultPermissionGenerationStrategy implements PermissionGeneration
    @Override
    public ProcessResult processSubCommand(String previousPermissions, String currentPermission, String commandName) {
       if (currentPermission.startsWith("$")) {
-         String permission = currentPermission.substring(1);
-         ProcessResult result = new ProcessResult(permission);
+         ProcessResult result = new ProcessResult(currentPermission);
+         result.setPermission(currentPermission.substring(1));
          return result;
       }
 
