@@ -10,97 +10,106 @@ import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;
 
 public abstract class Executor implements Executable {
-  ArgumentParser parser;
-  CommandSender sender;
-  
-  /**
-   * Получает аргумент по индексу, если его нет - null
-   */
-  protected final Argument arg(int index) {
-    return parser.get(index);
-  }
-  
-  /**
-   * Получает аргумент и кастует его в double, если его нет - эксепшен
-   */
-  protected double argD(int index) {
-    return arg(index).toDouble();
-  }
-  
-  /**
-   * Получает аргумент и кастует его в int, если его нет - эксепшен
-   */
-  protected int argI(int index) {
-    return arg(index).toInt();
-  }
-  
-  /**
-   * Получает аргумент и кастует его в строку, если его нет - эксепшен
-   */
-  protected String argS(int index) {
-    return arg(index).toString();
-  }
-  protected String argWithSpaces(int index) {
-    return SpacesHider.restore(arg(index).toString());
-  }
-  
-  protected final int argumentsAmount() {
-    return parser.args.length;
-  }
-  
-  /**
-   * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
-   */
-  protected final Player player() {
-    return (Player) sender;
-  }
-  
-  protected final CommandSender sender() {
-    return sender;
-  }
-  
-  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
-    parser = new ArgumentParser(args, argumentSet);
-    this.sender = sender;
-    
-    try {
-      if (sender instanceof Player) {
-        executeForPlayer();
-      } else {
-        executeForNonPlayer();
+   ArgumentParser parser;
+   CommandSender sender;
+
+   /**
+    * Получает аргумент по индексу, если его нет - null
+    */
+   protected final Argument arg(int index) {
+      return parser.get(index);
+   }
+
+   /**
+    * Получает аргумент и кастует его в double, если его нет - эксепшен
+    */
+   protected double argD(int index) {
+      return arg(index).toDouble();
+   }
+
+   /**
+    * Получает аргумент и кастует его в int, если его нет - эксепшен
+    */
+   protected int argI(int index) {
+      return arg(index).toInt();
+   }
+
+   /**
+    * Получает аргумент и кастует его в строку, если его нет - эксепшен
+    */
+   protected String argS(int index) {
+      return arg(index).toString();
+   }
+
+   /**
+    * Получает аргумент и кастует его в boolean, если его нет - эксепшен
+    */
+   protected boolean argB(int index) {
+      return arg(index).toBoolean();
+   }
+
+   protected String argWithSpaces(int index) {
+      return SpacesHider.restore(arg(index).toString());
+   }
+
+   protected final int argumentsAmount() {
+      return parser.args.length;
+   }
+
+   /**
+    * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
+    */
+   protected final Player player() {
+      return (Player) sender;
+   }
+
+   protected final CommandSender sender() {
+      return sender;
+   }
+
+   public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
+      parser = new ArgumentParser(args, argumentSet);
+      this.sender = sender;
+
+      try {
+         if (sender instanceof Player) {
+            executeForPlayer();
+         } else {
+            executeForNonPlayer();
+         }
+      } catch (Exception exception) {
+         errorHandler(exception);
       }
-    } catch (Exception exception) {
-      errorHandler(exception);
-    }
-  }
-  
-  /**
-   * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
-   */
-  public abstract void executeForPlayer() throws MessageReturn;
-  public void executeForNonPlayer() throws MessageReturn {
-    executeForPlayer();
-  }
-  
-  /**
-   * Переопределение обработчика ошибок
-   */
-  public void errorHandler(Exception exception) {
-    if (exception instanceof MessageReturn) {
-      sender.sendMessage(((MessageReturn) exception).getComponentMessage());
-      return;
-    }
-    
-    sender.sendMessage(exception.getLocalizedMessage());
-    
-    Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
-    exception.printStackTrace();
-  }
-  
-  /**
-   * Проверяет есть ли аргумент под таким индексом
-   */
-  public boolean isPresent(int index) {
-    return argumentsAmount() > index;
-  }
+   }
+
+   /**
+    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
+    */
+   public abstract void executeForPlayer() throws MessageReturn;
+
+   public void executeForNonPlayer() throws MessageReturn {
+      executeForPlayer();
+   }
+
+   /**
+    * Переопределение обработчика ошибок
+    */
+   public void errorHandler(Exception exception) {
+      if (exception instanceof MessageReturn) {
+         sender.sendMessage(((MessageReturn) exception).getComponentMessage());
+         return;
+      }
+
+      sender.sendMessage(exception.getLocalizedMessage());
+
+      Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
+      exception.printStackTrace();
+   }
+
+   /**
+    * Проверяет есть ли аргумент под таким индексом
+    */
+   public boolean isPresent(int index) {
+      return argumentsAmount() > index;
+   }
 }
