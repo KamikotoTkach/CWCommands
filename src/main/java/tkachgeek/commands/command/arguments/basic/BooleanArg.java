@@ -21,25 +21,25 @@ public class BooleanArg extends Argument {
 
   @Override
   public Integer toInt() {
-    if (valid()) return raw.equalsIgnoreCase(trueValue) ? 1 : 0;
+    if (notNull()) return raw.equalsIgnoreCase(trueValue) ? 1 : 0;
     return null;
   }
 
   @Override
   public String toString() {
-    if (valid()) return raw.equalsIgnoreCase(trueValue) ? "true" : "false";
+    if (notNull()) return raw.equalsIgnoreCase(trueValue) ? "true" : "false";
     return null;
   }
 
   @Override
   public Double toDouble() {
-    if (valid()) return raw.equalsIgnoreCase(trueValue) ? 1.0 : 0.0;
+    if (notNull()) return raw.equalsIgnoreCase(trueValue) ? 1.0 : 0.0;
     return null;
   }
 
   @Override
   public Boolean toBoolean() {
-    if (valid()) return raw.equalsIgnoreCase(trueValue);
+    if (notNull()) return raw.equalsIgnoreCase(trueValue);
     return null;
   }
 

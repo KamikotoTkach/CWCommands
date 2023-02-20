@@ -58,7 +58,7 @@ public abstract class Argument {
 
    public abstract boolean valid(String raw);
 
-   public boolean valid(String raw, List<String> arguments) {
+   public boolean valid(CommandSender sender, String raw, List<String> arguments) {
       return valid(raw);
    }
 
@@ -82,13 +82,13 @@ public abstract class Argument {
     */
    public abstract String argumentName();
 
-   public boolean valid() {
-      return raw != null && valid(raw);
+   public boolean notNull() {
+      return raw != null;
    }
 
    public Integer toInt() {
       try {
-         if (valid()) return Integer.parseInt(raw);
+         if (notNull()) return Integer.parseInt(raw);
       } catch (Exception exception) {
          Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
       }
@@ -97,7 +97,7 @@ public abstract class Argument {
 
    public Float toFloat() {
       try {
-         if (valid()) return Float.parseFloat(raw);
+         if (notNull()) return Float.parseFloat(raw);
       } catch (Exception exception) {
          Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
       }
@@ -106,14 +106,14 @@ public abstract class Argument {
    }
 
    public String toString() {
-      if (valid()) return raw;
+      if (notNull()) return raw;
       Bukkit.getLogger().warning("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
       return null;
    }
 
    public Double toDouble() {
       try {
-         if (valid()) return Double.parseDouble(raw);
+         if (notNull()) return Double.parseDouble(raw);
       } catch (Exception exception) {
          Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
       }
@@ -122,7 +122,7 @@ public abstract class Argument {
 
    public Boolean toBoolean() {
       try {
-         if (valid()) return Boolean.parseBoolean(raw);
+         if (notNull()) return Boolean.parseBoolean(raw);
       } catch (Exception exception) {
          Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
       }

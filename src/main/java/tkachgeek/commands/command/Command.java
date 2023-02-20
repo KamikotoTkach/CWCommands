@@ -255,7 +255,7 @@ public class Command {
   }
 
   protected boolean canPerformedBy(CommandSender sender) {
-    boolean result = permission != null && (sender.hasPermission(permission) || permission.isEmpty()) || sender.isOp();
+    boolean result = permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp();
 
     if (debug.is(DebugMode.DETAILED))
       debug.print("§7Проверка §f" + sender.getName() + " §7на возможность выполнения §f" + this.name + "§7: " + (result ? " §aуспешно" : "§cпровал"));
@@ -268,12 +268,14 @@ public class Command {
       debug.print("§7Попытка выполнения §f" + this.name + " §7с §f" + Arrays.toString(args) + " для " + sender.getName());
 
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
+      if (set.isArgumentsFit(sender, args) && set.canPerformedBy(sender)) {
 
         if (debug.is(DebugMode.REDUCED)) debug.print("§7Выполнение " + set);
 
         var start = System.nanoTime();
+        
         set.execute(sender, args, this);
+        
         if (debug.is(DebugMode.REDUCED))
           debug.print("§7Выполнение §f" + set + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
         return;
@@ -316,7 +318,6 @@ public class Command {
     for (Command command : subcommands) {
       if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg)) && command.canPerformedBy(sender)) {
         if (debug.is(DebugMode.DETAILED)) debug.print("§7" + command.name + " §aподходит..");
-
         return command;
       } else {
         if (debug.is(DebugMode.DETAILED)) debug.print("§7" + command.name + " §c не подходит..");
@@ -356,7 +357,7 @@ public class Command {
       debug.print("§7Поиск наличия подходящего аргументсета в §f" + this.name + "§7 с §f" + Arrays.toString(args) + "§7 для §f" + sender.getName());
 
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(args) && set.canPerformedBy(sender)) {
+      if (set.isArgumentsFit(sender, args) && set.canPerformedBy(sender)) {
         if (debug.is(DebugMode.DETAILED)) debug.print("§7" + set + " §aподходит..");
         return true;
       } else {

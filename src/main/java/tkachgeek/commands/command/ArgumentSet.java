@@ -16,10 +16,7 @@ import tkachgeek.commands.command.color.ColorGenerationStrategy;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.MessagesUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.StringJoiner;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
@@ -222,7 +219,7 @@ public class ArgumentSet {
     return this;
   }
   
-  protected boolean isArgumentsFit(String... args) {
+  protected boolean isArgumentsFit(CommandSender sender, String... args) {
     
     if (args.length != arguments.length && !spacedLastArgument) return false;
     if (args.length < arguments.length) return false;
@@ -233,8 +230,10 @@ public class ArgumentSet {
       args = copy;
     }
     
+    List<String> argList = List.of(args);
+    
     for (int i = 0; i < args.length; i++) {
-      if (!arguments[i].valid(args[i], Arrays.asList(args))) return false;
+      if (!arguments[i].valid(sender, args[i], argList)) return false;
     }
     return true;
   }
@@ -249,13 +248,12 @@ public class ArgumentSet {
   }
   
   protected List<String> getCompletesFor(List<String> written, CommandSender sender) {
-    int skip = 0;
-    List<String> completes = new ArrayList<>();
+    int skipBecauseSpaced = 0;
     
-    if (arguments.length == 0) return completes;
+    if (arguments.length == 0) return Collections.emptyList();
     
     if (spacedLastArgument && arguments.length < written.size()) {
-      skip = written.size() - arguments.length;
+      skipBecauseSpaced = written.size() - arguments.length;
       String writtenLastSpacedString = String.join(" ", written.subList(arguments.length - 1, written.size()));
       written = written.subList(0, arguments.length);
       written.set(arguments.length - 1, writtenLastSpacedString);
@@ -264,21 +262,21 @@ public class ArgumentSet {
     if (arguments.length >= written.size()) {
       
       for (int i = 0; i < written.size() - 1; i++) {
-        if (!arguments[i].valid(written.get(i), written)) return completes;
+        if (!arguments[i].valid(sender, written.get(i), written)) return Collections.emptyList();
       }
       
-      List<String> result = new ArrayList<>();
-      for (var st : arguments[written.size() - 1].completions(sender, written)) {
-        if (skip > 0) {
-          List<String> parts = List.of(st.split(" "));
-          if (skip < parts.size()) {
-            result.add(String.join(" ", parts.subList(skip, parts.size())));
+      List<String> completionOfLastArg = new ArrayList<>();
+      for (var completionLine : arguments[written.size() - 1].completions(sender, written)) {
+        if (skipBecauseSpaced > 0) {
+          List<String> parts = List.of(completionLine.split(" "));
+          if (skipBecauseSpaced < parts.size()) {
+            completionOfLastArg.add(String.join(" ", parts.subList(skipBecauseSpaced, parts.size())));
           }
-        } else result.add(st);
+        } else completionOfLastArg.add(completionLine);
       }
-      return result;
+      return completionOfLastArg;
     }
-    return completes;
+    return Collections.emptyList();
   }
   
   public boolean hasHelp() {
@@ -294,8 +292,7 @@ public class ArgumentSet {
     }
     
     return (argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
-                                   .append(sender.isOp() ? Component.text(" " + permission, color.permissions(canPerformedBy)) : Component.empty()));
-    
+                                .append(sender.isOp() ? Component.text(" " + permission, color.permissions(canPerformedBy)) : Component.empty()));
   }
   
   public void execute(CommandSender sender, String[] args, Command command) {
@@ -330,6 +327,4 @@ public class ArgumentSet {
     result.delete(result.length() - 2, result.length());
     return "[" + result + "]";
   }
-  
-  
 }
