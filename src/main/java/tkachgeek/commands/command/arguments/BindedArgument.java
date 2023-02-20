@@ -24,7 +24,7 @@ public abstract class BindedArgument extends Argument {
   }
   
   @Override
-  public boolean valid(String raw, List<String> arguments) {
+  public boolean valid(CommandSender sender, String raw, List<String> arguments) {
     return valid(raw, arguments.get(bind));
   }
   
