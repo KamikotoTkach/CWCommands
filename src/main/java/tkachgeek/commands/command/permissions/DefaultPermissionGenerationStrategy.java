@@ -30,10 +30,6 @@ public class DefaultPermissionGenerationStrategy implements PermissionGeneration
          return result;
       }
 
-      if (currentPermission == null) {
-         return new ProcessResult(previousPermissions + "." + commandName);
-      }
-
       return new ProcessResult(previousPermissions + "." + currentPermission);
    }
 

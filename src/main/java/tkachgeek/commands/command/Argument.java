@@ -14,7 +14,7 @@ import tkachgeek.tkachutils.messages.MessageReturn;
 import java.util.List;
 
 public abstract class Argument {
-  public String tag = argumentName();
+  private String tag = "";
   protected String raw;
   private boolean optional;
   
@@ -155,5 +155,9 @@ public abstract class Argument {
   public Argument tag(String tag) {
     this.tag = tag;
     return this;
+  }
+  
+  public String getTag() {
+    return tag.isEmpty() ? argumentName() : tag;
   }
 }

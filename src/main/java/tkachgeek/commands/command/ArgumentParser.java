@@ -25,7 +25,7 @@ public class ArgumentParser {
   }
   public Argument get(String tag) {
     for (Argument arg : args) {
-      if(arg.tag.equals(tag)) return arg;
+      if(arg.getTag().equals(tag)) return arg;
     }
     
     return null;

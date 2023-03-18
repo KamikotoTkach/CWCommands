@@ -26,7 +26,7 @@ public class Command {
   List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
   String description = "";
-  String permission = "";
+  String permission;
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
@@ -158,7 +158,7 @@ public class Command {
 
     if (isSubcommand) return;
     if (permissions == null) permissions = new DefaultPermissionGenerationStrategy();
-    if (color == null) color = new DefaultColorGenerationStrategy();
+    if (color == null) color = DefaultColorGenerationStrategy.INSTANCE;
 
     updatePermissions(permission);
 

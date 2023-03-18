@@ -3,6 +3,7 @@ package tkachgeek.commands.command.color;
 import net.kyori.adventure.text.format.TextColor;
 
 public class DefaultColorGenerationStrategy implements ColorGenerationStrategy {
+  public static DefaultColorGenerationStrategy INSTANCE = new DefaultColorGenerationStrategy();
   private static final TextColor main = TextColor.fromHexString("#00a6f0");
   private static final TextColor argument = TextColor.fromHexString("#00baff");
   private static final TextColor optional = TextColor.fromHexString("#02d7ff");

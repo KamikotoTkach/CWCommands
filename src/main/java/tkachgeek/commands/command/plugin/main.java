@@ -12,6 +12,7 @@ import tkachgeek.commands.command.arguments.datetime.DurationArg;
 public class main extends JavaPlugin {
   @Override
   public void onEnable() {
+    
     new Command("commandsTest", "*")
        .arguments(
           new ArgumentSet(new PrintArguments(), new ExactStringArg("targetXYZ"), ComplexArg.xyz),
