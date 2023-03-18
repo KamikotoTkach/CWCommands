@@ -401,21 +401,24 @@ public class Command {
                         .append(sender.isOp() ? Component.text(" " + subcommand.permission, color.permissions(canPerformedBy)) : Component.empty())
       );
     }
-    boolean previousHasEmptyLine = false;
+    
+    boolean previousWasEmptyLine = false;
+    
     for (ArgumentSet argumentSet : getArgumentSetsFor(sender, ignoreExecutionPossibility)) {
+      
       boolean canPerformedBy = argumentSet.canPerformedBy(sender);
       boolean hasHelp = argumentSet.hasHelp();
 
-      if (!previousHasEmptyLine && hasHelp) toSend.add(Component.empty());
+      if (!previousWasEmptyLine && hasHelp) toSend.add(Component.empty());
 
       toSend.add(written.color(color.written(canPerformedBy)).append(argumentSet.getHelp(sender, color)));
 
       if (hasHelp) {
         toSend.add(Component.text("↳ ").append(argumentSet.help).color(color.accent(canPerformedBy)));
         toSend.add(Component.empty());
-        previousHasEmptyLine = true;
+        previousWasEmptyLine = true;
       } else {
-        previousHasEmptyLine = false;
+        previousWasEmptyLine = false;
       }
     }
 

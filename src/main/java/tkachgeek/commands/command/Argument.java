@@ -14,141 +14,146 @@ import tkachgeek.tkachutils.messages.MessageReturn;
 import java.util.List;
 
 public abstract class Argument {
-   protected String raw;
-   private boolean optional;
-
-   protected Argument(String raw) {
-      this.raw = raw;
-   }
-
-   public Argument() {
-   }
-
-   /**
-    * Оформление аргумента в авто-хелпе
-    */
-   @NotNull
-   public TextComponent toComponent(ColorGenerationStrategy color, boolean canPerformedBy) {
-      if (isOptional()) {
-         return Component.text("[" + argumentName() + "]", color.optional(canPerformedBy));
-      } else if (this instanceof ExactStringArg) {
-         return Component.text(argumentName(), color.subcommand(canPerformedBy));
-      } else {
-         TextComponent component = Component.text("<" + argumentName() + ">", color.argument(canPerformedBy));
-         if (hint().isEmpty()) {
-            return component;
-         }
-         return component.hoverEvent(HoverEvent.showText(Component.text(hint(), color.accent(canPerformedBy))));
+  public String tag = argumentName();
+  protected String raw;
+  private boolean optional;
+  
+  protected Argument(String raw) {
+    this.raw = raw;
+  }
+  
+  public Argument() {
+  }
+  
+  /**
+   * Оформление аргумента в авто-хелпе
+   */
+  @NotNull
+  public TextComponent toComponent(ColorGenerationStrategy color, boolean canPerformedBy) {
+    if (isOptional()) {
+      return Component.text("[" + argumentName() + "]", color.optional(canPerformedBy));
+    } else if (this instanceof ExactStringArg) {
+      return Component.text(argumentName(), color.subcommand(canPerformedBy));
+    } else {
+      TextComponent component = Component.text("<" + argumentName() + ">", color.argument(canPerformedBy));
+      if (hint().isEmpty()) {
+        return component;
       }
-   }
-
-   public String toReadableString() {
-      if (isOptional()) {
-         return "[" + argumentName() + "]";
-      } else if (this instanceof ExactStringArg) {
-         return argumentName();
-      } else {
-         var args = "<" + argumentName() + ">";
-         if (hint().isEmpty()) {
-            return args;
-         }
-         return args;
+      return component.hoverEvent(HoverEvent.showText(Component.text(hint(), color.accent(canPerformedBy))));
+    }
+  }
+  
+  public String toReadableString() {
+    if (isOptional()) {
+      return "[" + argumentName() + "]";
+    } else if (this instanceof ExactStringArg) {
+      return argumentName();
+    } else {
+      var args = "<" + argumentName() + ">";
+      if (hint().isEmpty()) {
+        return args;
       }
-   }
-
-   public abstract boolean valid(String raw);
-
-   public boolean valid(CommandSender sender, String raw, List<String> arguments) {
-      return valid(raw);
-   }
-
-   public abstract List<String> completions(CommandSender sender);
-
-   public List<String> completions(CommandSender sender, List<String> written) {
-      return completions(sender);
-   }
-
-   /**
-    * Делает аргумент опциональным. Должен быть в конце, если таких несколько - все в конце
-    */
-   public Argument optional() {
-      optional = true;
-      return this;
-   }
-
-
-   /**
-    * Название аргумента в хелпе
-    */
-   public abstract String argumentName();
-
-   public boolean notNull() {
-      return raw != null;
-   }
-
-   public Integer toInt() {
-      try {
-         if (notNull()) return Integer.parseInt(raw);
-      } catch (Exception exception) {
-         Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
-      }
-      return null;
-   }
-
-   public Float toFloat() {
-      try {
-         if (notNull()) return Float.parseFloat(raw);
-      } catch (Exception exception) {
-         Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
-      }
-
-      return null;
-   }
-
-   public String toString() {
-      if (notNull()) return raw;
-      Bukkit.getLogger().warning("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
-      return null;
-   }
-
-   public Double toDouble() {
-      try {
-         if (notNull()) return Double.parseDouble(raw);
-      } catch (Exception exception) {
-         Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
-      }
-      return null;
-   }
-
-   public Boolean toBoolean() {
-      try {
-         if (notNull()) return Boolean.parseBoolean(raw);
-      } catch (Exception exception) {
-         Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
-      }
-
-      return null;
-   }
-
-   public boolean isOptional() {
-      return optional;
-   }
-
-
-   /**
-    * Подсказка при наведении на аргумент в авто-хелпе
-    */
-   protected String hint() {
-      return "";
-   }
-
-   public Argument newInstance() throws MessageReturn {
-      try {
-         return this.getClass().getDeclaredConstructor().newInstance();
-      } catch (Exception ignored) {
-         throw new MessageReturn(
-               Message.getInstance("Не удалось получить новый экземпляр аргумента " + this.argumentName()).get()
-         );
-      }
-   }
+      return args;
+    }
+  }
+  
+  public abstract boolean valid(String raw);
+  
+  public boolean valid(CommandSender sender, String raw, List<String> arguments) {
+    return valid(raw);
+  }
+  
+  public abstract List<String> completions(CommandSender sender);
+  
+  public List<String> completions(CommandSender sender, List<String> written) {
+    return completions(sender);
+  }
+  
+  /**
+   * Делает аргумент опциональным. Должен быть в конце, если таких несколько - все в конце
+   */
+  public Argument optional() {
+    optional = true;
+    return this;
+  }
+  
+  /**
+   * Название аргумента в хелпе
+   */
+  public abstract String argumentName();
+  
+  public boolean notNull() {
+    return raw != null;
+  }
+  
+  public Integer toInt() {
+    try {
+      if (notNull()) return Integer.parseInt(raw);
+    } catch (Exception exception) {
+      Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
+    }
+    return null;
+  }
+  
+  public Float toFloat() {
+    try {
+      if (notNull()) return Float.parseFloat(raw);
+    } catch (Exception exception) {
+      Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
+    }
+    
+    return null;
+  }
+  
+  public String toString() {
+    if (notNull()) return raw;
+    Bukkit.getLogger().warning("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
+    return null;
+  }
+  
+  public Double toDouble() {
+    try {
+      if (notNull()) return Double.parseDouble(raw);
+    } catch (Exception exception) {
+      Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
+    }
+    return null;
+  }
+  
+  public Boolean toBoolean() {
+    try {
+      if (notNull()) return Boolean.parseBoolean(raw);
+    } catch (Exception exception) {
+      Bukkit.getLogger().warning("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
+    }
+    
+    return null;
+  }
+  
+  public boolean isOptional() {
+    return optional;
+  }
+  
+  /**
+   * Подсказка при наведении на аргумент в авто-хелпе
+   */
+  protected String hint() {
+    return "";
+  }
+  
+  @Deprecated
+  public Argument newInstance() throws MessageReturn {
+    try {
+      return this.getClass().getDeclaredConstructor().newInstance();
+    } catch (Exception ignored) {
+      throw new MessageReturn(
+         Message.getInstance("Не удалось получить новый экземпляр аргумента " + this.argumentName()).get()
+      );
+    }
+  }
+  
+  public Argument tag(String tag) {
+    this.tag = tag;
+    return this;
+  }
 }

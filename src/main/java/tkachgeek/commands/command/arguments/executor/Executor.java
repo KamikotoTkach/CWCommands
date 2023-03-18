@@ -22,6 +22,13 @@ public abstract class Executor implements Executable {
     return parser.get(index);
   }
   /**
+   * Получает аргумент по тегу, если его нет - null. Дефолтный тэг - результат выполнения метода argumentName у аргумента
+   */
+  public Argument arg(String tag) {
+    return parser.get(tag);
+  }
+  
+  /**
    * Получает аргумент опционально
    */
   protected final Optional<Argument> argO(int index) {
@@ -59,6 +66,7 @@ public abstract class Executor implements Executable {
   protected boolean argB(int index) {
     return arg(index).toBoolean();
   }
+  
   /**
    * Возвращает строку с заменёнными подчёркиваниями на пробелы
    */
