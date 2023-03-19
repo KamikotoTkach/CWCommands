@@ -1,5 +1,6 @@
 package tkachgeek.commands.command.plugin;
 
+import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.plugin.java.JavaPlugin;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
@@ -23,6 +24,6 @@ public class main extends JavaPlugin {
           new ArgumentSet(new PrintArguments(), new ExactStringArg("targetYAW"), new TargetXArg(LocationPart.YAW)),
           new ArgumentSet(new PrintArguments(), new ExactStringArg("targetWORLD"), new TargetXArg(LocationPart.WORLD)),
           new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg())
-       ).register(this);
+       ).setColorScheme(NamedTextColor.GREEN).register(this);
   }
 }

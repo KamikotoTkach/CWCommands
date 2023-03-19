@@ -1,12 +1,14 @@
 package tkachgeek.commands.command;
 
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.executor.Executor;
+import tkachgeek.commands.command.color.ColoredScheme;
 import tkachgeek.commands.command.color.ColorGenerationStrategy;
 import tkachgeek.commands.command.color.DefaultColorGenerationStrategy;
 import tkachgeek.commands.command.permissions.DefaultPermissionGenerationStrategy;
@@ -113,8 +115,9 @@ public class Command {
   /**
    * Устанавливает цветовое оформление для хелпа и других сообщений. Статична, нужно переписать
    */
-  public void setColorScheme(ColorGenerationStrategy colorGenerationStrategy) {
+  public Command setColorScheme(ColorGenerationStrategy colorGenerationStrategy) {
     this.color = colorGenerationStrategy;
+    return this;
   }
 
   /**
@@ -483,6 +486,11 @@ public class Command {
    */
   public Command setPermissions(PermissionGenerationStrategy strategy) {
     this.permissions = strategy;
+    return this;
+  }
+  
+  public Command setColorScheme(TextColor color) {
+    setColorScheme(new ColoredScheme(color));
     return this;
   }
 }
