@@ -9,6 +9,7 @@ import tkachgeek.commands.command.arguments.ExactStringArg;
 import tkachgeek.commands.command.arguments.bukkit.location.LocationPart;
 import tkachgeek.commands.command.arguments.bukkit.location.TargetXArg;
 import tkachgeek.commands.command.arguments.datetime.DurationArg;
+import tkachgeek.commands.command.permissions.PermissionGenerationStrategy;
 
 public class main extends JavaPlugin {
   @Override
@@ -24,6 +25,9 @@ public class main extends JavaPlugin {
           new ArgumentSet(new PrintArguments(), new ExactStringArg("targetYAW"), new TargetXArg(LocationPart.YAW)),
           new ArgumentSet(new PrintArguments(), new ExactStringArg("targetWORLD"), new TargetXArg(LocationPart.WORLD)),
           new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg())
-       ).setColorScheme(NamedTextColor.GREEN).register(this);
+       )
+       .setColorScheme(NamedTextColor.GREEN)
+       .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
+       .register(this);
   }
 }
