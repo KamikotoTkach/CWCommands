@@ -449,7 +449,7 @@ public class Command {
     return writtenString.toString();
   }
   
-  Command getRootCommand() {
+  public Command getRootCommand() {
     if (isSubcommand) return parent.getRootCommand();
     return this;
   }

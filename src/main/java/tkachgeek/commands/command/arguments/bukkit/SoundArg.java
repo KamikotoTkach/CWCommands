@@ -23,6 +23,6 @@ public class SoundArg extends Argument {
 
     @Override
     public String argumentName() {
-        return "материал";
+        return "звук";
     }
 }
