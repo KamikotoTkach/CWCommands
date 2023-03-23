@@ -143,4 +143,8 @@ public abstract class Executor {
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
   }
+  
+  protected Command getCommand() {
+    return command;
+  }
 }
