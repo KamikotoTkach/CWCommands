@@ -2,6 +2,7 @@ package tkachgeek.commands.command.arguments.executor;
 
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.ArgumentSet;
+import tkachgeek.commands.command.Command;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -15,7 +16,7 @@ public abstract class LocalTimedExecutor extends Executor {
   }
   
   @Override
-  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
+  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet, Command command) {
     if (lastExecutionTime.containsKey(sender)) {
       if (System.currentTimeMillis() - lastExecutionTime.get(sender) > delay) {
         lastExecutionTime.put(sender, System.currentTimeMillis());
@@ -24,7 +25,7 @@ public abstract class LocalTimedExecutor extends Executor {
         commandDelayNotPassed();
       }
     }
-    super.prepare(sender, args, argumentSet);
+    super.prepare(sender, args, argumentSet, command);
   }
   
   protected abstract void commandDelayNotPassed();

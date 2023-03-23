@@ -6,14 +6,52 @@ import org.bukkit.entity.Player;
 import tkachgeek.commands.command.Argument;
 import tkachgeek.commands.command.ArgumentParser;
 import tkachgeek.commands.command.ArgumentSet;
+import tkachgeek.commands.command.Command;
 import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;
 
 import java.util.Optional;
 
-public abstract class Executor implements Executable {
+public abstract class Executor {
   ArgumentParser parser;
   CommandSender sender;
+  Command command = null;
+  
+  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet, Command command) {
+    parser = new ArgumentParser(args, argumentSet);
+    this.sender = sender;
+    this.command = command;
+    
+    try {
+      if (sender instanceof Player) {
+        executeForPlayer();
+      } else {
+        executeForNonPlayer();
+      }
+    } catch (Exception exception) {
+      errorHandler(exception);
+    }
+  }
+  
+  /**
+   * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
+   */
+  public abstract void executeForPlayer() throws MessageReturn;
+  
+  public void executeForNonPlayer() throws MessageReturn {
+    executeForPlayer();
+  }
+  
+  /**
+   * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
+   */
+  protected final Player player() {
+    return (Player) sender;
+  }
+  
+  protected final CommandSender sender() {
+    return sender;
+  }
   
   /**
    * Получает аргумент по индексу, если его нет - null
@@ -21,6 +59,7 @@ public abstract class Executor implements Executable {
   protected final Argument arg(int index) {
     return parser.get(index);
   }
+  
   /**
    * Получает аргумент по тегу, если его нет - null. Дефолтный тэг - результат выполнения метода argumentName у аргумента
    */
@@ -79,38 +118,10 @@ public abstract class Executor implements Executable {
   }
   
   /**
-   * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
+   * Проверяет есть ли аргумент под таким индексом
    */
-  protected final Player player() {
-    return (Player) sender;
-  }
-  
-  protected final CommandSender sender() {
-    return sender;
-  }
-  
-  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
-    parser = new ArgumentParser(args, argumentSet);
-    this.sender = sender;
-    
-    try {
-      if (sender instanceof Player) {
-        executeForPlayer();
-      } else {
-        executeForNonPlayer();
-      }
-    } catch (Exception exception) {
-      errorHandler(exception);
-    }
-  }
-  
-  /**
-   * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
-   */
-  public abstract void executeForPlayer() throws MessageReturn;
-  
-  public void executeForNonPlayer() throws MessageReturn {
-    executeForPlayer();
+  public boolean isPresent(int index) {
+    return argumentsAmount() > index;
   }
   
   /**
@@ -118,7 +129,12 @@ public abstract class Executor implements Executable {
    */
   public void errorHandler(Exception exception) {
     if (exception instanceof MessageReturn) {
-      sender.sendMessage(((MessageReturn) exception).getComponentMessage());
+      MessageReturn messageReturn = (MessageReturn) exception;
+      if (messageReturn.isStyled()) {
+        sender.sendMessage(messageReturn.getComponentMessage());
+      } else {
+        sender.sendMessage(messageReturn.getComponentMessage().color(command.getColorScheme().main()));
+      }
       return;
     }
     
@@ -126,12 +142,5 @@ public abstract class Executor implements Executable {
     
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
-  }
-  
-  /**
-   * Проверяет есть ли аргумент под таким индексом
-   */
-  public boolean isPresent(int index) {
-    return argumentsAmount() > index;
   }
 }

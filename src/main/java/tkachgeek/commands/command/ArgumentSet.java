@@ -9,7 +9,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import tkachgeek.commands.command.arguments.ComplexArg;
 import tkachgeek.commands.command.arguments.ExactStringArg;
-import tkachgeek.commands.command.arguments.executor.Executable;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.commands.command.color.ColorGenerationStrategy;
@@ -22,7 +21,7 @@ import java.util.logging.Logger;
 
 public class ArgumentSet {
   protected final Argument[] arguments;
-  protected final Executable executor;
+  protected final Executor executor;
   
   Predicate<CommandSender> canExecute = x -> true;
   
@@ -44,15 +43,6 @@ public class ArgumentSet {
    * Аргументов может не быть
    */
   public ArgumentSet(Executor executor, String permission, Argument... arguments) {
-    this((Executable) executor, permission, arguments);
-  }
-  
-  /**
-   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
-   * Аргументы optional должны быть последние в списке<br>
-   * Аргументов может не быть
-   */
-  public ArgumentSet(Executable executor, String permission, Argument... arguments) {
     this.arguments = unboxComplexArgs(arguments);
     this.executor = executor;
     this.permission = permission;
@@ -92,28 +82,8 @@ public class ArgumentSet {
    * Аргументов может не быть<br>
    * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
    */
-  public ArgumentSet(Executable executor, ExactStringArg exactStringArg, Argument... arguments) {
-    this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
-  }
-  
-  /**
-   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
-   * Аргументы optional должны быть последние в списке<br>
-   * Аргументов может не быть<br>
-   * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
-   */
   public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
-    this((Executable) executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
-  }
-  
-  /**
-   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
-   * Аргументы optional должны быть последние в списке<br>
-   * Аргументов может не быть<br>
-   * Шоткат, автоматически устанавливающий пермишен в пустую строку
-   */
-  public ArgumentSet(Executable executor, Argument... arguments) {
-    this(executor, "", arguments);
+    this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
   }
   
   /**
@@ -123,7 +93,7 @@ public class ArgumentSet {
    * Шоткат, автоматически устанавливающий пермишен в пустую строку
    */
   public ArgumentSet(Executor executor, Argument... arguments) {
-    this((Executable) executor, "", arguments);
+    this(executor, "", arguments);
   }
   
   public ArgumentSet(ArgumentSet toClone, Argument... newArgs) {
@@ -304,11 +274,11 @@ public class ArgumentSet {
       );
       
       ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
-                .success(() -> executor.prepare(sender, args, this))
+                .success(() -> executor.prepare(sender, args, this, command))
                 .expired(() -> MessagesUtils.send(sender, Component.text("Время подтверждения вышло", command.color.main())))
                 .register(command.getRootCommand().plugin);
     } else {
-      executor.prepare(sender, args, this);
+      executor.prepare(sender, args, this, command);
     }
   }
   

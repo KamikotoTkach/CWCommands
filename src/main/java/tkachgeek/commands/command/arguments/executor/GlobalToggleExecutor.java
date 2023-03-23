@@ -2,6 +2,7 @@ package tkachgeek.commands.command.arguments.executor;
 
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.ArgumentSet;
+import tkachgeek.commands.command.Command;
 
 public abstract class GlobalToggleExecutor extends Executor {
   boolean state;
@@ -11,8 +12,8 @@ public abstract class GlobalToggleExecutor extends Executor {
   }
   
   @Override
-  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet) {
-    super.prepare(sender, args, argumentSet);
+  public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet, Command command) {
+    super.prepare(sender, args, argumentSet, command);
     if (state) {
       onEnable();
     } else {
