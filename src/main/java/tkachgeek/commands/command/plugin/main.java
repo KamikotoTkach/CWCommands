@@ -5,7 +5,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
-import tkachgeek.commands.command.DebugMode;
 import tkachgeek.commands.command.arguments.*;
 import tkachgeek.commands.command.arguments.basic.BooleanArg;
 import tkachgeek.commands.command.arguments.basic.DoubleArg;
@@ -41,9 +40,9 @@ public class main extends JavaPlugin {
                 new ArgumentSet(new PrintArguments(), new ExactStringArg("effect"), new PotionEffectArg()),
                 new ArgumentSet(new PrintArguments(), new ExactStringArg("sound"), new SoundArg()),
                 new ArgumentSet(new PrintArguments(), new ExactStringArg("world"), new WorldArg()),
-                new ArgumentSet(new PrintArguments(), new ExactStringArg("onlinePlayersWithPermission"), new OnlinePlayerWithPermissionArg("*","admin")),
+                new ArgumentSet(new PrintArguments(), new ExactStringArg("onlinePlayersWithPermission"), new OnlinePlayerWithPermissionArg("*", "admin")),
                 new ArgumentSet(new PrintArguments(), new ExactStringArg("nearPlayers"), new NearPlayersArg(10, 10))
-                )
+             )
              .subCommands(
                 new Command("target")
                    .arguments(
@@ -72,6 +71,12 @@ public class main extends JavaPlugin {
                       new ArgumentSet(new PrintArguments(), new ExactStringArg("simple"), new StringArg()),
                       new ArgumentSet(new PrintArguments(), new ExactStringArg("list"), new ListArg("list", Arrays.asList("one", "two"))),
                       new ArgumentSet(new PrintArguments(), new ExactStringArg("safeString"), new SafetyStringArg())
+                   ),
+                new Command("auto")
+                   .arguments(
+                      new ArgumentSet(new PrintArguments(), new IntegerArg()),
+                      new ArgumentSet(new PrintArguments(), new DoubleArg()),
+                      new ArgumentSet(new PrintArguments(), new BooleanArg())
                    )
              ).arguments(
                 new ArgumentSet(new PrintArguments(), new ExactStringArg("int"), new IntegerArg()),
@@ -87,7 +92,7 @@ public class main extends JavaPlugin {
        )
        .arguments(
           new ArgumentSet(new PrintArguments(), new ExactStringArg("empty"), new EmptyArg()),
-          new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(PlayerQuitEvent.QuitReason.values(),"quitReasons")),
+          new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(PlayerQuitEvent.QuitReason.values(), "quitReasons")),
           new ArgumentSet(new PrintArguments(), new ExactStringArg("hexColor"), new HexColorArg("color"))
        )
        .setColorScheme(NamedTextColor.GREEN)
