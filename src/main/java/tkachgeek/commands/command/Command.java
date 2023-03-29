@@ -18,6 +18,7 @@ import tkachgeek.tkachutils.messages.MessagesUtils;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class Command {
   final String name;
@@ -364,7 +365,7 @@ public class Command {
       
       if (debug.is(DebugMode.DETAILED))
         debug.print("§7Генерация автохелпа для §f" + sender.getName() + "§7 в команде §f" + this.name);
-      sendAutoHelp(sender);
+      sendAutoHelp(sender, args);
       return;
     }
     
@@ -374,7 +375,7 @@ public class Command {
     help.sendTo(sender, args);
   }
   
-  private void sendAutoHelp(CommandSender sender) {
+  private void sendAutoHelp(CommandSender sender, String[] args) {
     ColorGenerationStrategy color = getColorScheme();
     
     Component written = Component.text(getFullCommandPath());
@@ -392,7 +393,7 @@ public class Command {
     
     boolean previousWasEmptyLine = false;
     
-    for (ArgumentSet argumentSet : getArgumentSetsFor(sender, ignoreExecutionPossibility)) {
+    for (ArgumentSet argumentSet : filterArgumentSets(getArgumentSetsFor(sender, ignoreExecutionPossibility), args)) {
       
       boolean canPerformedBy = argumentSet.canPerformedBy(sender);
       boolean hasHelp = argumentSet.hasHelp();
@@ -430,6 +431,18 @@ public class Command {
     }
   }
   
+  private List<ArgumentSet> filterArgumentSets(List<ArgumentSet> argumentSets, String[] args) {
+    if (args.length == 0) return argumentSets;
+    
+    //List<String> relevantArgs = List.of(Arrays.copyOfRange(args, getCommandPathLength() - 1, args.length));
+    
+    List<ArgumentSet> relevantArgumentSets = argumentSets.stream().filter(x -> x.shouldShowInHelp(List.of(args))).collect(Collectors.toList());
+    
+    if (relevantArgumentSets.size() == 0) return argumentSets;
+    
+    return relevantArgumentSets;
+  }
+  
   private void sendDescription(CommandSender sender, ColorGenerationStrategy color) {
     if (description != null) {
       sender.sendMessage("");
@@ -454,6 +467,19 @@ public class Command {
     
     writtenString.insert(0, "  /");
     return writtenString.toString();
+  }
+  
+  private int getCommandPathLength() {
+    int length = 0;
+    
+    Command parent = this;
+    
+    while (parent != null) {
+      length++;
+      parent = parent.parent;
+    }
+    
+    return length;
   }
   
   public Command getRootCommand() {

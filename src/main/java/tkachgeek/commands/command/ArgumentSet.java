@@ -302,4 +302,14 @@ public class ArgumentSet {
     
     return "[" + result + "]";
   }
+  
+  public boolean shouldShowInHelp(List<String> args) {
+    return args.size() == 0 || args.get(0).isEmpty()
+       || firstArgIsExactStringArg()
+       && ((ExactStringArg) arguments[0]).getExactString().equals(args.get(0)) || ((ExactStringArg) arguments[0]).getExactString().startsWith(args.get(0));
+  }
+  
+  private boolean firstArgIsExactStringArg() {
+    return arguments.length > 0 && arguments[0] instanceof ExactStringArg;
+  }
 }
