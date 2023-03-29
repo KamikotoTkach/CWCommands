@@ -5,6 +5,7 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
+import tkachgeek.commands.command.DebugMode;
 import tkachgeek.commands.command.arguments.*;
 import tkachgeek.commands.command.arguments.basic.BooleanArg;
 import tkachgeek.commands.command.arguments.basic.DoubleArg;

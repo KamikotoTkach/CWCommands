@@ -26,7 +26,7 @@ public class Command {
   PermissionGenerationStrategy permissions = null;
   List<String> aliases = new ArrayList<>();
   boolean isSubcommand = false;
-  String description = "";
+  String description = null;
   String permission;
   Help help;
   Command parent = null;
@@ -91,14 +91,6 @@ public class Command {
   }
   
   /**
-   * Устанавливает цветовое оформление для хелпа и других сообщений. Статична, нужно переписать
-   */
-  public Command setColorScheme(ColorGenerationStrategy colorGenerationStrategy) {
-    this.color = colorGenerationStrategy;
-    return this;
-  }
-  
-  /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
    */
   public Command aliases(List<String> aliases) {
@@ -138,6 +130,7 @@ public class Command {
     this.plugin = plugin;
     
     if (isSubcommand) return;
+    if (debug != DebugMode.NONE) updateDebug(debug);
     if (permissions == null) permissions = new DefaultPermissionGenerationStrategy();
     if (color == null) color = DefaultColorGenerationStrategy.INSTANCE;
     
@@ -148,6 +141,14 @@ public class Command {
       plugin.getCommand(name).setExecutor(new CommandParser(this));
     } catch (Exception e) {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
+    }
+  }
+  
+  private void updateDebug(DebugMode debug) {
+    this.debug = debug;
+    
+    for (Command subcommand : subcommands) {
+      subcommand.updateDebug(debug);
     }
   }
   
@@ -231,10 +232,6 @@ public class Command {
     }
   }
   
-  protected void onError(CommandSender sender, String[] args) {
-    helpFor(sender, args);
-  }
-  
   protected boolean canPerformedBy(CommandSender sender) {
     boolean result = permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp();
     
@@ -243,28 +240,13 @@ public class Command {
     return result;
   }
   
-  protected void onExecute(CommandSender sender, String[] args) {
+  protected void onExecute(CommandSender sender, String[] args, ArgumentSet founded) {
+    var start = System.nanoTime();
     
-    if (debug.is(DebugMode.DETAILED))
-      debug.print("§7Попытка выполнения §f" + this.name + " §7с §f" + Arrays.toString(args) + " для " + sender.getName());
+    founded.execute(sender, args, this);
     
-    for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(sender, args) && set.canPerformedBy(sender)) {
-        
-        if (debug.is(DebugMode.REDUCED)) debug.print("§7Выполнение " + set);
-        
-        var start = System.nanoTime();
-        
-        set.execute(sender, args, this);
-        
-        if (debug.is(DebugMode.REDUCED))
-          debug.print("§7Выполнение §f" + set + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
-        return;
-      } else {
-        if (debug.is(DebugMode.DETAILED))
-          debug.print("§4Провальная проверка §c" + set + "§4 на возможность выполнения");
-      }
-    }
+    if (debug.is(DebugMode.REDUCED))
+      debug.print("§7Выполнение §f" + founded + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender, boolean ignoreExecutionPossibility) {
@@ -332,27 +314,52 @@ public class Command {
     return getArgumentSetsFor(sender, false);
   }
   
-  protected boolean hasArgumentSet(CommandSender sender, String... args) {
-    
-    if (debug.is(DebugMode.DETAILED))
-      debug.print("§7Поиск наличия подходящего аргументсета в §f" + this.name + "§7 с §f" + Arrays.toString(args) + "§7 для §f" + sender.getName());
+  protected ArgumentSearchResult searchForArgumentSet(CommandSender sender, String... args) {
+    ArgumentSearchResult result = new ArgumentSearchResult();
     
     for (ArgumentSet set : argumentSets) {
-      if (set.isArgumentsFit(sender, args) && set.canPerformedBy(sender)) {
-        if (debug.is(DebugMode.DETAILED)) debug.print("§7" + set + " §aподходит..");
-        return true;
+      if (!set.canPerformedBy(sender)) continue;
+      
+      ArgumentFitnessResult fitnessResult = set.isArgumentsFit(sender, args);
+      
+      if (fitnessResult.success()) {
+        return result.founded(set);
       } else {
-        if (debug.is(DebugMode.DETAILED)) debug.print("§7" + set + " §cне подходит..");
+        result.add(fitnessResult);
       }
     }
     
-    if (debug.is(DebugMode.REDUCED))
-      debug.print("§7Нет подходящих аргументсетов для §f" + Arrays.toString(args) + "§7 для §f" + sender.getName());
-    
-    return false;
+    return result;
   }
   
-  protected void helpFor(CommandSender sender, String[] args) {
+  protected void onError(CommandSender sender, String[] args, ArgumentSearchResult argumentSearchResult) {
+    if (argumentSearchResult.canShowDetailedHelp()) {
+      showDetailedHelp(sender, argumentSearchResult);
+    } else {
+      showFullHelp(sender, args);
+    }
+  }
+  
+  private void showDetailedHelp(CommandSender sender, ArgumentSearchResult argumentSearchResult) {
+    Component written = Component.text(getFullCommandPath(), getColorScheme().written(true));
+    List<Component> toSend = new ArrayList<>();
+    
+    toSend.add(Component.empty());
+    
+    for (ArgumentFitnessResult invalidResult : argumentSearchResult.getInvalidResults()) {
+      toSend.add(written.append(invalidResult.getArgumentSet().getHelp(sender, getColorScheme())));
+      toSend.add(Component.text("↳ ")
+                          .append(invalidResult.getInvalidArgument().invalidMessage(this, sender, invalidResult.getInvalidStringArgument()))
+                          .color(getColorScheme().accent(true)));
+      toSend.add(Component.empty());
+    }
+    
+    for (Component row : toSend) {
+      MessagesUtils.send(sender, row);
+    }
+  }
+  
+  protected void showFullHelp(CommandSender sender, String[] args) {
     if (help == null) {
       
       if (debug.is(DebugMode.DETAILED))
@@ -368,7 +375,7 @@ public class Command {
   }
   
   private void sendAutoHelp(CommandSender sender) {
-    ColorGenerationStrategy color = getColorGenerationStrategy();
+    ColorGenerationStrategy color = getColorScheme();
     
     Component written = Component.text(getFullCommandPath());
     
@@ -379,7 +386,7 @@ public class Command {
       
       toSend.add(written.color(color.written(canPerformedBy))
                         .append(Component.text(" " + subcommand.name + " ", color.subcommand(canPerformedBy)))
-                        .append(sender.isOp() ? Component.text(" " + subcommand.permission, color.permissions(canPerformedBy)) : Component.empty())
+                        .append(sender.isOp() ? Component.text(subcommand.permission, color.permissions(canPerformedBy)) : Component.empty())
       );
     }
     
@@ -392,10 +399,14 @@ public class Command {
       
       if (!previousWasEmptyLine && hasHelp) toSend.add(Component.empty());
       
-      toSend.add(written.color(color.written(canPerformedBy)).append(argumentSet.getHelp(sender, color)));
+      toSend.add(written.color(color.written(canPerformedBy))
+                        .append(argumentSet.getHelp(sender, color)));
       
       if (hasHelp) {
-        toSend.add(Component.text("↳ ").append(argumentSet.help).color(color.accent(canPerformedBy)));
+        toSend.add(Component.text("↳ ")
+                            .append(argumentSet.help)
+                            .color(color.accent(canPerformedBy)));
+        
         toSend.add(Component.empty());
         previousWasEmptyLine = true;
       } else {
@@ -417,10 +428,6 @@ public class Command {
         MessagesUtils.send(sender, row);
       }
     }
-  }
-  
-  private ColorGenerationStrategy getColorGenerationStrategy() {
-    return getRootCommand().color;
   }
   
   private void sendDescription(CommandSender sender, ColorGenerationStrategy color) {
@@ -455,7 +462,11 @@ public class Command {
   }
   
   PermissionGenerationStrategy getPermissions() {
-    return getRootCommand().permissions;
+    if (permissions == null) {
+      if (parent == null) return null;
+      return parent.getPermissions();
+    }
+    return permissions;
   }
   
   /**
@@ -467,12 +478,21 @@ public class Command {
     return this;
   }
   
-  public Command setColorScheme(TextColor color) {
-    setColorScheme(new ColoredScheme(color));
+  public ColorGenerationStrategy getColorScheme() {
+    if (color == null) return parent.getColorScheme();
+    return color;
+  }
+  
+  /**
+   * Устанавливает цветовое оформление для хелпа и других сообщений.
+   */
+  public Command setColorScheme(ColorGenerationStrategy colorGenerationStrategy) {
+    this.color = colorGenerationStrategy;
     return this;
   }
   
-  public ColorGenerationStrategy getColorScheme() {
-    return color;
+  public Command setColorScheme(TextColor color) {
+    setColorScheme(new ColoredScheme(color));
+    return this;
   }
 }
