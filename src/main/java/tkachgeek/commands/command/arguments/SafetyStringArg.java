@@ -6,7 +6,7 @@ import tkachgeek.tkachutils.text.StringUtils;
 public class SafetyStringArg extends StringArg {
    @Override
    public boolean valid(String raw) {
-      return StringUtils.isSafetyString(raw);
+      return super.valid(raw) && StringUtils.isSafetyString(raw);
    }
 
    public SafetyStringArg() {
