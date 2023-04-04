@@ -107,6 +107,13 @@ public class Command {
     return this;
   }
   
+   /**
+    * Возвращает алиасы команды
+    */
+   public List<String> aliases() {
+      return this.aliases;
+   }
+
   /**
    * Добавляет подкоманды в команду. Можно использовать несколько раз
    */
