@@ -20,7 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Command {
-   final String name;
+   String name;
    protected List<ArgumentSet> argumentSets = new ArrayList<>();
    ColorGenerationStrategy color = null;
    PermissionGenerationStrategy permissions = null;
@@ -87,6 +87,17 @@ public class Command {
 
    public Command setIgnoreExecutionPossibility(boolean ignoreExecutionPossibility) {
       this.ignoreExecutionPossibility = ignoreExecutionPossibility;
+      return this;
+   }
+
+   /**
+    * Обновляет название команды, если это подкоманда
+    */
+   public Command setName(String name) {
+      if (this.isSubcommand) {
+         this.name = name;
+      }
+
       return this;
    }
 
