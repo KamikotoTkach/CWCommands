@@ -14,8 +14,8 @@ import tkachgeek.tkachutils.messages.MessageReturn;
 import java.util.List;
 
 public abstract class Argument {
-  private String tag = "";
   protected String raw;
+  private String tag = "";
   private boolean optional;
   
   protected Argument(String raw) {
@@ -159,5 +159,13 @@ public abstract class Argument {
   
   public String getTag() {
     return tag.isEmpty() ? argumentName() : tag;
+  }
+  
+  public Component invalidMessage(Command command, CommandSender sender, String written) {
+    ColorGenerationStrategy colorScheme = command.getColorScheme();
+    
+    return Component.text(written, colorScheme.accent(true))
+                    .append(Component.text(" нельзя представить как ", colorScheme.main()))
+                    .append(Component.text(argumentName(), colorScheme.accent(true)));
   }
 }

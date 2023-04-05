@@ -38,11 +38,14 @@ public class CommandParser implements CommandExecutor {
     
     args = args.length > deep ? Arrays.copyOfRange(args, deep, args.length) : new String[]{};
     
-    if (foundedCommand.hasArgumentSet(sender, args)) {
-      foundedCommand.onExecute(sender, args);
+    ArgumentSearchResult argumentSearchResult = foundedCommand.searchForArgumentSet(sender, args);
+    
+    if (argumentSearchResult.isFounded()) {
+      foundedCommand.onExecute(sender, args, argumentSearchResult.getFounded());
     } else {
-      foundedCommand.onError(sender, args);
+      foundedCommand.onError(sender, args, argumentSearchResult);
     }
+    
     return true;
   }
   

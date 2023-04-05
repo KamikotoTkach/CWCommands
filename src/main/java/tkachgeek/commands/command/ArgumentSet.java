@@ -189,10 +189,10 @@ public class ArgumentSet {
     return this;
   }
   
-  protected boolean isArgumentsFit(CommandSender sender, String... args) {
+  protected ArgumentFitnessResult isArgumentsFit(CommandSender sender, String... args) {
     
-    if (args.length != arguments.length && !spacedLastArgument) return false;
-    if (args.length < arguments.length) return false;
+    if (args.length != arguments.length && !spacedLastArgument) return ArgumentFitnessResult.NOT_FIT;
+    if (args.length < arguments.length) return ArgumentFitnessResult.NOT_FIT;
     
     if (spacedLastArgument) {
       String[] copy = Arrays.copyOfRange(args, 0, arguments.length);
@@ -203,9 +203,10 @@ public class ArgumentSet {
     List<String> argList = List.of(args);
     
     for (int i = 0; i < args.length; i++) {
-      if (!arguments[i].valid(sender, args[i], argList)) return false;
+      if (!arguments[i].valid(sender, args[i], argList)) return new ArgumentFitnessResult(this, arguments[i], args[i]);
     }
-    return true;
+    
+    return ArgumentFitnessResult.SUCCESS;
   }
   
   protected boolean canPerformedBy(CommandSender sender) {
@@ -290,11 +291,25 @@ public class ArgumentSet {
   
   private String getArgumentsString() {
     if (arguments.length == 0) return "[]";
+    
     StringBuilder result = new StringBuilder();
+    
     for (Argument arg : arguments) {
       result.append(arg.toReadableString()).append(", ");
     }
+    
     result.delete(result.length() - 2, result.length());
+    
     return "[" + result + "]";
+  }
+  
+  public boolean shouldShowInHelp(List<String> args) {
+    return args.size() == 0 || args.get(0).isEmpty()
+       || !firstArgIsExactStringArg()
+       || (((ExactStringArg) arguments[0]).getExactString().equals(args.get(0)) || ((ExactStringArg) arguments[0]).getExactString().startsWith(args.get(0)));
+  }
+  
+  private boolean firstArgIsExactStringArg() {
+    return arguments.length > 0 && arguments[0] instanceof ExactStringArg;
   }
 }
