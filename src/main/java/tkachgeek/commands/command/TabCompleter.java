@@ -9,15 +9,15 @@ import java.util.Arrays;
 import java.util.List;
 
 public class TabCompleter implements org.bukkit.command.TabCompleter {
-  private static int maxLinesPerCompletions = 64;
   private final Command command;
+  private int maxLinesPerCompletions = 64;
   
   public TabCompleter(Command command) {
     this.command = command;
   }
   
-  public static void setMaxCompletionsCount(int maxLinesPerCompletions) {
-    TabCompleter.maxLinesPerCompletions = maxLinesPerCompletions;
+  public void setMaxCompletionsEntries(int maxLinesPerCompletions) {
+    this.maxLinesPerCompletions = maxLinesPerCompletions;
   }
   
   @Override

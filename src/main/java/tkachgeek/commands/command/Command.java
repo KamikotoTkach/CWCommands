@@ -4,8 +4,10 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import tkachgeek.commands.command.arguments.executor.Executor;
 import tkachgeek.commands.command.color.ColorGenerationStrategy;
 import tkachgeek.commands.command.color.ColoredScheme;
@@ -160,6 +162,17 @@ public class Command {
     } catch (Exception e) {
       Bukkit.getLogger().warning("Не удалось зарегистрировать команду " + name + " ввиду её отсутствия в plugin.yml");
     }
+  }
+  
+  /**
+   * Использовать только после Command::register, иначе null
+   */
+  public @Nullable TabCompleter getTabCompleter() {
+    PluginCommand command = plugin.getCommand(name);
+    if(command !=null && command.getTabCompleter() instanceof TabCompleter) {
+      return (TabCompleter) command.getTabCompleter();
+    }
+    return null;
   }
   
   private void updateDebug(DebugMode debug) {
