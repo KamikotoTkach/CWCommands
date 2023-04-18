@@ -441,8 +441,6 @@ public class Command {
   private List<ArgumentSet> filterArgumentSets(List<ArgumentSet> argumentSets, String[] args) {
     if (args.length == 0) return argumentSets;
     
-    //List<String> relevantArgs = List.of(Arrays.copyOfRange(args, getCommandPathLength() - 1, args.length));
-    
     List<ArgumentSet> relevantArgumentSets = argumentSets.stream().filter(x -> x.shouldShowInHelp(List.of(args))).collect(Collectors.toList());
     
     if (relevantArgumentSets.size() == 0) return argumentSets;
