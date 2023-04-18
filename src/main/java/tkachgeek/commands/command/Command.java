@@ -21,7 +21,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Command {
-  final String name;
+   String name;
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
   ColorGenerationStrategy color = null;
   PermissionGenerationStrategy permissions = null;
@@ -90,6 +90,16 @@ public class Command {
     this.ignoreExecutionPossibility = ignoreExecutionPossibility;
     return this;
   }
+
+   /**
+    * Устанавливает новое имя для команды, если это подкоманда
+    */
+   public Command setName(String name) {
+      if (this.isSubcommand) {
+         this.name = name;
+      }
+      return this;
+   }
   
   /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
@@ -440,6 +450,8 @@ public class Command {
   
   private List<ArgumentSet> filterArgumentSets(List<ArgumentSet> argumentSets, String[] args) {
     if (args.length == 0) return argumentSets;
+    
+    //List<String> relevantArgs = List.of(Arrays.copyOfRange(args, getCommandPathLength() - 1, args.length));
     
     List<ArgumentSet> relevantArgumentSets = argumentSets.stream().filter(x -> x.shouldShowInHelp(List.of(args))).collect(Collectors.toList());
     
