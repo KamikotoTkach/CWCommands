@@ -23,14 +23,16 @@ public class ArgumentParser {
     if (isPresent(index)) return args[index];
     return null;
   }
+  
   public Argument get(String tag) {
     for (Argument arg : args) {
-      if(arg.getTag().equals(tag)) return arg;
+      if (arg.getTag().equals(tag)) return arg;
     }
     
     return null;
   }
+  
   public boolean isPresent(int index) {
-   return index >= 0 && index < args.length;
+    return index >= 0 && index < args.length;
   }
 }

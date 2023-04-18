@@ -14,11 +14,11 @@ public class ListArg extends Argument {
     this.name = name;
     this.acceptableStrings = acceptableStrings;
   }
+  
   public ListArg(String name, String... acceptableStrings) {
     this.name = name;
     this.acceptableStrings = Arrays.asList(acceptableStrings);
   }
-
   
   @Override
   public boolean valid(String raw) {

@@ -21,8 +21,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class Command {
-   String name;
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
+  String name;
   ColorGenerationStrategy color = null;
   PermissionGenerationStrategy permissions = null;
   List<String> aliases = new ArrayList<>();
@@ -90,16 +90,16 @@ public class Command {
     this.ignoreExecutionPossibility = ignoreExecutionPossibility;
     return this;
   }
-
-   /**
-    * Устанавливает новое имя для команды, если это подкоманда
-    */
-   public Command setName(String name) {
-      if (this.isSubcommand) {
-         this.name = name;
-      }
-      return this;
-   }
+  
+  /**
+   * Устанавливает новое имя для команды, если это подкоманда
+   */
+  public Command setName(String name) {
+    if (this.isSubcommand) {
+      this.name = name;
+    }
+    return this;
+  }
   
   /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
@@ -117,13 +117,13 @@ public class Command {
     return this;
   }
   
-   /**
-    * Возвращает алиасы команды
-    */
-   public List<String> aliases() {
-      return this.aliases;
-   }
-
+  /**
+   * Возвращает алиасы команды
+   */
+  public List<String> aliases() {
+    return this.aliases;
+  }
+  
   /**
    * Добавляет подкоманды в команду. Можно использовать несколько раз
    */
@@ -227,12 +227,12 @@ public class Command {
       result = getPermissions().processSubCommand(permissions, permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7Подкоманде §f" + name + " §7установлены права §f" + result.getPermission() + "");
+        debug.print("§7Подкоманде §f" + name + " §7установлены права §f" + result.getPermission());
     } else {
       result = getPermissions().processCommand(permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7Команде §f" + name + " §7установлены права §f" + result.getPermission() + "");
+        debug.print("§7Команде §f" + name + " §7установлены права §f" + result.getPermission());
     }
     
     permissions = result.getNextPermissions();

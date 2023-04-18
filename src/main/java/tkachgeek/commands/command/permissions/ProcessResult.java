@@ -21,12 +21,12 @@ public class ProcessResult {
     return permission;
   }
   
-  public String getNextPermissions() {
-    return nextPermissions;
-  }
-  
   public void setPermission(String permission) {
     this.permission = permission;
+  }
+  
+  public String getNextPermissions() {
+    return nextPermissions;
   }
   
   public void setNextPermissions(String nextPermissions) {

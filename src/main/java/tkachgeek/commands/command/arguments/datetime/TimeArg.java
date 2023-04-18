@@ -13,7 +13,7 @@ public class TimeArg extends Argument {
   static List<AbstractMap.SimpleEntry<String, List<String>>> completions = new ArrayList<>() {{
     add(new AbstractMap.SimpleEntry<>("", Arrays.asList("0", "1", "2")));
     add(new AbstractMap.SimpleEntry<>("^[0-2:]", Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")));
-    add(new AbstractMap.SimpleEntry<>("^(([0,1][0-9])|(2[0-3]))", Arrays.asList(":")));
+    add(new AbstractMap.SimpleEntry<>("^(([0,1][0-9])|(2[0-3]))", List.of(":")));
     add(new AbstractMap.SimpleEntry<>("^(([0,1][0-9])|(2[0-3])):", Arrays.asList("0", "1", "2", "3", "4", "5")));
     add(new AbstractMap.SimpleEntry<>("^(([0,1][0-9])|(2[0-3])):[0-5]", Arrays.asList("0", "1", "2", "3", "4", "5", "6", "7", "8", "9")));
   }};
