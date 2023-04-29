@@ -175,6 +175,10 @@ public class Command {
     return null;
   }
   
+  public JavaPlugin getPlugin() {
+    return plugin;
+  }
+  
   private void updateDebug(DebugMode debug) {
     this.debug = debug;
     

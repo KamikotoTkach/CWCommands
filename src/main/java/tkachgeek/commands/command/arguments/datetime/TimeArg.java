@@ -3,10 +3,7 @@ package tkachgeek.commands.command.arguments.datetime;
 import org.bukkit.command.CommandSender;
 import tkachgeek.commands.command.Argument;
 
-import java.util.AbstractMap;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class TimeArg extends Argument {
@@ -24,18 +21,18 @@ public class TimeArg extends Argument {
   }
   
   @Override
-  public List<String> completions(CommandSender sender) {
-    return null;
-  }
-  
-  @Override
   public List<String> completions(CommandSender sender, List<String> written) {
     String last = written.get(written.size() - 1);
     
     if (last.length() >= 5 || !last.matches(completions.get(last.length()).getKey())) {
-      return new ArrayList<>();
+      return Collections.EMPTY_LIST;
     }
     return completions.get(last.length()).getValue().stream().map(x -> last + x).collect(Collectors.toList());
+  }
+  
+  @Override
+  public List<String> completions(CommandSender sender) {
+    return null;
   }
   
   @Override

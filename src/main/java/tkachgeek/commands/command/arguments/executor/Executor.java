@@ -15,9 +15,9 @@ import tkachgeek.tkachutils.text.SpacesHider;
 import java.util.Optional;
 
 public abstract class Executor {
-  ArgumentParser parser;
-  CommandSender sender;
-  Command command = null;
+  protected ArgumentParser parser;
+  protected CommandSender sender;
+  protected Command command = null;
   
   public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet, Command command) {
     this.parser = new ArgumentParser(args, argumentSet);
