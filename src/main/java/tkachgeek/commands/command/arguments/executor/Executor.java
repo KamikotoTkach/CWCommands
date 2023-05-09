@@ -38,9 +38,9 @@ public abstract class Executor {
   /**
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */
-  public abstract void executeForPlayer() throws MessageReturn;
+  public abstract void executeForPlayer() throws MessageReturn, TargetableMessageReturn;
   
-  public void executeForNonPlayer() throws MessageReturn {
+  public void executeForNonPlayer() throws MessageReturn, TargetableMessageReturn {
     executeForPlayer();
   }
   
