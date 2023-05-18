@@ -6,6 +6,7 @@ import tkachgeek.commands.command.Argument;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
+
 @Deprecated
 public class DynamicArg extends Argument {
   final Function<CommandSender, List<String>> dynamicArgument;

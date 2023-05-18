@@ -9,12 +9,12 @@ import java.util.List;
 public class ExactStringArg extends Argument {
   final String exactString;
   
-  public String getExactString() {
-    return exactString;
-  }
-  
   public ExactStringArg(String exactString) {
     this.exactString = exactString;
+  }
+  
+  public String getExactString() {
+    return exactString;
   }
   
   @Override

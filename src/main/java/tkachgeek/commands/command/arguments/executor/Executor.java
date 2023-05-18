@@ -7,18 +7,20 @@ import tkachgeek.commands.command.Argument;
 import tkachgeek.commands.command.ArgumentParser;
 import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
+import tkachgeek.tkachutils.messages.Message;
 import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;
 
 import java.util.Optional;
 
 public abstract class Executor {
-  ArgumentParser parser;
-  CommandSender sender;
-  Command command = null;
+  protected ArgumentParser parser;
+  protected CommandSender sender;
+  protected Command command = null;
   
   public void prepare(CommandSender sender, String[] args, ArgumentSet argumentSet, Command command) {
-    parser = new ArgumentParser(args, argumentSet);
+    this.parser = new ArgumentParser(args, argumentSet);
     this.sender = sender;
     this.command = command;
     
@@ -36,9 +38,9 @@ public abstract class Executor {
   /**
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */
-  public abstract void executeForPlayer() throws MessageReturn;
+  public abstract void executeForPlayer() throws MessageReturn, TargetableMessageReturn;
   
-  public void executeForNonPlayer() throws MessageReturn {
+  public void executeForNonPlayer() throws MessageReturn, TargetableMessageReturn {
     executeForPlayer();
   }
   
@@ -131,14 +133,19 @@ public abstract class Executor {
     if (exception instanceof MessageReturn) {
       MessageReturn messageReturn = (MessageReturn) exception;
       if (messageReturn.isStyled()) {
-        sender.sendMessage(messageReturn.getComponentMessage());
+        Message.getInstance(messageReturn.getComponentMessage()).send(sender);
       } else {
-        sender.sendMessage(messageReturn.getComponentMessage().color(command.getColorScheme().main()));
+        Message.getInstance(messageReturn.getComponentMessage()
+                                         .color(command.getColorScheme().main())).send(sender);
       }
+      return;
+    } else if (exception instanceof TargetableMessageReturn) {
+      TargetableMessageReturn targetable = (TargetableMessageReturn) exception;
+      Message.getInstance(targetable.getMessage(sender)).send(sender);
       return;
     }
     
-    sender.sendMessage(exception.getLocalizedMessage());
+    Message.getInstance(exception.getLocalizedMessage()).send(sender);
     
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();

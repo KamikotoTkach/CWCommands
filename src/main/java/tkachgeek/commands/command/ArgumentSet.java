@@ -14,6 +14,7 @@ import tkachgeek.commands.command.arguments.spaced.SpacedArgument;
 import tkachgeek.commands.command.color.ColorGenerationStrategy;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.MessagesUtils;
+import tkachgeek.tkachutils.text.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
@@ -304,9 +305,13 @@ public class ArgumentSet {
   }
   
   public boolean shouldShowInHelp(List<String> args) {
-    return args.size() == 0 || args.get(0).isEmpty()
+    return !isEmpty() && (args.size() == 0 || args.get(0).isEmpty()
        || !firstArgIsExactStringArg()
-       || (((ExactStringArg) arguments[0]).getExactString().equals(args.get(0)) || ((ExactStringArg) arguments[0]).getExactString().startsWith(args.get(0)));
+       || (StringUtils.startWithIgnoreCase(((ExactStringArg) arguments[0]).getExactString(), args.get(0))));
+  }
+  
+  private boolean isEmpty() {
+    return arguments.length == 0;
   }
   
   private boolean firstArgIsExactStringArg() {

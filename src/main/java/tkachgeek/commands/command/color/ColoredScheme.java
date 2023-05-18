@@ -5,19 +5,19 @@ import net.kyori.adventure.util.HSVLike;
 
 public class ColoredScheme implements ColorGenerationStrategy {
   TextColor selectedColor;
-  private TextColor main;
-  private TextColor argument;
-  private TextColor optional;
-  private TextColor subcommand;
-  private TextColor written;
-  private TextColor permissions;
-  private TextColor accent;
-  private TextColor argumentWithNoPermissions;
-  private TextColor optionalWithNoPermissions;
-  private TextColor subcommandWithNoPermissions;
-  private TextColor writtenWithNoPermissions;
-  private TextColor permissionsWithNoPermissions;
-  private TextColor accentWithNoPermissions;
+  private final TextColor main;
+  private final TextColor argument;
+  private final TextColor optional;
+  private final TextColor subcommand;
+  private final TextColor written;
+  private final TextColor permissions;
+  private final TextColor accent;
+  private final TextColor argumentWithNoPermissions;
+  private final TextColor optionalWithNoPermissions;
+  private final TextColor subcommandWithNoPermissions;
+  private final TextColor writtenWithNoPermissions;
+  private final TextColor permissionsWithNoPermissions;
+  private final TextColor accentWithNoPermissions;
   
   public ColoredScheme(TextColor selectedColor) {
     this.selectedColor = selectedColor;

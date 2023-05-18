@@ -4,16 +4,16 @@ import tkachgeek.commands.command.arguments.basic.StringArg;
 import tkachgeek.tkachutils.text.StringUtils;
 
 public class SafetyStringArg extends StringArg {
-   @Override
-   public boolean valid(String raw) {
-      return super.valid(raw) && StringUtils.isSafetyString(raw);
-   }
-
-   public SafetyStringArg() {
-
-   }
-
-   public SafetyStringArg(String placeholder) {
-      this.placeholder = placeholder;
-   }
+  public SafetyStringArg() {
+  
+  }
+  
+  public SafetyStringArg(String placeholder) {
+    this.placeholder = placeholder;
+  }
+  
+  @Override
+  public boolean valid(String raw) {
+    return super.valid(raw) && StringUtils.isSafetyString(raw);
+  }
 }

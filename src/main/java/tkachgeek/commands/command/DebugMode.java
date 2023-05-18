@@ -6,10 +6,10 @@ public enum DebugMode {
   NONE, REDUCED, DETAILED;
   
   public void print(String text) {
-      Bukkit.broadcastMessage(text);
-    }
+    Bukkit.broadcastMessage(text);
+  }
   
   public boolean is(DebugMode mode) {
-    return this.ordinal()>= mode.ordinal();
+    return this.ordinal() >= mode.ordinal();
   }
 }
