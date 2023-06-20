@@ -6,10 +6,11 @@ import tkachgeek.commands.command.Command;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 public abstract class LocalTimedExecutor extends Executor {
-  HashMap<CommandSender, Long> lastExecutionTime = new HashMap<>();
-  Long delay;
+  WeakHashMap<CommandSender, Long> lastExecutionTime = new WeakHashMap<>();
+  long delay;
   
   public LocalTimedExecutor(Date delay) {
     this.delay = delay.getTime();

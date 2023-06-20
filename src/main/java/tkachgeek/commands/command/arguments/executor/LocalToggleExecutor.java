@@ -5,9 +5,10 @@ import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
 
 import java.util.HashMap;
+import java.util.WeakHashMap;
 
 public abstract class LocalToggleExecutor extends Executor {
-  HashMap<CommandSender, Boolean> state = new HashMap<>();
+  WeakHashMap<CommandSender, Boolean> state = new WeakHashMap<>();
   boolean initialState;
   
   public LocalToggleExecutor(boolean initialState) {

@@ -45,6 +45,34 @@ public abstract class Executor {
   }
   
   /**
+   * Переопределение обработчика ошибок
+   */
+  public void errorHandler(Exception exception) {
+    if (exception instanceof MessageReturn) {
+      MessageReturn messageReturn = (MessageReturn) exception;
+      if (messageReturn.isStyled()) {
+        Message.getInstance(messageReturn.getComponentMessage()).send(sender);
+      } else {
+        Message.getInstance(messageReturn.getComponentMessage()
+                                         .color(command.getColorScheme().main())).send(sender);
+      }
+      return;
+    } else if (exception instanceof TargetableMessageReturn) {
+      TargetableMessageReturn targetable = (TargetableMessageReturn) exception;
+      Message.getInstance(targetable.getMessage(sender)).send(sender);
+      return;
+    }
+    
+    String localizedMessage = exception.getLocalizedMessage();
+    if (localizedMessage == null) localizedMessage = "§Error (no message in exception)";
+    
+    Message.getInstance(localizedMessage).send(sender);
+    
+    Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
+    exception.printStackTrace();
+  }
+  
+  /**
    * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()
    */
   protected final Player player() {
@@ -53,13 +81,6 @@ public abstract class Executor {
   
   protected final CommandSender sender() {
     return sender;
-  }
-  
-  /**
-   * Получает аргумент по индексу, если его нет - null
-   */
-  protected final Argument arg(int index) {
-    return parser.get(index);
   }
   
   /**
@@ -78,6 +99,24 @@ public abstract class Executor {
     } else {
       return Optional.empty();
     }
+  }
+  
+  /**
+   * Получает аргумент по индексу, если его нет - null
+   */
+  protected final Argument arg(int index) {
+    return parser.get(index);
+  }
+  
+  /**
+   * Проверяет есть ли аргумент под таким индексом
+   */
+  public boolean isPresent(int index) {
+    return argumentsAmount() > index;
+  }
+  
+  protected final int argumentsAmount() {
+    return parser.args.length;
   }
   
   /**
@@ -113,42 +152,6 @@ public abstract class Executor {
    */
   protected String argWithSpaces(int index) {
     return SpacesHider.restore(arg(index).toString());
-  }
-  
-  protected final int argumentsAmount() {
-    return parser.args.length;
-  }
-  
-  /**
-   * Проверяет есть ли аргумент под таким индексом
-   */
-  public boolean isPresent(int index) {
-    return argumentsAmount() > index;
-  }
-  
-  /**
-   * Переопределение обработчика ошибок
-   */
-  public void errorHandler(Exception exception) {
-    if (exception instanceof MessageReturn) {
-      MessageReturn messageReturn = (MessageReturn) exception;
-      if (messageReturn.isStyled()) {
-        Message.getInstance(messageReturn.getComponentMessage()).send(sender);
-      } else {
-        Message.getInstance(messageReturn.getComponentMessage()
-                                         .color(command.getColorScheme().main())).send(sender);
-      }
-      return;
-    } else if (exception instanceof TargetableMessageReturn) {
-      TargetableMessageReturn targetable = (TargetableMessageReturn) exception;
-      Message.getInstance(targetable.getMessage(sender)).send(sender);
-      return;
-    }
-    
-    Message.getInstance(exception.getLocalizedMessage()).send(sender);
-    
-    Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
-    exception.printStackTrace();
   }
   
   protected Command getCommand() {
