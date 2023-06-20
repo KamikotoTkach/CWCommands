@@ -76,6 +76,14 @@ public abstract class Argument {
     optional = true;
     return this;
   }
+  /**
+   * Делает аргумент опциональным. Должен быть в конце, если таких несколько - все в конце
+   */
+  public Argument optional(String defaultValue) {
+    optional = true;
+    raw = defaultValue;
+    return this;
+  }
   
   /**
    * Название аргумента в хелпе
@@ -168,4 +176,6 @@ public abstract class Argument {
                     .append(Component.text(" нельзя представить как ", colorScheme.main()))
                     .append(Component.text(argumentName(), colorScheme.accent(true)));
   }
+  
+  
 }
