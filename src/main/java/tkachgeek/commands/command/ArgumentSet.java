@@ -37,6 +37,17 @@ public class ArgumentSet {
   Component help;
   private String confirmableString = "";
   private long timeToConfirm = 0;
+  private boolean hidden = false;
+  
+  /**
+   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
+   * Аргументы optional должны быть последние в списке<br>
+   * Аргументов может не быть<br>
+   * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
+   */
+  public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
+    this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
+  }
   
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
@@ -77,14 +88,27 @@ public class ArgumentSet {
     this.optionalStart = optionalStart;
   }
   
-  /**
-   * Аргумент implements SpacedArgument должен быть 1 и последний<br>
-   * Аргументы optional должны быть последние в списке<br>
-   * Аргументов может не быть<br>
-   * Шоткат, автоматически устанавливающий пермишен в соответствии с ExactStringArg
-   */
-  public ArgumentSet(Executor executor, ExactStringArg exactStringArg, Argument... arguments) {
-    this(executor, exactStringArg.getExactString(), collectArgs(exactStringArg, arguments));
+  @NotNull
+  private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
+    Argument[] args = new Argument[arguments.length + 1];
+    args[0] = exactStringArg;
+    System.arraycopy(arguments, 0, args, 1, arguments.length);
+    return args;
+  }
+  
+  private Argument[] unboxComplexArgs(Argument[] arguments) {
+    List<Argument> args = new ArrayList<>();
+    
+    for (Argument argument : arguments) {
+      if (argument instanceof ComplexArg) {
+        ComplexArg ca = (ComplexArg) argument;
+        args.addAll(ca.getArgs());
+      } else {
+        args.add(argument);
+      }
+    }
+    
+    return args.toArray(new Argument[0]);
   }
   
   /**
@@ -111,43 +135,12 @@ public class ArgumentSet {
     this.timeToConfirm = toClone.timeToConfirm;
   }
   
-  @NotNull
-  private static Argument[] collectArgs(ExactStringArg exactStringArg, Argument[] arguments) {
-    Argument[] args = new Argument[arguments.length + 1];
-    args[0] = exactStringArg;
-    System.arraycopy(arguments, 0, args, 1, arguments.length);
-    return args;
-  }
-  
-  private Argument[] unboxComplexArgs(Argument[] arguments) {
-    List<Argument> args = new ArrayList<>();
-    
-    for (Argument argument : arguments) {
-      if (argument instanceof ComplexArg) {
-        ComplexArg ca = (ComplexArg) argument;
-        args.addAll(ca.getArgs());
-      } else {
-        args.add(argument);
-      }
-    }
-    
-    return args.toArray(new Argument[0]);
-  }
-  
   /**
    * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения экзекутора
    */
   public ArgumentSet canExecute(Predicate<CommandSender> canExecute) {
     this.canExecute = canExecute;
     return this;
-  }
-  
-  private void sendBlockedArgumentWarning() {
-    StringJoiner joiner = new StringJoiner(", ");
-    for (Argument argument : arguments) {
-      joiner.add(argument.argumentName());
-    }
-    Bukkit.getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
   }
   
   /**
@@ -157,6 +150,14 @@ public class ArgumentSet {
     blockForPlayers = true;
     if (blockForNonPlayers) sendBlockedArgumentWarning();
     return this;
+  }
+  
+  private void sendBlockedArgumentWarning() {
+    StringJoiner joiner = new StringJoiner(", ");
+    for (Argument argument : arguments) {
+      joiner.add(argument.argumentName());
+    }
+    Bukkit.getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
   }
   
   /**
@@ -190,67 +191,6 @@ public class ArgumentSet {
     return this;
   }
   
-  protected ArgumentFitnessResult isArgumentsFit(CommandSender sender, String... args) {
-    
-    if (args.length != arguments.length && !spacedLastArgument) return ArgumentFitnessResult.NOT_FIT;
-    if (args.length < arguments.length) return ArgumentFitnessResult.NOT_FIT;
-    
-    if (spacedLastArgument) {
-      String[] copy = Arrays.copyOfRange(args, 0, arguments.length);
-      copy[arguments.length - 1] = String.join(" ", Arrays.copyOfRange(args, arguments.length - 1, args.length));
-      args = copy;
-    }
-    
-    List<String> argList = List.of(args);
-    
-    for (int i = 0; i < args.length; i++) {
-      if (!arguments[i].valid(sender, args[i], argList)) return new ArgumentFitnessResult(this, arguments[i], args[i]);
-    }
-    
-    return ArgumentFitnessResult.SUCCESS;
-  }
-  
-  protected boolean canPerformedBy(CommandSender sender) {
-    if (sender instanceof Player) {
-      if (blockForPlayers) return false;
-    } else {
-      if (blockForNonPlayers) return false;
-    }
-    return canExecute.test(sender) && (permission.isEmpty() || sender.hasPermission(permission) || sender.isOp());
-  }
-  
-  protected List<String> getCompletesFor(List<String> written, CommandSender sender) {
-    int skipBecauseSpaced = 0;
-    
-    if (arguments.length == 0) return Collections.emptyList();
-    
-    if (spacedLastArgument && arguments.length < written.size()) {
-      skipBecauseSpaced = written.size() - arguments.length;
-      String writtenLastSpacedString = String.join(" ", written.subList(arguments.length - 1, written.size()));
-      written = written.subList(0, arguments.length);
-      written.set(arguments.length - 1, writtenLastSpacedString);
-    }
-    
-    if (arguments.length >= written.size()) {
-      
-      for (int i = 0; i < written.size() - 1; i++) {
-        if (!arguments[i].valid(sender, written.get(i), written)) return Collections.emptyList();
-      }
-      
-      List<String> completionOfLastArg = new ArrayList<>();
-      for (var completionLine : arguments[written.size() - 1].completions(sender, written)) {
-        if (skipBecauseSpaced > 0) {
-          List<String> parts = List.of(completionLine.split(" "));
-          if (skipBecauseSpaced < parts.size()) {
-            completionOfLastArg.add(String.join(" ", parts.subList(skipBecauseSpaced, parts.size())));
-          }
-        } else completionOfLastArg.add(completionLine);
-      }
-      return completionOfLastArg;
-    }
-    return Collections.emptyList();
-  }
-  
   public boolean hasHelp() {
     return help != null;
   }
@@ -265,6 +205,15 @@ public class ArgumentSet {
     
     return (argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
                                 .append(sender.isOp() ? Component.text(" " + permission, color.permissions(canPerformedBy)) : Component.empty()));
+  }
+  
+  protected boolean canPerformedBy(CommandSender sender) {
+    if (sender instanceof Player) {
+      if (blockForPlayers) return false;
+    } else {
+      if (blockForNonPlayers) return false;
+    }
+    return canExecute.test(sender) && (permission.isEmpty() || sender.hasPermission(permission) || sender.isOp());
   }
   
   public void execute(CommandSender sender, String[] args, Command command) {
@@ -316,5 +265,70 @@ public class ArgumentSet {
   
   private boolean firstArgIsExactStringArg() {
     return arguments.length > 0 && arguments[0] instanceof ExactStringArg;
+  }
+  
+  public ArgumentSet hidden() {
+    this.hidden = true;
+    return this;
+  }
+  
+  public boolean isHidden() {
+    return hidden;
+  }
+  
+  protected ArgumentFitnessResult isArgumentsFit(CommandSender sender, String... args) {
+    
+    if (args.length != arguments.length && !spacedLastArgument) return ArgumentFitnessResult.NOT_FIT;
+    if (args.length < arguments.length) return ArgumentFitnessResult.NOT_FIT;
+    
+    if (spacedLastArgument) {
+      String[] copy = Arrays.copyOfRange(args, 0, arguments.length);
+      copy[arguments.length - 1] = String.join(" ", Arrays.copyOfRange(args, arguments.length - 1, args.length));
+      args = copy;
+    }
+    
+    List<String> argList = List.of(args);
+    
+    for (int i = 0; i < args.length; i++) {
+      if (!arguments[i].valid(sender, args[i], argList)) return new ArgumentFitnessResult(this, arguments[i], args[i]);
+    }
+    
+    return ArgumentFitnessResult.SUCCESS;
+  }
+  
+  protected List<String> getCompletesFor(List<String> written, CommandSender sender) {
+    int skipBecauseSpaced = 0;
+    
+    if (arguments.length == 0) return Collections.emptyList();
+    
+    if (spacedLastArgument && arguments.length < written.size()) {
+      skipBecauseSpaced = written.size() - arguments.length;
+      String writtenLastSpacedString = String.join(" ", written.subList(arguments.length - 1, written.size()));
+      written = written.subList(0, arguments.length);
+      written.set(arguments.length - 1, writtenLastSpacedString);
+    }
+    
+    if (arguments.length >= written.size()) {
+      
+      for (int i = 0; i < written.size() - 1; i++) {
+        if (!arguments[i].valid(sender, written.get(i), written)) return Collections.emptyList();
+      }
+      
+      List<String> completionOfLastArg = new ArrayList<>();
+      
+      for (var completionLine : arguments[written.size() - 1].completions(sender, written)) {
+        if (skipBecauseSpaced > 0) {
+          List<String> parts = List.of(completionLine.split(" "));
+          
+          if (skipBecauseSpaced < parts.size()) {
+            completionOfLastArg.add(String.join(" ", parts.subList(skipBecauseSpaced, parts.size())));
+          }
+        } else completionOfLastArg.add(completionLine);
+      }
+      
+      return completionOfLastArg;
+    }
+    
+    return Collections.emptyList();
   }
 }

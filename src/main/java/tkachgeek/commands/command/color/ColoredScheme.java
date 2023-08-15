@@ -29,6 +29,7 @@ public class ColoredScheme implements ColorGenerationStrategy {
     written = generateColor(TextColor.fromHexString("#007ab5"));
     permissions = generateColor(TextColor.fromHexString("#055080"));
     accent = generateColor(TextColor.fromHexString("#8adaff"));
+    
     argumentWithNoPermissions = generateColor(TextColor.fromHexString("#FF2C00"));
     optionalWithNoPermissions = generateColor(TextColor.fromHexString("#FF1800"));
     subcommandWithNoPermissions = generateColor(TextColor.fromHexString("#FF2C00"));

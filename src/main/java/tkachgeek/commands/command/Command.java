@@ -41,14 +41,6 @@ public class Command {
   private boolean ignoreExecutionPossibility = true;
   
   /**
-   * Автоматически устанавливается пермишен name
-   */
-  public Command(String name) {
-    this.name = name;
-    this.permission = name;
-  }
-  
-  /**
    * Автоматически устанавливается пермишен name и устанавливаются алиасы
    */
   public Command(String name, List<String> aliases) {
@@ -57,11 +49,19 @@ public class Command {
   }
   
   /**
-   * Указывайте пермишен "" для того, чтобы пермишены рекурсивно не генерировались
+   * Автоматически устанавливается пермишен name
    */
-  public Command(String name, String permission) {
-    this(name);
-    this.permission = permission;
+  public Command(String name) {
+    this.name = name;
+    this.permission = name;
+  }
+  
+  /**
+   * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
+   */
+  public Command aliases(List<String> aliases) {
+    this.aliases = aliases;
+    return this;
   }
   
   /**
@@ -73,11 +73,41 @@ public class Command {
   }
   
   /**
+   * Добавляет аргументсеты в команду или подкоманду
+   */
+  public Command arguments(ArgumentSet... arguments) {
+    for (ArgumentSet set : arguments) {
+      argumentSets.add(set);
+      
+      if (debug.is(DebugMode.DETAILED))
+        debug.print("§7В §f" + name + "§7 зарегистрирован аргументсет §f" + set);
+      
+      if (set.optionalStart > 0) {
+        for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
+          argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)).hidden());
+          
+          if (debug.is(DebugMode.DETAILED)) debug.print("§7Адаптация опциональх аргументов: §f" + set);
+        }
+      }
+    }
+    
+    return this;
+  }
+  
+  /**
    * Шоткат для сингл-аргументсета в команде без аргументов с кастомным пермишеном
    */
   public Command(String name, String permission, Executor executor) {
     this(name, permission);
     arguments(new ArgumentSet(executor, name));
+  }
+  
+  /**
+   * Указывайте пермишен "" для того, чтобы пермишены рекурсивно не генерировались
+   */
+  public Command(String name, String permission) {
+    this(name);
+    this.permission = permission;
   }
   
   /**
@@ -100,14 +130,6 @@ public class Command {
     if (this.isSubcommand) {
       this.name = name;
     }
-    return this;
-  }
-  
-  /**
-   * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
-   */
-  public Command aliases(List<String> aliases) {
-    this.aliases = aliases;
     return this;
   }
   
@@ -169,7 +191,7 @@ public class Command {
    */
   public @Nullable TabCompleter getTabCompleter() {
     PluginCommand command = plugin.getCommand(name);
-    if(command !=null && command.getTabCompleter() instanceof TabCompleter) {
+    if (command != null && command.getTabCompleter() instanceof TabCompleter) {
       return (TabCompleter) command.getTabCompleter();
     }
     return null;
@@ -185,28 +207,6 @@ public class Command {
     for (Command subcommand : subcommands) {
       subcommand.updateDebug(debug);
     }
-  }
-  
-  /**
-   * Добавляет аргументсеты в команду или подкоманду
-   */
-  public Command arguments(ArgumentSet... arguments) {
-    for (ArgumentSet set : arguments) {
-      argumentSets.add(set);
-      
-      if (debug.is(DebugMode.DETAILED))
-        debug.print("§7В §f" + name + "§7 зарегистрирован аргументсет §f" + set);
-      
-      if (set.optionalStart > 0) {
-        for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
-          argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)));
-          
-          if (debug.is(DebugMode.DETAILED)) debug.print("§7Адаптация опциональх аргументов: §f" + set);
-        }
-      }
-    }
-    
-    return this;
   }
   
   /**
@@ -267,14 +267,6 @@ public class Command {
     }
   }
   
-  protected boolean canPerformedBy(CommandSender sender) {
-    boolean result = permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp();
-    
-    if (debug.is(DebugMode.DETAILED))
-      debug.print("§7Проверка §f" + sender.getName() + " §7на возможность выполнения §f" + this.name + "§7: " + (result ? " §aуспешно" : "§cпровал"));
-    return result;
-  }
-  
   protected void onExecute(CommandSender sender, String[] args, ArgumentSet founded) {
     var start = System.nanoTime();
     
@@ -282,6 +274,10 @@ public class Command {
     
     if (debug.is(DebugMode.REDUCED))
       debug.print("§7Выполнение §f" + founded + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
+  }
+  
+  protected List<Command> getSubcommandsFor(CommandSender sender) {
+    return getSubcommandsFor(sender, false);
   }
   
   protected List<Command> getSubcommandsFor(CommandSender sender, boolean ignoreExecutionPossibility) {
@@ -304,8 +300,12 @@ public class Command {
     return list;
   }
   
-  protected List<Command> getSubcommandsFor(CommandSender sender) {
-    return getSubcommandsFor(sender, false);
+  protected boolean canPerformedBy(CommandSender sender) {
+    boolean result = permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp();
+    
+    if (debug.is(DebugMode.DETAILED))
+      debug.print("§7Проверка §f" + sender.getName() + " §7на возможность выполнения §f" + this.name + "§7: " + (result ? " §aуспешно" : "§cпровал"));
+    return result;
   }
   
   protected Command getSubcommandFor(String arg, CommandSender sender) {
@@ -326,6 +326,10 @@ public class Command {
     return null;
   }
   
+  protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
+    return getArgumentSetsFor(sender, false);
+  }
+  
   protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender, boolean ignoreExecutionPossibility) {
     
     if (debug.is(DebugMode.DETAILED))
@@ -343,10 +347,6 @@ public class Command {
     if (debug.is(DebugMode.DETAILED)) debug.print("§7Найдено §f" + list.size() + "§7 аргументсетов");
     
     return list;
-  }
-  
-  protected List<ArgumentSet> getArgumentSetsFor(CommandSender sender) {
-    return getArgumentSetsFor(sender, false);
   }
   
   protected ArgumentSearchResult searchForArgumentSet(CommandSender sender, String... args) {
@@ -428,6 +428,8 @@ public class Command {
     boolean previousWasEmptyLine = false;
     
     for (ArgumentSet argumentSet : filterArgumentSets(getArgumentSetsFor(sender, ignoreExecutionPossibility), args)) {
+      
+      if (argumentSet.isHidden()) continue;
       
       boolean canPerformedBy = argumentSet.canPerformedBy(sender);
       boolean hasHelp = argumentSet.hasHelp();
