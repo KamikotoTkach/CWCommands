@@ -27,7 +27,7 @@
                             .setMin(1)
                             .optional()).help("help текст")
     //, new ArgumentSet...
-    ).register(this);
+    ).register(this); //this = JavaPlugin
 ```
 
 Пример Executor`a:
