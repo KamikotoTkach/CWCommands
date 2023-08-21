@@ -7,9 +7,9 @@ import com.velocitypowered.api.plugin.Plugin;
 import org.slf4j.Logger;
 
 @Plugin(
-   id = "velocityplatform",
+   id = "velocity-platform",
    name = "VelocityPlatform",
-   version = "1.0-SNAPSHOT"
+   version = "1.0"
 )
 public class VelocityPlatform {
   
