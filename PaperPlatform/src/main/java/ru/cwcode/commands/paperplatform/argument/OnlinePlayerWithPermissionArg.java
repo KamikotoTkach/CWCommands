@@ -29,9 +29,9 @@ public class OnlinePlayerWithPermissionArg extends Argument {
   @Override
   public List<String> completions(Sender sender) {
     List<String> list = new ArrayList<>();
-    for (Player x : Bukkit.getOnlinePlayers()) {
-      if (x.hasPermission(permission)) {
-        list.add(x.getName());
+    for (Player player : Bukkit.getOnlinePlayers()) {
+      if (player.hasPermission(permission)) {
+        list.add(player.getName());
       }
     }
     return list;

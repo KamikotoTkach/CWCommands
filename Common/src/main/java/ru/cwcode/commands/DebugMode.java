@@ -6,7 +6,7 @@ public enum DebugMode {
   NONE, REDUCED, DETAILED;
   
   public void print(String text) {
-    CommandsAPI.getPlatform().getLogger().warning(text);
+    CommandsAPI.getPlatform().getLogger().warn(text);
   }
   
   public boolean is(DebugMode mode) {

@@ -154,7 +154,7 @@ public class ArgumentSet {
     for (Argument argument : arguments) {
       joiner.add(argument.argumentName());
     }
-    CommandsAPI.getPlatform().getLogger().warning("Набор агрументов " + joiner + " не может быть выполнен");
+    CommandsAPI.getPlatform().getLogger().warn("Набор агрументов " + joiner + " не может быть выполнен");
   }
   
   /**

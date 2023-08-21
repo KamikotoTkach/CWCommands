@@ -1,13 +1,13 @@
-package ru.cwcode.commands.paperplatform.paper;
+package ru.cwcode.commands.velocityplatform.velocity;
 
+import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
-import org.bukkit.entity.Player;
 import ru.cwcode.commands.api.AbstractExecutor;
 import ru.cwcode.commands.api.CommandsAPI;
 import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
-public abstract class PaperExecutor extends AbstractExecutor {
+public abstract class VelocityExecutor extends AbstractExecutor {
    @Override
    public void errorHandler(Exception exception) {
       if (exception instanceof MessageReturn) {
@@ -34,8 +34,8 @@ public abstract class PaperExecutor extends AbstractExecutor {
    }
 
    protected final Player player() {
-      if (sender instanceof PaperSender) {
-         return ((PaperSender) sender).getPlayer();
+      if (sender instanceof VelocitySender) {
+         return ((VelocitySender) sender).getPlayer();
       }
 
       return null;

@@ -98,7 +98,7 @@ public abstract class Argument {
     try {
       if (notNull()) return Integer.parseInt(raw);
     } catch (Exception exception) {
-      CommandsAPI.getPlatform().getLogger().warning("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
+      CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
     }
     return null;
   }
@@ -107,7 +107,7 @@ public abstract class Argument {
     try {
       if (notNull()) return Float.parseFloat(raw);
     } catch (Exception exception) {
-      CommandsAPI.getPlatform().getLogger().warning("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
+      CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
     }
     
     return null;
@@ -115,7 +115,7 @@ public abstract class Argument {
   
   public String toString() {
     if (notNull()) return raw;
-    CommandsAPI.getPlatform().getLogger().warning("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
+    CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
     return null;
   }
   
@@ -123,7 +123,7 @@ public abstract class Argument {
     try {
       if (notNull()) return Double.parseDouble(raw);
     } catch (Exception exception) {
-      CommandsAPI.getPlatform().getLogger().warning("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
+      CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
     }
     return null;
   }
@@ -132,7 +132,7 @@ public abstract class Argument {
     try {
       if (notNull()) return Boolean.parseBoolean(raw);
     } catch (Exception exception) {
-      CommandsAPI.getPlatform().getLogger().warning("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
+      CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
     }
     
     return null;
