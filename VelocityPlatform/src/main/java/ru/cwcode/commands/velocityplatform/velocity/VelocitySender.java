@@ -4,6 +4,8 @@ import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.text.Component;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.velocityplatform.VelocityMain;
+import tkachgeek.tkachutils.confirmable.velocity.ConfirmAPI;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
 public class VelocitySender implements Sender {
@@ -40,11 +42,11 @@ public class VelocitySender implements Sender {
 
    @Override
    public void confirm(String confirmableString, long timeToConfirm, Runnable onConfirm, Runnable onExpired) {
-     /*TODO: Fix it
-     ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
+      if (!this.isPlayer()) return;
+      ConfirmAPI.requestBuilder(this.getPlayer(), confirmableString, timeToConfirm)
                 .success(onConfirm)
                 .expired(onExpired)
-                .register(PaperMain.plugin);*/
+                .register(VelocityMain.getPlatform().getServer(), VelocityMain.getPlatform().getPlugin());
    }
 
    public Player getPlayer() {
