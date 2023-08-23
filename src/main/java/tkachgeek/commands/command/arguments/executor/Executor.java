@@ -9,6 +9,7 @@ import tkachgeek.commands.command.ArgumentSet;
 import tkachgeek.commands.command.Command;
 import tkachgeek.tkachutils.messages.Message;
 import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.messages.PaperMessage;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;
 
@@ -51,22 +52,22 @@ public abstract class Executor {
     if (exception instanceof MessageReturn) {
       MessageReturn messageReturn = (MessageReturn) exception;
       if (messageReturn.isStyled()) {
-        Message.getInstance(messageReturn.getComponentMessage()).send(sender);
+        PaperMessage.getInstance(messageReturn.getComponentMessage()).send(sender);
       } else {
-        Message.getInstance(messageReturn.getComponentMessage()
+        PaperMessage.getInstance(messageReturn.getComponentMessage()
                                          .color(command.getColorScheme().main())).send(sender);
       }
       return;
     } else if (exception instanceof TargetableMessageReturn) {
       TargetableMessageReturn targetable = (TargetableMessageReturn) exception;
-      Message.getInstance(targetable.getMessage(sender)).send(sender);
+      PaperMessage.getInstance(targetable.getMessage(sender)).send(sender);
       return;
     }
     
     String localizedMessage = exception.getLocalizedMessage();
     if (localizedMessage == null) localizedMessage = "§Error (no message in exception)";
-    
-    Message.getInstance(localizedMessage).send(sender);
+
+    PaperMessage.getInstance(localizedMessage).send(sender);
     
     Bukkit.getLogger().warning("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
