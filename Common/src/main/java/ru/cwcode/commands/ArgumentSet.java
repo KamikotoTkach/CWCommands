@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.cwcode.commands.api.AbstractExecutor;
+import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.arguments.ComplexArg;

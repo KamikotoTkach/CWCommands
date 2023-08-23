@@ -1,9 +1,10 @@
-package ru.cwcode.commands.api;
+package ru.cwcode.commands.executor;
 
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.ArgumentParser;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
+import ru.cwcode.commands.api.Sender;
 import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;

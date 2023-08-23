@@ -2,7 +2,7 @@ package ru.cwcode.commands.paperplatform.paper;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
-import ru.cwcode.commands.api.AbstractExecutor;
+import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.api.CommandsAPI;
 import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;

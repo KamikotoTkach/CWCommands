@@ -1,9 +1,8 @@
-package ru.cwcode.commands.arguments.executor;
+package ru.cwcode.commands.executor;
 
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
-import ru.cwcode.commands.api.AbstractExecutor;
 
 import java.util.Date;
 import java.util.WeakHashMap;

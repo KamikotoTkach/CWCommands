@@ -30,7 +30,7 @@ public class VelocitySender implements Sender {
 
    @Override
    public void sendMessage(TargetableMessageReturn targetable) {
-      //sender.sendMessage(targetable.getMessage());
+      throw new RuntimeException("TargetableMessageReturn not supported on Velocity");
    }
 
    @Override
