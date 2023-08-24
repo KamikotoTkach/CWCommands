@@ -27,13 +27,14 @@ import ru.cwcode.commands.velocityplatform.argument.OnlinePlayerWithPermissionAr
 import ru.cwcode.commands.velocityplatform.velocity.VelocityPlatform;
 
 import java.nio.file.Path;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @Plugin(
       id = "velocity-commands",
       name = "VelocityCommands",
       version = "1.0",
-      description = "Pretty Commands Lib",
+      description = "A Pretty Commands Lib",
       url = "https://cwcode.ru/vk",
       authors = {"TkachGeek", "Soul_KRT"}
 )
@@ -99,12 +100,13 @@ public class VelocityMain {
                )
                .arguments(
                      new ArgumentSet(new PrintArguments(), new ExactStringArg("empty"), new EmptyArg()),
-                     //new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(EquipmentSlot.values(), "equipmentSlot")),
+                     new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(ChronoUnit.values(), "chronoUnits")),
                      new ArgumentSet(new PrintArguments(), new ExactStringArg("hexColor"), new HexColorArg("color"))
                )
                .setColorScheme(NamedTextColor.GREEN)
                .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
                .register();
+         
       } catch (Exception ex) {
          this.logger.warn(ex.getLocalizedMessage());
       }

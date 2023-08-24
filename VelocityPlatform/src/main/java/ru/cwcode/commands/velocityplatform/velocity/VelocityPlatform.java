@@ -5,19 +5,20 @@ import com.velocitypowered.api.proxy.ProxyServer;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Logger;
 import ru.cwcode.commands.api.Platform;
+import ru.cwcode.commands.velocityplatform.VelocityMain;
 
 public class VelocityPlatform extends Platform {
-   private final Object plugin;
+   private final VelocityMain plugin;
    private final ProxyServer server;
    private final Logger logger;
 
-   public VelocityPlatform(Object plugin, ProxyServer server, org.slf4j.Logger logger) {
+   public VelocityPlatform(VelocityMain plugin, ProxyServer server, org.slf4j.Logger logger) {
       this.plugin = plugin;
       this.server = server;
       this.logger = new VelocityLogger(logger);
    }
 
-   public Object getPlugin() {
+   public VelocityMain getPlugin() {
       return plugin;
    }
 
