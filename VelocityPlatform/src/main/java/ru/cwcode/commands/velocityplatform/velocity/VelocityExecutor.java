@@ -1,9 +1,12 @@
 package ru.cwcode.commands.velocityplatform.velocity;
 
 import com.velocitypowered.api.proxy.Player;
-import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.api.CommandsAPI;
+import ru.cwcode.commands.executor.AbstractExecutor;
+import ru.cwcode.commands.velocityplatform.VelocityMain;
 import tkachgeek.tkachutils.messages.MessageReturn;
+
+import java.util.Optional;
 
 public abstract class VelocityExecutor extends AbstractExecutor {
    @Override
@@ -26,6 +29,14 @@ public abstract class VelocityExecutor extends AbstractExecutor {
 
       CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
       exception.printStackTrace();
+   }
+
+   @Override
+   protected Optional<Player> argP(int index) {
+      Player player = VelocityMain.getPlatform().getServer().getPlayer(argS(index)).orElse(null);
+      if (player == null) return Optional.empty();
+
+      return Optional.of(player);
    }
 
    protected final Player player() {

@@ -1,5 +1,6 @@
 package ru.cwcode.commands.executor;
 
+import net.kyori.adventure.audience.Audience;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.ArgumentParser;
 import ru.cwcode.commands.ArgumentSet;
@@ -118,6 +119,8 @@ public abstract class AbstractExecutor {
   protected boolean argB(int index) {
     return arg(index).toBoolean();
   }
+
+  protected abstract Optional<? extends Audience> argP(int index);
   
   /**
    * Возвращает строку с заменёнными подчёркиваниями на пробелы
