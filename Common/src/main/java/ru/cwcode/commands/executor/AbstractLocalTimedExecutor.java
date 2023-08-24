@@ -7,12 +7,12 @@ import ru.cwcode.commands.api.Sender;
 import java.util.Date;
 import java.util.WeakHashMap;
 
-public abstract class LocalTimedExecutor extends AbstractExecutor {
+public abstract class AbstractLocalTimedExecutor extends AbstractExecutor {
   WeakHashMap<Sender, Long> lastExecutionTime = new WeakHashMap<>();
   long delay;
   
-  public LocalTimedExecutor(Date delay) {
-    this.delay = delay.getTime();
+  public AbstractLocalTimedExecutor(long delayMillis) {
+    this.delay = delayMillis;
   }
   
   @Override

@@ -4,10 +4,10 @@ import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
 
-public abstract class GlobalToggleExecutor extends AbstractExecutor {
+public abstract class AbstractGlobalToggleExecutor extends AbstractExecutor {
   boolean state;
   
-  public GlobalToggleExecutor(boolean initialState) {
+  public AbstractGlobalToggleExecutor(boolean initialState) {
     this.state = initialState;
   }
   

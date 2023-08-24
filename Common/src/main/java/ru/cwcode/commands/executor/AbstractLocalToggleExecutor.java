@@ -6,11 +6,11 @@ import ru.cwcode.commands.api.Sender;
 
 import java.util.WeakHashMap;
 
-public abstract class LocalToggleExecutor extends AbstractExecutor {
+public abstract class AbstractLocalToggleExecutor extends AbstractExecutor {
   WeakHashMap<Sender, Boolean> state = new WeakHashMap<>();
   boolean initialState;
   
-  public LocalToggleExecutor(boolean initialState) {
+  public AbstractLocalToggleExecutor(boolean initialState) {
     this.initialState = initialState;
   }
   
