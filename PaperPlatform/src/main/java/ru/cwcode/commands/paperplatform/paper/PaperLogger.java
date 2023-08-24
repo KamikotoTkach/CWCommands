@@ -1,9 +1,10 @@
 package ru.cwcode.commands.paperplatform.paper;
 
 import ru.cwcode.commands.api.Logger;
+import ru.cwcode.commands.paperplatform.PaperMain;
 
 public class PaperLogger implements Logger {
-   private final java.util.logging.Logger logger = java.util.logging.Logger.getAnonymousLogger();
+   private final java.util.logging.Logger logger = PaperMain.plugin.getLogger();
 
    @Override
    public void info(String message) {
