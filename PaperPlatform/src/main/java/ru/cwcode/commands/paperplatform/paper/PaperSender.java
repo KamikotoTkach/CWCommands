@@ -11,6 +11,10 @@ import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 public class PaperSender implements Sender {
   CommandSender sender;
   
+  public CommandSender getCommandSender() {
+    return sender;
+  }
+  
   public PaperSender(CommandSender sender) {
     this.sender = sender;
   }
