@@ -42,7 +42,7 @@ public class ColoredScheme implements ColorGenerationStrategy {
     HSVLike selectedHSV = selectedColor.asHSV();
     HSVLike baseHSV = base.asHSV();
     
-    HSVLike of = HSVLike.hsvLike(selectedHSV.h(), baseHSV.s(), baseHSV.v());
+    HSVLike of = HSVLike.of(selectedHSV.h(), baseHSV.s(), baseHSV.v());
     
     return TextColor.color(of);
   }

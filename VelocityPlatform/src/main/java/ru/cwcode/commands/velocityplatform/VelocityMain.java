@@ -40,16 +40,12 @@ import java.util.Arrays;
 )
 
 public class VelocityMain {
-   private final ProxyServer server;
-   private final Logger logger;
-   private final Path dataFolder;
-
    @Inject
-   public VelocityMain(final @NotNull ProxyServer server, final @NotNull Logger logger, final @NotNull @DataDirectory Path dataFolder) {
-      this.server = server;
-      this.logger = logger;
-      this.dataFolder = dataFolder;
-   }
+   private ProxyServer server;
+   @Inject
+   private Logger logger;
+   @Inject @DataDirectory
+   private Path dataFolder;
 
    @Subscribe
    public void onProxyInitialization(ProxyInitializeEvent event) {

@@ -61,7 +61,7 @@ public class DynamicRainbowColorScheme implements ColorGenerationStrategy {
     
     float h = time / 3600000.0f;
     float sOffset = h > 0.6 && h < 0.8 ? -0.3f : 0f;
-    HSVLike of = HSVLike.hsvLike(h, hsvLike.s() + sOffset, Math.min(1, hsvLike.v() - sOffset));
+    HSVLike of = HSVLike.of(h, hsvLike.s() + sOffset, Math.min(1, hsvLike.v() - sOffset));
     
     return TextColor.color(of);
   }
