@@ -2,6 +2,7 @@ package ru.cwcode.commands.velocityplatform.velocity;
 
 import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
@@ -47,6 +48,11 @@ public class VelocitySender implements Sender {
                 .success(onConfirm)
                 .expired(onExpired)
                 .register(VelocityMain.getPlatform().getServer(), VelocityMain.getPlatform().getPlugin());
+   }
+
+   @Override
+   public Audience getAudience() {
+      return sender;
    }
 
    public Player getPlayer() {

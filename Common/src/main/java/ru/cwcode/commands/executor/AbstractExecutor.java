@@ -52,9 +52,7 @@ public abstract class AbstractExecutor {
    */
   
   
-  protected final Sender sender() {
-    return sender;
-  }
+  protected abstract Audience sender();
   
   /**
    * Получает аргумент по тегу, если его нет - null. Дефолтный тэг - результат выполнения метода argumentName у аргумента

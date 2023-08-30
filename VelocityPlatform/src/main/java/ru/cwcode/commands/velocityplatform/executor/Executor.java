@@ -1,14 +1,16 @@
-package ru.cwcode.commands.velocityplatform.velocity;
+package ru.cwcode.commands.velocityplatform.executor;
 
 import com.velocitypowered.api.proxy.Player;
+import net.kyori.adventure.audience.Audience;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
+import ru.cwcode.commands.velocityplatform.velocity.VelocitySender;
 import tkachgeek.tkachutils.messages.MessageReturn;
 
 import java.util.Optional;
 
-public abstract class VelocityExecutor extends AbstractExecutor {
+public abstract class Executor extends AbstractExecutor {
    @Override
    public void errorHandler(Exception exception) {
       if (exception instanceof MessageReturn) {
@@ -29,6 +31,11 @@ public abstract class VelocityExecutor extends AbstractExecutor {
 
       CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
       exception.printStackTrace();
+   }
+
+   @Override
+   protected Audience sender() {
+      return sender.getAudience();
    }
 
    @Override

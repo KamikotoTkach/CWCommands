@@ -1,5 +1,6 @@
 package ru.cwcode.commands.api;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
@@ -17,6 +18,8 @@ public interface Sender {
   default boolean isOp() {
     return hasPermission("*");
   }
+
+  Audience getAudience();
   
   void confirm(String confirmableString, long timeToConfirm, Runnable onConfirm, Runnable onExpired);
 }

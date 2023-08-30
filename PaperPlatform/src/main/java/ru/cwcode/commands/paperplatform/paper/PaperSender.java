@@ -1,5 +1,6 @@
 package ru.cwcode.commands.paperplatform.paper;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -50,6 +51,11 @@ public class PaperSender implements Sender {
               .success(onConfirm)
               .expired(onExpired)
               .register(PaperMain.plugin);
+  }
+
+  @Override
+  public Audience getAudience() {
+    return sender;
   }
   
   public Player getPlayer() {

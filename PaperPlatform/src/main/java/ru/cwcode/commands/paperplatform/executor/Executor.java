@@ -1,5 +1,6 @@
 package ru.cwcode.commands.paperplatform.executor;
 
+import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -35,6 +36,11 @@ public abstract class Executor extends AbstractExecutor {
 
       CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
       exception.printStackTrace();
+   }
+
+   @Override
+   protected Audience sender() {
+      return sender.getAudience();
    }
 
    @Override

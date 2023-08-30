@@ -1,12 +1,12 @@
-package ru.cwcode.commands.velocityplatform;
+package ru.cwcode.commands.velocityplatform.executor;
 
 import ru.cwcode.commands.ArgumentParser;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
-import ru.cwcode.commands.velocityplatform.velocity.VelocityExecutor;
+import ru.cwcode.commands.velocityplatform.VelocityMain;
 
-public abstract class AsyncExecutor extends VelocityExecutor {
+public abstract class AsyncExecutor extends Executor {
    @Override
    public void prepare(Sender sender, String[] args, ArgumentSet argumentSet, Command command) {
       this.parser = new ArgumentParser(args, argumentSet);
