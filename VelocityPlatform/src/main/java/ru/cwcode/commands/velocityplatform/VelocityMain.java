@@ -31,8 +31,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @Plugin(
-      id = "velocity-commands",
-      name = "VelocityCommands",
+      id = "cw-commands",
+      name = "CWCommands",
       version = "1.0",
       description = "A Pretty Commands Lib",
       url = "https://cwcode.ru/vk",
