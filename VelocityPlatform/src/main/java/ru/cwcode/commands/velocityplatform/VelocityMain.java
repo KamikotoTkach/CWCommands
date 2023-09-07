@@ -7,7 +7,6 @@ import com.velocitypowered.api.plugin.Plugin;
 import com.velocitypowered.api.plugin.annotation.DataDirectory;
 import com.velocitypowered.api.proxy.ProxyServer;
 import net.kyori.adventure.text.format.NamedTextColor;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
@@ -44,7 +43,8 @@ public class VelocityMain {
    private ProxyServer server;
    @Inject
    private Logger logger;
-   @Inject @DataDirectory
+   @Inject
+   @DataDirectory
    private Path dataFolder;
 
    @Subscribe
@@ -102,7 +102,7 @@ public class VelocityMain {
                .setColorScheme(NamedTextColor.GREEN)
                .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
                .register();
-         
+
       } catch (Exception ex) {
          this.logger.warn(ex.getLocalizedMessage());
       }
