@@ -36,7 +36,10 @@ public class VelocityPlatform extends Platform {
       try {
          CommandManager commandManager = this.server.getCommandManager();
          commandManager.register(
-               commandManager.metaBuilder(command.getName()).plugin(this.plugin).build(),
+               commandManager.metaBuilder(command.getName())
+                             .aliases(command.aliases().toArray(new String[0]))
+                             .plugin(this.plugin)
+                             .build(),
                new VelocityCommand(command)
          );
       } catch (Exception e) {
