@@ -12,7 +12,7 @@ public class PaperCommandParser extends CommandParser implements CommandExecutor
   }
   
   @Override
-  public boolean onCommand(@NotNull CommandSender commandSender, org.bukkit.command.@NotNull Command command, @NotNull String s, @NotNull String[] strings) {
-    return onCommandExecute(new PaperSender(commandSender),s,strings);
+  public boolean onCommand(@NotNull CommandSender commandSender, org.bukkit.command.@NotNull Command command, @NotNull String usedAlias, @NotNull String[] strings) {
+    return onCommandExecute(new PaperSender(commandSender), usedAlias, strings);
   }
 }

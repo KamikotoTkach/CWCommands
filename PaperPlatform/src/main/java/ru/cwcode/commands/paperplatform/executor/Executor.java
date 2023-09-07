@@ -3,6 +3,7 @@ package ru.cwcode.commands.paperplatform.executor;
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.executor.AbstractExecutor;
@@ -57,5 +58,9 @@ public abstract class Executor extends AbstractExecutor {
       }
 
       return null;
+   }
+   
+   protected final Material argM(int index) {
+      return Material.matchMaterial(argS(index));
    }
 }

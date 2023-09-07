@@ -7,7 +7,7 @@ import tkachgeek.tkachutils.messages.MessageReturn;
 
 public class PrintArguments extends Executor {
   @Override
-  public void executeForPlayer() throws MessageReturn {
+  public void executeForPlayer() {
     for (int i = 0; isPresent(i); i++) {
       sender().sendMessage(arg(i).toComponent(getCommand().getRootCommand().getColorScheme(), true)
                                  .append(Component.text(": " + argS(i)))
