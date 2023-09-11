@@ -3,12 +3,12 @@ package ru.cwcode.commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.TextColor;
 import org.jetbrains.annotations.NotNull;
-import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.color.ColorGenerationStrategy;
 import ru.cwcode.commands.color.ColoredScheme;
 import ru.cwcode.commands.color.DefaultColorGenerationStrategy;
+import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.permissions.DefaultPermissionGenerationStrategy;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.permissions.ProcessResult;
@@ -118,16 +118,6 @@ public class Command {
   }
   
   /**
-   * Устанавливает новое имя для команды, если это подкоманда
-   */
-  public Command setName(String name) {
-    if (this.isSubcommand) {
-      this.name = name;
-    }
-    return this;
-  }
-  
-  /**
    * Устанавливает алиасы для команды. Не работает для рут-команды. Переписывает текущие алиасы
    */
   public Command aliases(String... aliases) {
@@ -197,6 +187,10 @@ public class Command {
     return this;
   }
   
+  public String description() {
+    return description;
+  }
+  
   public Command debug(DebugMode mode) {
     this.debug = mode;
     return this;
@@ -227,6 +221,20 @@ public class Command {
   
   public String getName() {
     return name;
+  }
+  
+  /**
+   * Устанавливает новое имя для команды, если это подкоманда
+   */
+  public Command setName(String name) {
+    if (this.isSubcommand) {
+      this.name = name;
+    }
+    return this;
+  }
+  
+  public String permission() {
+    return permission;
   }
   
   PermissionGenerationStrategy getPermissions() {
@@ -465,12 +473,14 @@ public class Command {
   private void sendDescription(Sender sender, ColorGenerationStrategy color) {
     if (description != null) {
       sender.sendMessage("");
+      sender.sendMessage(Component.text("Описание:", color.main()));
+      
+      boolean firstLine = true;
       
       for (String part : description.split("\n")) {
-        sender.sendMessage(Component.text(part, color.main()));
+        sender.sendMessage(Component.text((firstLine ? "↳ " : "  ") + part, color.accent(true)));
+        firstLine = false;
       }
-      
-      sender.sendMessage("");
     }
   }
   
