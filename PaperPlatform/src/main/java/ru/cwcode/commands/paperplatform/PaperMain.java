@@ -1,6 +1,9 @@
 package ru.cwcode.commands.paperplatform;
 
+import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
+import org.bukkit.Bukkit;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.cwcode.commands.ArgumentSet;
@@ -22,9 +25,11 @@ import ru.cwcode.commands.paperplatform.argument.location.LocationPart;
 import ru.cwcode.commands.paperplatform.argument.location.TargetXArg;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
+import tkachgeek.tkachutils.collections.CollectionUtils;
 import tkachgeek.tkachutils.server.ServerUtils;
 
 import java.util.Arrays;
+import java.util.List;
 
 public final class PaperMain extends JavaPlugin {
   
@@ -39,7 +44,9 @@ public final class PaperMain extends JavaPlugin {
   public void onEnable() {
     plugin = this;
     CommandsAPI.setPlatform(new PaperPlatform());
-
+    
+    for(int i = 0; i<20; i++) sendLogo();
+    
     if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;
     
     try {
@@ -115,9 +122,22 @@ public final class PaperMain extends JavaPlugin {
          .setColorScheme(NamedTextColor.GREEN)
          .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
          .register();
-      
     } catch (Exception ex) {
       this.getLogger().warning(ex.getLocalizedMessage());
     }
+  }
+  
+  private void sendLogo() {
+    NamedTextColor randomColor = CollectionUtils.getRandomListEntry(List.of(NamedTextColor.DARK_GREEN, NamedTextColor.DARK_RED, NamedTextColor.DARK_BLUE, NamedTextColor.BLUE, NamedTextColor.YELLOW, NamedTextColor.GOLD, NamedTextColor.GRAY));
+    
+    ConsoleCommandSender console = Bukkit.getConsoleSender();
+    
+    console.sendMessage("");
+    console.sendMessage(Component.text("  ___ _         _  __      __       _   ", randomColor));
+    console.sendMessage(Component.text(" / __| |___  __| |_\\ \\    / /__ _ _| |__", randomColor));
+    console.sendMessage(Component.text("| (__| / _ \\/ _| / /\\ \\/\\/ / _ \\ '_| / /", randomColor));
+    console.sendMessage(Component.text(" \\___|_\\___/\\__|_\\_\\ \\_/\\_/\\___/_| |_\\_\\", randomColor));
+    console.sendMessage(Component.text("Заказать приватный плагин - cwcode.ru/vk", randomColor));
+    console.sendMessage("");
   }
 }
