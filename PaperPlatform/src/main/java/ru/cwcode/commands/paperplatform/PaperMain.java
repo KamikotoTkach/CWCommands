@@ -45,7 +45,7 @@ public final class PaperMain extends JavaPlugin {
     plugin = this;
     CommandsAPI.setPlatform(new PaperPlatform());
     
-    for(int i = 0; i<20; i++) sendLogo();
+    //for(int i = 0; i<20; i++) sendLogo();
     
     if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;
     
