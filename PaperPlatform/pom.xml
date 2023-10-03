@@ -102,4 +102,10 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
+    <parent>
+        <artifactId>Commands</artifactId>
+        <groupId>ru.cwcode</groupId>
+        <version>3.0</version>
+    </parent>
 </project>

@@ -16,6 +16,7 @@ import ru.cwcode.commands.permissions.ProcessResult;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 public class Command {
@@ -27,6 +28,7 @@ public class Command {
   boolean isSubcommand = false;
   String description = null;
   String permission;
+  Predicate<Sender> canExecute = x -> true;
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
@@ -253,6 +255,13 @@ public class Command {
     this.permissions = strategy;
     return this;
   }
+  /**
+   * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения
+   */
+  public Command canExecute(Predicate<Sender> canExecute) {
+    this.canExecute = canExecute;
+    return this;
+  }
   
   protected void updatePermissions(String permissions) {
     ProcessResult result;
@@ -310,7 +319,7 @@ public class Command {
   }
   
   protected boolean canPerformedBy(Sender sender) {
-    return permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp();
+    return (permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp()) && canExecute.test(sender);
   }
   
   protected Command getSubcommandFor(String arg, Sender sender) {
