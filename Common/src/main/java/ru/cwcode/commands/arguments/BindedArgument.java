@@ -3,6 +3,7 @@ package ru.cwcode.commands.arguments;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
 
+import java.util.Collection;
 import java.util.List;
 
 public abstract class BindedArgument extends Argument {
@@ -14,7 +15,7 @@ public abstract class BindedArgument extends Argument {
   }
   
   @Override
-  public List<String> completions(Sender sender) {
+  public Collection<String> completions(Sender sender) {
     return null;
   }
   
@@ -29,11 +30,11 @@ public abstract class BindedArgument extends Argument {
   }
   
   @Override
-  public List<String> completions(Sender sender, List<String> written) {
+  public Collection<String> completions(Sender sender, List<String> written) {
     return completions(sender, written.get(bind));
   }
   
   public abstract boolean valid(String raw, String offsetValue);
   
-  public abstract List<String> completions(Sender sender, String offsetValue);
+  public abstract Collection<String> completions(Sender sender, String offsetValue);
 }

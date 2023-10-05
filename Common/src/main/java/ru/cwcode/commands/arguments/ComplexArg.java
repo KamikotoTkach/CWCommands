@@ -4,6 +4,7 @@ package ru.cwcode.commands.arguments;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
 
+import java.util.Collection;
 import java.util.List;
 
 public class ComplexArg extends Argument {
@@ -24,7 +25,7 @@ public class ComplexArg extends Argument {
   }
   
   @Override
-  public List<String> completions(Sender sender) {
+  public Collection<String> completions(Sender sender) {
     return null;
   }
   

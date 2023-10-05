@@ -11,6 +11,7 @@ import ru.cwcode.commands.color.ColorGenerationStrategy;
 import tkachgeek.tkachutils.messages.Message;
 import tkachgeek.tkachutils.messages.MessageReturn;
 
+import java.util.Collection;
 import java.util.List;
 
 public abstract class Argument {
@@ -63,9 +64,9 @@ public abstract class Argument {
       return valid(raw);
    }
 
-   public abstract List<String> completions(Sender sender);
+   public abstract Collection<String> completions(Sender sender);
 
-   public List<String> completions(Sender sender, List<String> written) {
+   public Collection<String> completions(Sender sender, List<String> written) {
       return completions(sender);
    }
 
