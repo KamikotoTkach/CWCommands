@@ -26,7 +26,7 @@ public abstract class Executor extends AbstractExecutor {
          }
          return;
       } else if (exception instanceof TargetableMessageReturn) {
-         sender.sendMessage((Component) exception);
+         sender.sendMessage(((TargetableMessageReturn) exception).getMessage(((PaperSender) sender).getCommandSender()));
          return;
       }
 

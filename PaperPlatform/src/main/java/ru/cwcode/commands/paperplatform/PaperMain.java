@@ -23,6 +23,7 @@ import ru.cwcode.commands.paperplatform.argument.*;
 import ru.cwcode.commands.paperplatform.argument.location.LocationArg;
 import ru.cwcode.commands.paperplatform.argument.location.LocationPart;
 import ru.cwcode.commands.paperplatform.argument.location.TargetXArg;
+import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import tkachgeek.tkachutils.collections.CollectionUtils;
@@ -45,13 +46,22 @@ public final class PaperMain extends JavaPlugin {
     plugin = this;
     CommandsAPI.setPlatform(new PaperPlatform());
     
-    //for(int i = 0; i<20; i++) sendLogo();
+    sendLogo();
     
     if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;
     
     try {
       new Command("commandsTest", "*")
          .subCommands(
+            new Command("feature")
+               .arguments(
+                  new ArgumentSet(new ItemToSnbtCommand(), new ExactStringArg("mainItemToSnbt")),
+                  new ArgumentSet(new ItemToBase64Command(), new ExactStringArg("mainItemToBase64")),
+                  new ArgumentSet(new ItemToGsonCommand(), new ExactStringArg("mainItemToGson")),
+                  
+                  new ArgumentSet(new ItemFromSnbtCommand(), new ExactStringArg("itemFromSnbt"), new StringArg("snbt")),
+                  new ArgumentSet(new ItemFromBase64Command(), new ExactStringArg("itemFromBase64"), new StringArg("base64"))
+               ),
             new Command("bukkit")
                .arguments(
                   new ArgumentSet(new PrintArguments(), new ExactStringArg("block"), new BlockArg()),
