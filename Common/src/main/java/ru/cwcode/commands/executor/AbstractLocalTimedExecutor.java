@@ -3,6 +3,8 @@ package ru.cwcode.commands.executor;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
+import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
 import java.util.Date;
 import java.util.WeakHashMap;
@@ -26,6 +28,11 @@ public abstract class AbstractLocalTimedExecutor extends AbstractExecutor {
       }
     }
     super.prepare(sender, args, argumentSet, command);
+  }
+  
+  @Override
+  public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
+  
   }
   
   protected abstract void commandDelayNotPassed();

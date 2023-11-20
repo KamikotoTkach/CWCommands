@@ -3,6 +3,8 @@ package ru.cwcode.commands.executor;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
+import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
 import java.util.WeakHashMap;
 
@@ -24,6 +26,11 @@ public abstract class AbstractLocalToggleExecutor extends AbstractExecutor {
       onDisable();
     }
     this.state.put(sender, !state);
+  }
+  
+  @Override
+  public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
+  
   }
   
   public abstract void onEnable();
