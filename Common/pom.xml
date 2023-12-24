@@ -8,6 +8,26 @@
     <artifactId>Common</artifactId>
     <version>1.0</version>
 
+    <licenses>
+        <license>
+            <name>GNU Affero General Public License v3.0</name>
+            <url>https://github.com/KamikotoTkach/TkachCommands/blob/master/LICENSE</url>
+        </license>
+    </licenses>
+
+    <developers>
+        <developer>
+            <id>tkach</id>
+            <name>Tkachenko Danil</name>
+            <url>https://t.me/tkachx</url>
+        </developer>
+        <developer>
+            <id>Soul_KRT</id>
+            <name>Egor Yaroslavcev</name>
+            <url>https://t.me/Soul_KRT</url>
+        </developer>
+    </developers>
+
     <properties>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
