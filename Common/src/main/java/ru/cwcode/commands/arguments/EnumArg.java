@@ -14,7 +14,8 @@ public class EnumArg extends Argument {
   public EnumArg(Enum[] values, String name) {
     this.name = name;
     this.values.addAll(Stream.of(values)
-                             .map(Enum::name).collect(Collectors.toList()));
+                             .map(Enum::name)
+                             .collect(Collectors.toList()));
   }
   
   @Override

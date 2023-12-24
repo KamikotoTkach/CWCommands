@@ -6,6 +6,7 @@ import ru.cwcode.commands.ArgumentParser;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
+import tkachgeek.tkachutils.collections.EnumUtils;
 import tkachgeek.tkachutils.messages.MessageReturn;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 import tkachgeek.tkachutils.text.SpacesHider;
@@ -116,6 +117,17 @@ public abstract class AbstractExecutor {
    */
   protected boolean argB(int index) {
     return arg(index).toBoolean();
+  }
+  
+  /**
+   * Получает аргумент и получает из него enum (регистронезависимо)
+   */
+  protected <T extends Enum<?>> Optional<T> argE(int index, Class<? extends T> enumClass) {
+    try {
+      return EnumUtils.getEnumInstance(EnumUtils.getEnumValues(enumClass), argS(index));
+    } catch (IllegalAccessException | NoSuchFieldException e) {
+      return Optional.empty();
+    }
   }
 
   protected abstract Optional<? extends Audience> argP(int index);
