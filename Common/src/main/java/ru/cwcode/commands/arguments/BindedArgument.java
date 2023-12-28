@@ -33,8 +33,17 @@ public abstract class BindedArgument extends Argument {
   public Collection<String> completions(Sender sender, List<String> written) {
     return completions(sender, written.get(bind));
   }
-  
-  public abstract boolean valid(String raw, String offsetValue);
-  
-  public abstract Collection<String> completions(Sender sender, String offsetValue);
+
+  /**
+   * @param raw - written value
+   * @param binded - binded value
+   */
+  public abstract boolean valid(String raw, String binded);
+
+
+  /**
+   * @param sender - command sender
+   * @param binded - binded value
+   */
+  public abstract Collection<String> completions(Sender sender, String binded);
 }
