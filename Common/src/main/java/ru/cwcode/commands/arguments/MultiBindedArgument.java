@@ -6,7 +6,7 @@ import ru.cwcode.commands.api.Sender;
 import java.util.Collection;
 import java.util.List;
 
-public abstract class MultyBindedArgument extends Argument {
+public abstract class MultiBindedArgument extends Argument {
   int[] binds;
 
   @Override
@@ -19,7 +19,7 @@ public abstract class MultyBindedArgument extends Argument {
     return null;
   }
 
-  public MultyBindedArgument bind(int... binds) {
+  public MultiBindedArgument bind(int... binds) {
     this.binds = binds;
     return this;
   }
@@ -47,14 +47,14 @@ public abstract class MultyBindedArgument extends Argument {
   }
 
   /**
-   * @param raw - written value
-   * @param binded - binded values
+   * @param raw written value
+   * @param binded binded values
    */
   public abstract boolean valid(String raw, String[] binded);
 
   /**
-   * @param sender - command sender
-   * @param binded - binded values
+   * @param sender command sender
+   * @param binded binded values
    */
   public abstract Collection<String> completions(Sender sender, String[] binded);
 }

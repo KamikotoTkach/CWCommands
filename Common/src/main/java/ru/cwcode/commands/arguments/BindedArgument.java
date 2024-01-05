@@ -35,15 +35,15 @@ public abstract class BindedArgument extends Argument {
   }
 
   /**
-   * @param raw - written value
-   * @param binded - binded value
+   * @param raw written value
+   * @param binded binded value
    */
   public abstract boolean valid(String raw, String binded);
 
 
   /**
-   * @param sender - command sender
-   * @param binded - binded value
+   * @param sender command sender
+   * @param binded binded value
    */
   public abstract Collection<String> completions(Sender sender, String binded);
 }
