@@ -5,29 +5,31 @@ import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.executor.AbstractExecutor;
-import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.arguments.ComplexArg;
 import ru.cwcode.commands.arguments.ExactStringArg;
 import ru.cwcode.commands.arguments.spaced.SpacedArgument;
 import ru.cwcode.commands.color.ColorGenerationStrategy;
+import ru.cwcode.commands.preconditions.*;
+import ru.cwcode.commands.preconditions.processor.PermissionPrecondition;
+import ru.cwcode.commands.preconditions.processor.PreconditionProcessor;
+import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
+import ru.cwcode.commands.preconditions.processor.PreconditionResult;
 import tkachgeek.tkachutils.text.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
-public class ArgumentSet {
+public class ArgumentSet implements Permissible {
   protected final Argument[] arguments;
   protected final AbstractExecutor executor;
   
-  Predicate<Sender> canExecute = x -> true;
+  Deque<Precondition> preconditions = new ArrayDeque<>();
   
   String permission;
   
   boolean spacedLastArgument = false;
-  boolean blockForPlayers = false;
-  boolean blockForNonPlayers = false;
   
   int optionalStart;
   
@@ -93,6 +95,16 @@ public class ArgumentSet {
     return args;
   }
   
+  void updatePermissionPrecondition() {
+    for (Precondition precondition : preconditions) {
+      if (precondition instanceof PermissionPrecondition) {
+        return;
+      }
+    }
+    
+    preconditions.addFirst(new PermissionPrecondition(this));
+  }
+  
   private Argument[] unboxComplexArgs(Argument[] arguments) {
     List<Argument> args = new ArrayList<>();
     
@@ -121,11 +133,9 @@ public class ArgumentSet {
   public ArgumentSet(ArgumentSet toClone, Argument... newArgs) {
     this.arguments = newArgs;
     this.executor = toClone.executor;
-    this.canExecute = toClone.canExecute;
+    this.preconditions = toClone.preconditions;
     this.permission = toClone.permission;
     this.spacedLastArgument = toClone.spacedLastArgument;
-    this.blockForPlayers = toClone.blockForPlayers;
-    this.blockForNonPlayers = toClone.blockForNonPlayers;
     this.optionalStart = toClone.optionalStart;
     this.help = toClone.help;
     this.confirmableString = toClone.confirmableString;
@@ -136,33 +146,31 @@ public class ArgumentSet {
    * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения экзекутора
    */
   public ArgumentSet canExecute(Predicate<Sender> canExecute) {
-    this.canExecute = canExecute;
+    this.preconditions.add(new PredicatePrecondition(canExecute));
     return this;
   }
   
   /**
-   * Запретить и скрыть для игроков
+   * Добавляет Precondition`s в конец списка
+   */
+  public ArgumentSet preconditions(Precondition... preconditions) {
+    this.preconditions.addAll(Arrays.asList(preconditions));
+    return this;
+  }
+  
+  /**
+   * Запретить для игроков
    */
   public ArgumentSet blockForPlayers() {
-    blockForPlayers = true;
-    if (blockForNonPlayers) sendBlockedArgumentWarning();
+    this.preconditions.add(OnlyForNonPlayersPrecondition.getInstance());
     return this;
   }
   
-  private void sendBlockedArgumentWarning() {
-    StringJoiner joiner = new StringJoiner(", ");
-    for (Argument argument : arguments) {
-      joiner.add(argument.argumentName());
-    }
-    CommandsAPI.getPlatform().getLogger().warn("Набор агрументов " + joiner + " не может быть выполнен");
-  }
-  
   /**
-   * Запретить и скрыть для не-игроков
+   * Запретить для не-игроков
    */
   public ArgumentSet blockForNonPlayers() {
-    blockForNonPlayers = true;
-    if (blockForPlayers) sendBlockedArgumentWarning();
+    this.preconditions.add(OnlyForPlayersPrecondition.getInstance());
     return this;
   }
   
@@ -192,38 +200,42 @@ public class ArgumentSet {
     return help != null;
   }
   
-  public Component getHelp(Sender sender, ColorGenerationStrategy color) {
-    boolean canPerformedBy = canPerformedBy(sender);
+  public Component toComponent(Sender sender, ColorGenerationStrategy color) {
+    PreconditionResult preconditions = checkPreconditions(sender);
+    
     TextComponent argumentsAccumulator = Component.empty();
     
     for (Argument arg : arguments) {
-      argumentsAccumulator = argumentsAccumulator.append(Component.space()).append(arg.toComponent(color, canPerformedBy));
+      argumentsAccumulator = argumentsAccumulator.append(Component.space()).append(arg.toComponent(color, preconditions.canPerform()));
     }
     
     return (argumentsAccumulator.append(Component.text(spacedLastArgument ? "..." : ""))
-                                .append(sender.isOp() ? Component.text(" " + permission, color.permissions(canPerformedBy)) : Component.empty()));
+                                .append(sender.isOp() ? Component.text(" " + permission, color.permissions(preconditions.canPerform())) : Component.empty()));
   }
   
   protected boolean canPerformedBy(Sender sender) {
-    if (sender.isPlayer()) {
-      if (blockForPlayers) return false;
-    } else {
-      if (blockForNonPlayers) return false;
-    }
-    return canExecute.test(sender) && (permission.isEmpty() || sender.hasPermission(permission) || sender.isOp());
+    return checkPreconditions(sender).canPerform();
+  }
+  
+  protected PreconditionResult checkPreconditions(Sender sender) {
+    return PreconditionProcessor.process(sender, preconditions);
+  }
+  
+  protected boolean checkPreconditions(Sender sender, PreconditionRequirements requirements) {
+    return PreconditionProcessor.process(sender, preconditions).isSatisfy(requirements);
   }
   
   public void execute(Sender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
-      sender.sendMessage(Component.text("Введите ", command.color.main())
-                                  .append(Component.text(confirmableString, command.color.accent(true)))
-                                  .append(Component.text(" для подтверждения", command.color.main()))
+      sender.sendMessage(Component.text("Введите ", command.getColorScheme().main())
+                                  .append(Component.text(confirmableString, command.getColorScheme().accent(true)))
+                                  .append(Component.text(" для подтверждения", command.getColorScheme().main()))
                                   .clickEvent(ClickEvent.runCommand(confirmableString))
       );
       
       sender.confirm(confirmableString, timeToConfirm,
                      () -> executor.prepare(sender, args, this, command),
-                     () -> sender.sendMessage(Component.text("Время подтверждения вышло", command.color.main())));
+                     () -> sender.sendMessage(Component.text("Время подтверждения вышло", command.getColorScheme().main())));
     } else {
       executor.prepare(sender, args, this, command);
     }
@@ -250,7 +262,7 @@ public class ArgumentSet {
   }
   
   public boolean shouldShowInHelp(List<String> args) {
-    return !isEmpty() && (args.size() == 0 || args.get(0).isEmpty()
+    return !isEmpty() && (args.isEmpty() || args.get(0).isEmpty()
        || !firstArgIsExactStringArg()
        || (StringUtils.startWithIgnoreCase(((ExactStringArg) arguments[0]).getExactString(), args.get(0))));
   }
@@ -326,5 +338,10 @@ public class ArgumentSet {
     }
     
     return Collections.emptyList();
+  }
+  
+  @Override
+  public String getPermission() {
+    return permission;
   }
 }

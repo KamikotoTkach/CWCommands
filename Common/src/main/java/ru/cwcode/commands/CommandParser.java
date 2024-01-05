@@ -2,6 +2,7 @@ package ru.cwcode.commands;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.preconditions.CommandPreconditionResult;
 
 import java.util.Arrays;
 
@@ -22,7 +23,7 @@ public abstract class CommandParser {
     
     ArgumentSearchResult argumentSearchResult = foundedCommand.searchForArgumentSet(sender, args);
     
-    if (argumentSearchResult.isFounded()) {
+    if (argumentSearchResult.isFounded() && argumentSearchResult.getErrorMessage() == null) {
       foundedCommand.onExecute(sender, args, argumentSearchResult.getFounded());
     } else {
       foundedCommand.onError(sender, args, argumentSearchResult);
@@ -47,7 +48,7 @@ public abstract class CommandParser {
     return new Result(parentCommand, deep);
   }
   
-  static class Result {
+  public static class Result {
     Command command;
     int deep;
     

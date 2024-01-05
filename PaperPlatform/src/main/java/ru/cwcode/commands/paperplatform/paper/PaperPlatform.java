@@ -14,7 +14,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 public class PaperPlatform extends Platform {
@@ -45,7 +44,7 @@ public class PaperPlatform extends Platform {
     
     if (pluginCommand.getDescription().isEmpty()) pluginCommand.setDescription(command.description());
     
-    if (pluginCommand.getPermission() == null) pluginCommand.setPermission(command.permission());
+    if (pluginCommand.getPermission() == null) pluginCommand.setPermission(command.getPermission());
   }
   
   private void registerNewAliases(Command command, org.bukkit.command.Command paperCommand, CommandMap commandMap, Plugin plugin) {
