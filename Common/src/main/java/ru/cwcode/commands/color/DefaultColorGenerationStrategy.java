@@ -19,7 +19,6 @@ public class DefaultColorGenerationStrategy implements ColorGenerationStrategy {
   public static DefaultColorGenerationStrategy INSTANCE = new DefaultColorGenerationStrategy();
   
   @Override
-  
   public TextColor main() {
     return main;
   }

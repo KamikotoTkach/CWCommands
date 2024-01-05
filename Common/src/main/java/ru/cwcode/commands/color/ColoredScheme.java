@@ -4,7 +4,6 @@ import net.kyori.adventure.text.format.TextColor;
 import net.kyori.adventure.util.HSVLike;
 
 public class ColoredScheme implements ColorGenerationStrategy {
-  TextColor selectedColor;
   private final TextColor main;
   private final TextColor argument;
   private final TextColor optional;
@@ -19,32 +18,35 @@ public class ColoredScheme implements ColorGenerationStrategy {
   private final TextColor permissionsWithNoPermissions;
   private final TextColor accentWithNoPermissions;
   
-  public ColoredScheme(TextColor selectedColor) {
-    this.selectedColor = selectedColor;
+  public ColoredScheme(TextColor baseColor, TextColor baseNoPermissionColor) {
+
+    main = generateColor(baseColor, TextColor.fromHexString("#00a6f0"));
     
-    main = generateColor(TextColor.fromHexString("#00a6f0"));
-    argument = generateColor(TextColor.fromHexString("#00baff"));
-    optional = generateColor(TextColor.fromHexString("#02d7ff"));
-    subcommand = generateColor(TextColor.fromHexString("#0098dc"));
-    written = generateColor(TextColor.fromHexString("#007ab5"));
-    permissions = generateColor(TextColor.fromHexString("#055080"));
-    accent = generateColor(TextColor.fromHexString("#8adaff"));
+    argument = generateColor(baseColor, TextColor.fromHexString("#00baff"));
+    optional = generateColor(baseColor, TextColor.fromHexString("#02d7ff"));
+    subcommand = generateColor(baseColor, TextColor.fromHexString("#0098dc"));
+    written = generateColor(baseColor, TextColor.fromHexString("#007ab5"));
+    permissions = generateColor(baseColor, TextColor.fromHexString("#055080"));
+    accent = generateColor(baseColor, TextColor.fromHexString("#8adaff"));
     
-    argumentWithNoPermissions = generateColor(TextColor.fromHexString("#FF2C00"));
-    optionalWithNoPermissions = generateColor(TextColor.fromHexString("#FF1800"));
-    subcommandWithNoPermissions = generateColor(TextColor.fromHexString("#FF2C00"));
-    writtenWithNoPermissions = generateColor(TextColor.fromHexString("#FF3100"));
-    permissionsWithNoPermissions = generateColor(TextColor.fromHexString("#C83000"));
-    accentWithNoPermissions = generateColor(TextColor.fromHexString("#FF9C84"));
+    argumentWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF2C00"));
+    optionalWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF1800"));
+    subcommandWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF2C00"));
+    writtenWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF3100"));
+    permissionsWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#C83000"));
+    accentWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF9C84"));
+  }
+  public ColoredScheme(TextColor baseColor) {
+    this(baseColor, baseColor);
   }
   
-  private TextColor generateColor(TextColor base) {
-    HSVLike selectedHSV = selectedColor.asHSV();
-    HSVLike baseHSV = base.asHSV();
+  private TextColor generateColor(TextColor h, TextColor sv) {
+    HSVLike hsvH = h.asHSV();
+    HSVLike hsvSV = sv.asHSV();
     
-    HSVLike of = HSVLike.of(selectedHSV.h(), baseHSV.s(), baseHSV.v());
+    HSVLike combined = HSVLike.of(hsvH.h(), hsvSV.s(), hsvSV.v());
     
-    return TextColor.color(of);
+    return TextColor.color(combined);
   }
   
   public TextColor main() {
