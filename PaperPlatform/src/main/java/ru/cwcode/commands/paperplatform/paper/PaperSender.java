@@ -9,6 +9,8 @@ import ru.cwcode.commands.paperplatform.PaperMain;
 import tkachgeek.tkachutils.confirmable.ConfirmAPI;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
+import java.util.Objects;
+
 public class PaperSender implements Sender {
   CommandSender sender;
   
@@ -60,5 +62,20 @@ public class PaperSender implements Sender {
   
   public Player getPlayer() {
     return (Player) sender;
+  }
+  
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    
+    PaperSender that = (PaperSender) o;
+    
+    return Objects.equals(sender, that.sender);
+  }
+  
+  @Override
+  public int hashCode() {
+    return sender != null ? sender.hashCode() : 0;
   }
 }

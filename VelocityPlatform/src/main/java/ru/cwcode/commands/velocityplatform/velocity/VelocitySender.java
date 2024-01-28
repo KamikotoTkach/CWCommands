@@ -9,6 +9,8 @@ import ru.cwcode.commands.velocityplatform.VelocityMain;
 import tkachgeek.tkachutils.confirmable.velocity.ConfirmAPI;
 import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 
+import java.util.Objects;
+
 public class VelocitySender implements Sender {
    CommandSource sender;
 
@@ -57,5 +59,20 @@ public class VelocitySender implements Sender {
 
    public Player getPlayer() {
       return (Player) sender;
+   }
+   
+   @Override
+   public boolean equals(Object o) {
+      if (this == o) return true;
+      if (o == null || getClass() != o.getClass()) return false;
+      
+      VelocitySender that = (VelocitySender) o;
+     
+     return Objects.equals(sender, that.sender);
+   }
+   
+   @Override
+   public int hashCode() {
+      return sender != null ? sender.hashCode() : 0;
    }
 }
