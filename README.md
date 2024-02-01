@@ -65,4 +65,4 @@ arg("amount).toInt()
 <br><br>
 ![image](https://github.com/KamikotoTkach/TkachCommands/assets/110531613/1fc3f972-0b54-4473-88ae-ac5bd84cbc12)
 <br><br>
-Для работы нужны TkachUtils
+Для сборки нужны TkachUtils
