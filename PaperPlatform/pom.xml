@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode</groupId>
     <artifactId>PaperCommands</artifactId>
-    <version>1.0.3</version>
+    <version>1.0.4</version>
     <packaging>jar</packaging>
 
     <name>PaperCommands</name>
