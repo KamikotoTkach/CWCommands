@@ -2,6 +2,7 @@ package ru.cwcode.commands;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
 import tkachgeek.tkachutils.text.StringUtils;
 
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public abstract class TabCompleter {
     final List<String> arguments = Arrays.asList(args);
     
     if (arguments.size() == 1) {
-      for (Command cmd : foundedCommand.getSubcommandsFor(sender)) {
+      for (Command cmd : foundedCommand.getSubcommandsFor(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
         complete.add(cmd.name);
         complete.addAll(cmd.aliases);
       }
@@ -51,7 +52,7 @@ public abstract class TabCompleter {
     
     //Benchmark.stage("TabComplete", "addedArgumentSets");
     
-    for (ArgumentSet set : foundedCommand.getArgumentSetsFor(sender)) {
+    for (ArgumentSet set : foundedCommand.getArgumentSetsFor(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
       complete.addAll(set.getCompletesFor(arguments, sender));
     }
     

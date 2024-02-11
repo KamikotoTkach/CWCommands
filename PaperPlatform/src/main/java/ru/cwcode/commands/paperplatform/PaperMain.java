@@ -19,13 +19,17 @@ import ru.cwcode.commands.arguments.datetime.TimeArg;
 import ru.cwcode.commands.arguments.spaced.SafetySpacedStringArg;
 import ru.cwcode.commands.arguments.spaced.SpacedListArg;
 import ru.cwcode.commands.arguments.spaced.SpacedStringArg;
+import ru.cwcode.commands.color.ColoredScheme;
 import ru.cwcode.commands.paperplatform.argument.*;
 import ru.cwcode.commands.paperplatform.argument.location.LocationArg;
 import ru.cwcode.commands.paperplatform.argument.location.LocationPart;
 import ru.cwcode.commands.paperplatform.argument.location.TargetXArg;
 import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
+import ru.cwcode.commands.paperplatform.paper.PaperSender;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
+import ru.cwcode.commands.preconditions.Precondition;
+import ru.cwcode.commands.preconditions.PredicatePrecondition;
 import tkachgeek.tkachutils.collections.CollectionUtils;
 import tkachgeek.tkachutils.server.ServerUtils;
 
@@ -61,6 +65,22 @@ public final class PaperMain extends JavaPlugin {
                   
                   new ArgumentSet(new ItemFromSnbtCommand(), new ExactStringArg("itemFromSnbt"), new StringArg("snbt")),
                   new ArgumentSet(new ItemFromBase64Command(), new ExactStringArg("itemFromBase64"), new StringArg("base64"))
+               ),
+            new Command("preconditionTest")
+               .arguments(
+                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyIfFlying"))
+                     .canExecute(sender -> ((PaperSender) sender).getPlayer().isFlying()),
+                  
+                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyIfNotFlying"))
+                     .preconditions(
+                        new PredicatePrecondition(sender -> !((PaperSender) sender).getPlayer().isFlying(), "Игрок должен стоять на земле")
+                     ),
+                  
+                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyForPlayer"))
+                     .blockForNonPlayers(),
+                  
+                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyForNonPlayer"))
+                     .blockForPlayers()
                ),
             new Command("bukkit")
                .arguments(
@@ -129,7 +149,7 @@ public final class PaperMain extends JavaPlugin {
             new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(EquipmentSlot.values(), "equipmentSlot")),
             new ArgumentSet(new PrintArguments(), new ExactStringArg("hexColor"), new HexColorArg("color"))
          )
-         .setColorScheme(NamedTextColor.GREEN)
+         .setColorScheme(new ColoredScheme(NamedTextColor.GREEN, NamedTextColor.RED))
          .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
          .register();
     } catch (Exception ex) {

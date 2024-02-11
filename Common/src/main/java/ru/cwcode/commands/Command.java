@@ -12,14 +12,19 @@ import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.permissions.DefaultPermissionGenerationStrategy;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.permissions.ProcessResult;
+import ru.cwcode.commands.preconditions.CommandPreconditionResult;
+import ru.cwcode.commands.preconditions.Precondition;
+import ru.cwcode.commands.preconditions.PredicatePrecondition;
+import ru.cwcode.commands.preconditions.processor.PermissionPrecondition;
+import ru.cwcode.commands.preconditions.processor.PreconditionProcessor;
+import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
+import ru.cwcode.commands.preconditions.processor.PreconditionResult;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class Command {
+public class Command implements Permissible{
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
   String name;
   ColorGenerationStrategy color = null;
@@ -28,13 +33,12 @@ public class Command {
   boolean isSubcommand = false;
   String description = null;
   String permission;
-  Predicate<Sender> canExecute = x -> true;
+  Deque<Precondition> preconditions = new ArrayDeque<>();
   Help help;
   Command parent = null;
   Command[] subcommands = new Command[]{};
   //присваивается только в рут-команде
   DebugMode debug = DebugMode.NONE;
-  private boolean ignoreExecutionPossibility = true;
   
   /**
    * Автоматически устанавливается пермишен name и устанавливаются алиасы
@@ -114,8 +118,8 @@ public class Command {
     arguments(new ArgumentSet(executor, "", arguments));
   }
   
+  @Deprecated(forRemoval = true)
   public Command setIgnoreExecutionPossibility(boolean ignoreExecutionPossibility) {
-    this.ignoreExecutionPossibility = ignoreExecutionPossibility;
     return this;
   }
   
@@ -235,7 +239,8 @@ public class Command {
     return this;
   }
   
-  public String permission() {
+  @Override
+  public String getPermission() {
     return permission;
   }
   
@@ -255,11 +260,21 @@ public class Command {
     this.permissions = strategy;
     return this;
   }
+  
   /**
    * Предикат, который проверяется при автокомплите, выводе хелпа и попытке выполнения
    */
   public Command canExecute(Predicate<Sender> canExecute) {
-    this.canExecute = canExecute;
+    this.preconditions.add(new PredicatePrecondition(canExecute));
+    return this;
+  }
+  
+  
+  /**
+   * Добавляет Precondition`s в конец списка
+   */
+  public Command preconditions(Precondition... preconditions) {
+    this.preconditions.addAll(Arrays.asList(preconditions));
     return this;
   }
   
@@ -280,6 +295,7 @@ public class Command {
     
     permissions = result.getNextPermissions();
     permission = result.getPermission();
+    updatePermissionPrecondition();
     
     for (Command subcommand : subcommands) {
       subcommand.updatePermissions(permissions);
@@ -287,10 +303,21 @@ public class Command {
     
     for (ArgumentSet argumentSet : argumentSets) {
       argumentSet.permission = getPermissions().processArgumentSet(permissions, argumentSet.permission, permission);
+      argumentSet.updatePermissionPrecondition();
       
       if (debug.is(DebugMode.DETAILED))
         debug.print("§7Аргументсету §f" + permissions + "/" + argumentSet + " §7установлены права §f" + argumentSet.permission);
     }
+  }
+  
+  private void updatePermissionPrecondition() {
+      for (Precondition precondition : preconditions) {
+        if (precondition instanceof PermissionPrecondition) {
+          return;
+        }
+      }
+      
+      preconditions.addFirst(new PermissionPrecondition(this));
   }
   
   protected void onExecute(Sender sender, String[] args, ArgumentSet founded) {
@@ -302,15 +329,11 @@ public class Command {
       debug.print("§7Выполнение §f" + founded + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
   }
   
-  protected List<Command> getSubcommandsFor(Sender sender) {
-    return getSubcommandsFor(sender, false);
-  }
-  
-  protected List<Command> getSubcommandsFor(Sender sender, boolean ignoreExecutionPossibility) {
-    
+  protected List<Command> getSubcommandsFor(Sender sender, PreconditionRequirements requirements) {
     List<Command> list = new ArrayList<>();
+    
     for (Command command : subcommands) {
-      if (ignoreExecutionPossibility || command.canPerformedBy(sender)) {
+      if (command.checkPreconditions(sender, requirements)) {
         list.add(command);
       }
     }
@@ -319,13 +342,22 @@ public class Command {
   }
   
   protected boolean canPerformedBy(Sender sender) {
-    return (permission != null && (permission.isEmpty() || sender.hasPermission(permission)) || sender.isOp()) && canExecute.test(sender);
+    return checkPreconditions(sender).getResult().canPerform();
+  }
+  
+  protected CommandPreconditionResult checkPreconditions(Sender sender) {
+    return new CommandPreconditionResult(this, PreconditionProcessor.process(sender, preconditions));
+  }
+  
+  protected boolean checkPreconditions(Sender sender, PreconditionRequirements requirements) {
+    return PreconditionProcessor.process(sender, preconditions).isSatisfy(requirements);
   }
   
   protected Command getSubcommandFor(String arg, Sender sender) {
     
     for (Command command : subcommands) {
-      if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg)) && command.canPerformedBy(sender)) {
+      if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg))
+         && command.checkPreconditions(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
         return command;
       }
     }
@@ -333,15 +365,12 @@ public class Command {
     return null;
   }
   
-  protected List<ArgumentSet> getArgumentSetsFor(Sender sender) {
-    return getArgumentSetsFor(sender, false);
-  }
   
-  protected List<ArgumentSet> getArgumentSetsFor(Sender sender, boolean ignoreExecutionPossibility) {
+  protected List<ArgumentSet> getArgumentSetsFor(Sender sender, PreconditionRequirements requirements) {
     List<ArgumentSet> list = new ArrayList<>();
     
     for (ArgumentSet arg : argumentSets) {
-      if (ignoreExecutionPossibility || arg.canPerformedBy(sender)) {
+      if (arg.checkPreconditions(sender, requirements)) {
         list.add(arg);
       }
     }
@@ -352,14 +381,25 @@ public class Command {
     ArgumentSearchResult result = new ArgumentSearchResult();
     
     for (ArgumentSet set : argumentSets) {
-      if (!set.canPerformedBy(sender)) continue;
+      PreconditionResult preconditionResult = set.checkPreconditions(sender);
       
       ArgumentFitnessResult fitnessResult = set.isArgumentsFit(sender, args);
       
+      String errorMessage = null;
+      if (!preconditionResult.canPerform()) {
+        if (preconditionResult.getCannotPerformMessage() != null) {
+          errorMessage = preconditionResult.getCannotPerformMessage();
+        } else continue;
+      }
+      
       if (fitnessResult.success()) {
-        return result.founded(set);
+        if (errorMessage == null) {
+          return result.founded(set);
+        } else {
+          return result.error(set, errorMessage);
+        }
       } else {
-        result.add(fitnessResult);
+        if (preconditionResult.canSee()) result.add(fitnessResult);
       }
     }
     
@@ -367,21 +407,38 @@ public class Command {
   }
   
   protected void onError(Sender sender, String[] args, ArgumentSearchResult argumentSearchResult) {
-    if (argumentSearchResult.canShowDetailedHelp()) {
+    if(argumentSearchResult.getErrorMessage() != null) {
+      showErrorMessage(sender, argumentSearchResult);
+    } else if (argumentSearchResult.canShowDetailedHelp()) {
       showDetailedHelp(sender, argumentSearchResult);
     } else {
       showFullHelp(sender, args);
     }
   }
   
+  private void showErrorMessage(Sender sender, ArgumentSearchResult argumentSearchResult) {
+    List<Component> toSend = new ArrayList<>();
+    
+    toSend.add(Component.empty());
+    
+    toSend.add(argumentSearchResult.getFounded().toComponent(sender, getColorScheme()));
+    toSend.add(Component.text("↳ ")
+                        .append(Component.text(argumentSearchResult.getErrorMessage()))
+                        .color(getColorScheme().accent(true)));
+    
+    toSend.add(Component.empty());
+    
+    for (Component line : toSend) {
+      sender.sendMessage(line);
+    }
+  }
+  
   protected void showFullHelp(Sender sender, String[] args) {
     if (help == null) {
-      
       sendAutoHelp(sender, args);
-      return;
+    } else {
+      help.sendTo(sender, args);
     }
-    
-    help.sendTo(sender, args);
   }
   
   private void updateDebug(DebugMode debug) {
@@ -399,7 +456,7 @@ public class Command {
     toSend.add(Component.empty());
     
     for (ArgumentFitnessResult invalidResult : argumentSearchResult.getInvalidResults()) {
-      toSend.add(written.append(invalidResult.getArgumentSet().getHelp(sender, getColorScheme())));
+      toSend.add(written.append(invalidResult.getArgumentSet().toComponent(sender, getColorScheme())));
       toSend.add(Component.text("↳ ")
                           .append(invalidResult.getInvalidArgument().invalidMessage(this, sender, invalidResult.getInvalidStringArgument()))
                           .color(getColorScheme().accent(true)));
@@ -418,7 +475,7 @@ public class Command {
     
     List<Component> toSend = new ArrayList<>();
     
-    for (Command subcommand : getSubcommandsFor(sender, ignoreExecutionPossibility)) {
+    for (Command subcommand : getSubcommandsFor(sender, PreconditionRequirements.ONLY_CAN_SEE)) {
       boolean canPerformedBy = subcommand.canPerformedBy(sender);
       
       toSend.add(written.color(color.written(canPerformedBy))
@@ -429,7 +486,7 @@ public class Command {
     
     boolean previousWasEmptyLine = false;
     
-    for (ArgumentSet argumentSet : filterArgumentSets(getArgumentSetsFor(sender, ignoreExecutionPossibility), args)) {
+    for (ArgumentSet argumentSet : filterArgumentSets(getArgumentSetsFor(sender, PreconditionRequirements.ONLY_CAN_SEE), args)) {
       
       if (argumentSet.isHidden()) continue;
       
@@ -439,7 +496,7 @@ public class Command {
       if (!previousWasEmptyLine && hasHelp) toSend.add(Component.empty());
       
       toSend.add(written.color(color.written(canPerformedBy))
-                        .append(argumentSet.getHelp(sender, color)));
+                        .append(argumentSet.toComponent(sender, color)));
       
       if (hasHelp) {
         toSend.add(Component.text("↳ ")
@@ -474,7 +531,7 @@ public class Command {
     
     List<ArgumentSet> relevantArgumentSets = argumentSets.stream().filter(x -> x.shouldShowInHelp(List.of(args))).collect(Collectors.toList());
     
-    if (relevantArgumentSets.size() == 0) return argumentSets;
+    if (relevantArgumentSets.isEmpty()) return argumentSets;
     
     return relevantArgumentSets;
   }

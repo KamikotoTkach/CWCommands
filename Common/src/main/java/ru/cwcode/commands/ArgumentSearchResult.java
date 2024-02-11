@@ -1,5 +1,6 @@
 package ru.cwcode.commands;
 
+import org.jetbrains.annotations.Nullable;
 import ru.cwcode.commands.arguments.ExactStringArg;
 
 import java.util.ArrayList;
@@ -7,11 +8,16 @@ import java.util.List;
 
 public class ArgumentSearchResult {
   List<ArgumentFitnessResult> notValid = new ArrayList<>();
-  ArgumentSet founded = null;
+  @Nullable ArgumentSet founded = null;
+  @Nullable String errorMessage = null;
   
   public ArgumentSearchResult founded(ArgumentSet set) {
     founded = set;
     return this;
+  }
+  
+  public @Nullable String getErrorMessage() {
+    return errorMessage;
   }
   
   public void add(ArgumentFitnessResult fitnessResult) {
@@ -22,7 +28,7 @@ public class ArgumentSearchResult {
   }
   
   public boolean isFounded() {
-    return founded != null;
+    return getFounded() != null;
   }
   
   public boolean canShowDetailedHelp() {
@@ -35,5 +41,11 @@ public class ArgumentSearchResult {
   
   public ArgumentSet getFounded() {
     return founded;
+  }
+  
+  public ArgumentSearchResult error(ArgumentSet set, String errorMessage) {
+    this.founded = set;
+    this.errorMessage = errorMessage;
+    return this;
   }
 }
