@@ -1,17 +1,23 @@
+# TkachCommands 1.1.1
+ _(aka CWCommands, PaperCommands, VelocityCommands)_\
+_Velocity & Paper 1.16.5+_
+
 Библиотека на команды. Возможно, когда-то сделаю нормальную документацию, но лень, и пока это останется только для личного использования.
 <br><br>
-Фиачурес:
+### Фиачурес:
 - Авто-генерируемый хелп
 - Авто-валидация аргуметов
 - Авто таб-комплишен
-- Готовые аргументы на все случаи жизни (34 шт.)
+- Готовые аргументы на все случаи жизни (37 шт.)
 - Кастомизация цветов
 - Авто-генерация пермишенов (переопределяемая)
 - Опциональные аргументы
 - Spaced-аргументы (implements SpacedArgument)
 - Динамические аргументы
+- AutowiredExecutor
+- Preconditions (предусловия)
 
-Использование:
+### Использование:
 ```java
     new Command("rootCommandName", "rootPermission")
        .subCommands(
@@ -65,4 +71,111 @@ arg("amount).toInt()
 <br><br>
 ![image](https://github.com/KamikotoTkach/TkachCommands/assets/110531613/1fc3f972-0b54-4473-88ae-ac5bd84cbc12)
 <br><br>
+
+### AutowiredExecutor
+Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён.
+
+```java
+new ArgumentSet(new TestAutowired(), new ExactStringArg("testAutowired"), new SomeObjectArg().optional())
+
+//............
+
+public class TestAutowired extends AutowiredExecutor {
+
+//В зависимости от того, предоставлен ли опциональный аргумент, будет выбран подходящий метод:
+
+  public void test(SomeObject object) {
+    sender.sendMessage(object.toString());
+  }
+  
+  public void test() {
+    sender.sendMessage("optional object not present");
+  }
+}
+
+```
+
+### Preconditions
+Предусловия проверяются перед непосредственным исполнением экзекутора и по их результату или выполняется экзекутор или отправителю команды пишется что не так
+
+```java
+new Command("command")
+       .preconditions(new LoadedPlayerData(), new SomethingElse())
+//......
+
+public class LoadedPlayerData extends Precondition {
+  @Override
+  public boolean canExecute(Sender sender) {
+    return sender.isPlayer()
+       && sender instanceof PaperSender paperSender
+       && playerDataManager.getPlayerData(paperSender.getPlayer()).isPresent();
+  }
+  
+  @Override
+  public String cannotExecuteFeedback(Sender sender) {
+    return "Подождите немного или перезайдите на сервер: ваши даные не удалось загрузить";
+  }
+
+  //Если в предусловии переопределить этот метод, то команда/аргументсет, если не доступен игроку, будет исключён из списка досупных для игрока в принципе
+  @Override
+  public boolean canSee(Sender sender) {
+    return true;
+  }
+}
+
+```
+
+### Встроенные аргументы
+Формат: Название класса : тип, в который мапится в AutowiredExecutor
+
+Модуль Common:
+  * Basic:
+    - **IntegerArg** : int
+    - **DoubleArg** : double
+    - **BooleanArg** : boolean 
+    - **StringArg** : string
+  * Datetime:
+    - **DurationArg** : Duration
+    - **TimeArg** : string
+  * Spaced:
+    - **SpacedStringArg** : string
+    - **SpacedListArg** : string
+    - **SpacedDynamicList** : string
+    - **SpacedDynamicArg** : string
+    - **SafetySpacedStringArg** : string
+  * Another:
+    - **ComplexArg** (обёртка для нескольких аргументов в одном)
+    - **DynamicList** : string
+    - **EmptyArg** : string
+    - **EnumArg** : enum instance
+    - **ExactStringArg** : string
+    - **HaxColorArg** : string
+    - **LegacyColorArg** : string
+    - **ListArg** : string
+    - **SafetyStringArg** : string
+
+Модуль Paper:
+  * Location:
+    - **LocationArg** (комплексный аргумент из TargetXArg-ов xyz/xyz+world)
+    - **TargetXArg**(LocationPart) : xyz->double, pitch yaw - > float, world -> org.bukkit.World
+  * Another:
+    - **BlockArg** : enum instance
+    - **EnchantmentArg** : org.bukkit.enchantments.Enchantment
+    - **MaterialArg** : enum instance
+    - **NearPlayersArg** : org.bukkit.Player
+    - **OnlinePlayersArg** : org.bukkit.Player
+    - **OninePlayersWithoutSender** : org.bukkit.Player
+    - **OnlinePlayerWithPermissionArg** : org.bukkit.Player
+    - **ParticleArg** : enum instance
+    - **PlayerArg** : org.bukkit.Player
+    - **PotionEffectArg** : org.bukkit.potion.PotionEffectType
+    - **SoundArg** : enum instance
+    - **WorldArg** : org.bukkit.World
+
+Модуль Velocity:
+- **OnlinePlayersArg** : proxy player 
+- **OninePlayersWithoutSender** : proxy player
+- **OnlinePlayerWithPermissionArg** : proxy player
+- **PlayerArg** : proxy player
+
 Для сборки нужны TkachUtils
