@@ -8,7 +8,7 @@ _Velocity & Paper 1.16.5+_
 - Авто-генерируемый хелп
 - Авто-валидация аргуметов
 - Авто таб-комплишен
-- Готовые аргументы на все случаи жизни (34 шт.)
+- Готовые аргументы на все случаи жизни (37 шт.)
 - Кастомизация цветов
 - Авто-генерация пермишенов (переопределяемая)
 - Опциональные аргументы
@@ -125,7 +125,57 @@ public class LoadedPlayerData extends Precondition {
 
 ```
 
+### Встроенные аргументы
+Формат: Название класса : тип, в который мапится в AutowiredExecutor
 
+Модуль Common:
+  * Basic:
+    - **IntegerArg** : int
+    - **DoubleArg** : double
+    - **BooleanArg** : boolean 
+    - **StringArg** : string
+  * Datetime:
+    - **DurationArg** : Duration
+    - **TimeArg** : string
+  * Spaced:
+    - **SpacedStringArg** : string
+    - **SpacedListArg** : string
+    - **SpacedDynamicList** : string
+    - **SpacedDynamicArg** : string
+    - **SafetySpacedStringArg** : string
+  * Another:
+    - **ComplexArg** (обёртка для нескольких аргументов в одном)
+    - **DynamicList** : string
+    - **EmptyArg** : string
+    - **EnumArg** : enum instance
+    - **ExactStringArg** : string
+    - **HaxColorArg** : string
+    - **LegacyColorArg** : string
+    - **ListArg** : string
+    - **SafetyStringArg** : string
 
+Модуль Paper:
+  * Location:
+    - **LocationArg** (комплексный аргумент из TargetXArg-ов xyz/xyz+world)
+    - **TargetXArg**(LocationPart) : xyz->double, pitch yaw - > float, world -> org.bukkit.World
+  * Another:
+    - **BlockArg** : enum instance
+    - **EnchantmentArg** : org.bukkit.enchantments.Enchantment
+    - **MaterialArg** : enum instance
+    - **NearPlayersArg** : org.bukkit.Player
+    - **OnlinePlayersArg** : org.bukkit.Player
+    - **OninePlayersWithoutSender** : org.bukkit.Player
+    - **OnlinePlayerWithPermissionArg** : org.bukkit.Player
+    - **ParticleArg** : enum instance
+    - **PlayerArg** : org.bukkit.Player
+    - **PotionEffectArg** : org.bukkit.potion.PotionEffectType
+    - **SoundArg** : enum instance
+    - **WorldArg** : org.bukkit.World
+
+Модуль Velocity:
+- **OnlinePlayersArg** : proxy player 
+- **OninePlayersWithoutSender** : proxy player
+- **OnlinePlayerWithPermissionArg** : proxy player
+- **PlayerArg** : proxy player
 
 Для сборки нужны TkachUtils
