@@ -41,4 +41,9 @@ public class OnlinePlayerWithPermissionArg extends Argument {
   public String argumentName() {
     return argumentName == null ? "Игрок с " + permission : argumentName;
   }
+  
+  @Override
+  public Object map() {
+    return Bukkit.getPlayer(raw);
+  }
 }

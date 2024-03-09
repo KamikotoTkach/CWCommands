@@ -74,7 +74,12 @@ public class IntegerArg extends Argument {
    public String argumentName() {
       return placeholder;
    }
-
+   
+   @Override
+   public Object map() {
+      return toInt();
+   }
+   
    @Override
    protected String hint() {
       StringBuilder builder = new StringBuilder();

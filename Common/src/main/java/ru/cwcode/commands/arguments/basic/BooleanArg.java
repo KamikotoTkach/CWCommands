@@ -59,6 +59,11 @@ public class BooleanArg extends Argument {
   }
   
   @Override
+  public Object map() {
+    return toBoolean();
+  }
+  
+  @Override
   protected String hint() {
     return trueValue + " или " + falseValue;
   }

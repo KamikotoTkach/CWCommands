@@ -33,4 +33,9 @@ public class DurationArg extends Argument {
   protected String hint() {
     return "Строка вида 1y2d100t - 1 год, 2 дня и 100 тиков. \nКомбинировать можно как угодно, повторять нельзя.";
   }
+  
+  @Override
+  public Object map() {
+    return StringToDuration.parse(raw);
+  }
 }

@@ -3,14 +3,14 @@ package ru.cwcode.commands.velocityplatform.executor;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.audience.Audience;
 import ru.cwcode.commands.api.CommandsAPI;
+import ru.cwcode.commands.executor.AbstractAutowiredExecutor;
 import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
 import ru.cwcode.commands.velocityplatform.velocity.VelocitySender;
-import tkachgeek.tkachutils.messages.MessageReturn;
 
 import java.util.Optional;
 
-public abstract class Executor extends AbstractExecutor {
+public abstract class AutowiredExecutor extends AbstractAutowiredExecutor {
    @Override
    public void handleError(Exception exception) {
       CommandsAPI.getPlatform().handleExecutionException(exception,command,sender);

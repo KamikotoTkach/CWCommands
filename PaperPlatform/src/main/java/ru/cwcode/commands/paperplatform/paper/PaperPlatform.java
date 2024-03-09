@@ -1,13 +1,18 @@
 package ru.cwcode.commands.paperplatform.paper;
 
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import ru.cwcode.commands.Command;
+import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Logger;
 import ru.cwcode.commands.api.Platform;
+import ru.cwcode.commands.api.Sender;
 import tkachgeek.tkachutils.collections.CollectionUtils;
+import tkachgeek.tkachutils.messages.MessageReturn;
+import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 import tkachgeek.tkachutils.reflection.ReflectionUtils;
 
 import java.lang.reflect.Field;
@@ -70,5 +75,30 @@ public class PaperPlatform extends Platform {
   @Override
   public Logger getLogger() {
     return this.logger;
+  }
+  
+  @Override
+  public void handleExecutionException(Exception exception, Command command, Sender sender) {
+    if (exception instanceof MessageReturn) {
+      MessageReturn messageReturn = (MessageReturn) exception;
+      if (messageReturn.isStyled()) {
+        sender.sendMessage(messageReturn.getComponentMessage());
+      } else {
+        sender.sendMessage(messageReturn.getComponentMessage()
+                                        .color(command.getColorScheme().main()));
+      }
+      return;
+    } else if (exception instanceof TargetableMessageReturn) {
+      sender.sendMessage(((TargetableMessageReturn) exception).getMessage(((PaperSender) sender).getCommandSender()));
+      return;
+    }
+    
+    String localizedMessage = exception.getLocalizedMessage();
+    if (localizedMessage == null) localizedMessage = "Неизвестная ошибка";
+    
+    sender.sendMessage(Component.text(localizedMessage, command.getColorScheme().main()));
+    
+    CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
+    exception.printStackTrace();
   }
 }

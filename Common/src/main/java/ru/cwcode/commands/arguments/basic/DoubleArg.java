@@ -82,6 +82,11 @@ public class DoubleArg extends Argument {
   }
   
   @Override
+  public Object map() {
+    return toDouble();
+  }
+  
+  @Override
   protected String hint() {
     StringBuilder builder = new StringBuilder();
     

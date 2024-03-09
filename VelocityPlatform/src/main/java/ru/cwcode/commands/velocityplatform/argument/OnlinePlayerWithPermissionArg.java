@@ -49,4 +49,9 @@ public class OnlinePlayerWithPermissionArg extends Argument {
    public String argumentName() {
       return argumentName == null ? "Игрок с " + permission : argumentName;
    }
+   
+   @Override
+   public Object map() {
+      return VelocityMain.getPlatform().getServer().getPlayer(raw);
+   }
 }

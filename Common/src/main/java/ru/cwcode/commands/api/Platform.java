@@ -6,4 +6,6 @@ public abstract class Platform {
    public abstract void registerCommand(Command command);
 
    public abstract Logger getLogger();
+   
+   public abstract void handleExecutionException(Exception exception, Command command, Sender sender);
 }

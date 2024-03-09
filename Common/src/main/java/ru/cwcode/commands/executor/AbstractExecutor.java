@@ -30,7 +30,7 @@ public abstract class AbstractExecutor {
         executeForNonPlayer();
       }
     } catch (Exception exception) {
-      errorHandler(exception);
+      handleError(exception);
     }
   }
   
@@ -46,7 +46,7 @@ public abstract class AbstractExecutor {
   /**
    * Переопределение обработчика ошибок
    */
-  public abstract void errorHandler(Exception exception);
+  public abstract void handleError(Exception exception);
   
   /**
    * Возвращает игрока при выполнении команды игроком. Для не-игроков используй sender()

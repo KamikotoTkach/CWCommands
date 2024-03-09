@@ -44,4 +44,9 @@ public class OnlinePlayers extends Argument {
    public Component invalidMessage(Command command, Sender sender, String written) {
       return Component.text("игрок " + written + " не онлайн", command.getColorScheme().main());
    }
+   
+   @Override
+   public Object map() {
+      return VelocityMain.getPlatform().getServer().getPlayer(raw).get();
+   }
 }

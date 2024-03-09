@@ -3,6 +3,7 @@ package ru.cwcode.commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Sender;
@@ -178,6 +179,9 @@ public abstract class Argument {
                       .append(Component.text(" нельзя представить как ", colorScheme.main()))
                       .append(Component.text(argumentName(), colorScheme.accent(true)));
    }
-
+   @ApiStatus.OverrideOnly
+   public Object map() {
+      return raw;
+   }
 
 }

@@ -5,36 +5,31 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import ru.cwcode.commands.api.CommandsAPI;
-import ru.cwcode.commands.executor.AbstractLocalToggleExecutor;
+import ru.cwcode.commands.executor.AbstractAutowiredExecutor;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
 
 import java.util.Optional;
 
-public abstract class LocalToggleExecutor extends AbstractLocalToggleExecutor {
-  
-  public LocalToggleExecutor(boolean initialState) {
-    super(initialState);
-  }
-  
+public class AutowiredExecutor extends AbstractAutowiredExecutor {
   @Override
   public void handleError(Exception exception) {
     CommandsAPI.getPlatform().handleExecutionException(exception, command, sender);
   }
   
   @Override
-  protected Audience sender() {
+  public Audience sender() {
     return sender.getAudience();
   }
   
   @Override
-  protected Optional<Player> argP(int index) {
+  public Optional<Player> argP(int index) {
     Player player = Bukkit.getPlayer(argS(index));
     if (player == null) return Optional.empty();
     
     return Optional.of(player);
   }
   
-  protected final Player player() {
+  public final Player player() {
     if (sender instanceof PaperSender) {
       return ((PaperSender) sender).getPlayer();
     }
@@ -42,7 +37,7 @@ public abstract class LocalToggleExecutor extends AbstractLocalToggleExecutor {
     return null;
   }
   
-  protected final Material argM(int index) {
+  public final Material argM(int index) {
     return Material.matchMaterial(argS(index));
   }
 }

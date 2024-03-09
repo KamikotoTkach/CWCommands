@@ -23,7 +23,7 @@ public abstract class AsyncExecutor extends Executor {
           executeForNonPlayer();
         }
       } catch (Exception e) {
-        errorHandler(e);
+        handleError(e);
       }
     });
   }
