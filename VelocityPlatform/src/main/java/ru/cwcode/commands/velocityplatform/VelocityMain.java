@@ -32,7 +32,7 @@ import java.util.Arrays;
 @Plugin(
       id = "cw-commands",
       name = "CWCommands",
-      version = "1.0",
+      version = "1.1.1",
       description = "A Pretty Commands Lib",
       url = "https://cwcode.ru/vk",
       authors = {"TkachGeek", "Soul_KRT"}

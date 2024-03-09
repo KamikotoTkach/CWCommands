@@ -1,6 +1,6 @@
 name: CWCommands
 main: ru.cwcode.commands.paperplatform.PaperMain
-version: 1.0
+version: ${project.version}
 api-version: 1.14
 folia-supported: true
 
