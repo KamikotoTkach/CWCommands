@@ -1,6 +1,10 @@
+# TkachCommands
+ _(aka CWCommands, PaperCommands, VelocityCommands)_
+
+
 Библиотека на команды. Возможно, когда-то сделаю нормальную документацию, но лень, и пока это останется только для личного использования.
 <br><br>
-Фиачурес:
+### Фиачурес:
 - Авто-генерируемый хелп
 - Авто-валидация аргуметов
 - Авто таб-комплишен
@@ -11,7 +15,7 @@
 - Spaced-аргументы (implements SpacedArgument)
 - Динамические аргументы
 
-Использование:
+### Использование:
 ```java
     new Command("rootCommandName", "rootPermission")
        .subCommands(
@@ -65,4 +69,31 @@ arg("amount).toInt()
 <br><br>
 ![image](https://github.com/KamikotoTkach/TkachCommands/assets/110531613/1fc3f972-0b54-4473-88ae-ac5bd84cbc12)
 <br><br>
+
+### AutowiredExecutor
+Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён.
+
+```java
+new ArgumentSet(new TestAutowired(), new ExactStringArg("testAutowired"), new SomeObjectArg().optional())
+
+//............
+
+public class TestAutowired extends AutowiredExecutor {
+
+//В зависимости от того, предоставлен ли опциональный аргумент, будет выбран подходящий метод:
+
+  public void test(SomeObject object) {
+    sender.sendMessage(object.toString());
+  }
+  
+  public void test() {
+    sender.sendMessage("optional object not present");
+  }
+}
+
+```
+
+
+
+
 Для сборки нужны TkachUtils
