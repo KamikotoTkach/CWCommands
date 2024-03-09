@@ -1,6 +1,6 @@
-# TkachCommands
- _(aka CWCommands, PaperCommands, VelocityCommands)_
-
+# TkachCommands 1.1.1
+ _(aka CWCommands, PaperCommands, VelocityCommands)_\
+_Velocity & Paper 1.16.5+_
 
 Библиотека на команды. Возможно, когда-то сделаю нормальную документацию, но лень, и пока это останется только для личного использования.
 <br><br>
@@ -14,6 +14,8 @@
 - Опциональные аргументы
 - Spaced-аргументы (implements SpacedArgument)
 - Динамические аргументы
+- AutowiredExecutor
+- Preconditions (предусловия)
 
 ### Использование:
 ```java
@@ -88,6 +90,36 @@ public class TestAutowired extends AutowiredExecutor {
   
   public void test() {
     sender.sendMessage("optional object not present");
+  }
+}
+
+```
+
+### Preconditions
+Предусловия проверяются перед непосредственным исполнением экзекутора и по их результату или выполняется экзекутор или отправителю команды пишется что не так
+
+```java
+new Command("command")
+       .preconditions(new LoadedPlayerData(), new SomethingElse())
+//......
+
+public class LoadedPlayerData extends Precondition {
+  @Override
+  public boolean canExecute(Sender sender) {
+    return sender.isPlayer()
+       && sender instanceof PaperSender paperSender
+       && playerDataManager.getPlayerData(paperSender.getPlayer()).isPresent();
+  }
+  
+  @Override
+  public String cannotExecuteFeedback(Sender sender) {
+    return "Подождите немного или перезайдите на сервер: ваши даные не удалось загрузить";
+  }
+
+  //Если в предусловии переопределить этот метод, то команда/аргументсет, если не доступен игроку, будет исключён из списка досупных для игрока в принципе
+  @Override
+  public boolean canSee(Sender sender) {
+    return true;
   }
 }
 
