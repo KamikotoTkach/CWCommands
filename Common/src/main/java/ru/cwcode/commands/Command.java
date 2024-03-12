@@ -406,17 +406,17 @@ public class Command implements Permissible{
     return result;
   }
   
-  protected void onError(Sender sender, String[] args, ArgumentSearchResult argumentSearchResult) {
+  protected void onError(Sender sender, String label, String[] args, ArgumentSearchResult argumentSearchResult) {
     if(argumentSearchResult.getErrorMessage() != null) {
-      showErrorMessage(sender, argumentSearchResult);
+      showErrorMessage(sender, label, argumentSearchResult);
     } else if (argumentSearchResult.canShowDetailedHelp()) {
-      showDetailedHelp(sender, argumentSearchResult);
+      showDetailedHelp(sender, label, argumentSearchResult);
     } else {
-      showFullHelp(sender, args);
+      showFullHelp(sender, label, args);
     }
   }
   
-  private void showErrorMessage(Sender sender, ArgumentSearchResult argumentSearchResult) {
+  private void showErrorMessage(Sender sender, String label, ArgumentSearchResult argumentSearchResult) {
     List<Component> toSend = new ArrayList<>();
     
     toSend.add(Component.empty());
@@ -433,11 +433,11 @@ public class Command implements Permissible{
     }
   }
   
-  protected void showFullHelp(Sender sender, String[] args) {
+  protected void showFullHelp(Sender sender, String label, String[] args) {
     if (help == null) {
-      sendAutoHelp(sender, args);
+      sendAutoHelp(sender, label, args);
     } else {
-      help.sendTo(sender, args);
+      help.sendTo(sender, label, args);
     }
   }
   
@@ -449,8 +449,8 @@ public class Command implements Permissible{
     }
   }
   
-  private void showDetailedHelp(Sender sender, ArgumentSearchResult argumentSearchResult) {
-    Component written = Component.text(getFullCommandPath(), getColorScheme().written(true));
+  private void showDetailedHelp(Sender sender, String label, ArgumentSearchResult argumentSearchResult) {
+    Component written = Component.text(getFullCommandPath(label), getColorScheme().written(true));
     List<Component> toSend = new ArrayList<>();
     
     toSend.add(Component.empty());
@@ -468,10 +468,10 @@ public class Command implements Permissible{
     }
   }
   
-  private void sendAutoHelp(Sender sender, String[] args) {
+  private void sendAutoHelp(Sender sender, String label, String[] args) {
     ColorGenerationStrategy color = getColorScheme();
     
-    Component written = Component.text(getFullCommandPath());
+    Component written = Component.text(getFullCommandPath(label));
     
     List<Component> toSend = new ArrayList<>();
     
@@ -551,9 +551,9 @@ public class Command implements Permissible{
   }
   
   @NotNull
-  private String getFullCommandPath() {
+  private String getFullCommandPath(String label) {
     StringBuilder writtenString = new StringBuilder();
-    writtenString.insert(0, name);
+    writtenString.insert(0, label);
     
     Command rootCommand = this;
     

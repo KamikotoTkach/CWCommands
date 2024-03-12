@@ -26,7 +26,7 @@ public abstract class CommandParser {
     if (argumentSearchResult.isFounded() && argumentSearchResult.getErrorMessage() == null) {
       foundedCommand.onExecute(sender, args, argumentSearchResult.getFounded());
     } else {
-      foundedCommand.onError(sender, args, argumentSearchResult);
+      foundedCommand.onError(sender, label, args, argumentSearchResult);
     }
     
     return true;
