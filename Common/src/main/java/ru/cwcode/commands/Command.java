@@ -437,7 +437,7 @@ public class Command implements Permissible{
     if (help == null) {
       sendAutoHelp(sender, label, args);
     } else {
-      help.sendTo(sender, label, args);
+      help.sendTo(sender, this, label, args);
     }
   }
   
