@@ -7,6 +7,8 @@ import tkachgeek.tkachutils.messages.TargetableMessageReturn;
 public interface Sender {
   boolean hasPermission(String str);
   
+  String getName();
+  
   void sendMessage(Component line);
   
   boolean isPlayer();

@@ -28,6 +28,11 @@ public class PaperSender implements Sender {
   }
   
   @Override
+  public String getName() {
+    return sender.getName();
+  }
+  
+  @Override
   public void sendMessage(Component line) {
     sender.sendMessage(line);
   }
