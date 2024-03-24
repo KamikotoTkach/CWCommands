@@ -33,7 +33,7 @@ _Velocity & Paper 1.16.5+_
                             .setMin(1)
                             .optional()).help("help текст")
     //, new ArgumentSet...
-    ).register(this); //this = JavaPlugin
+    ).register(); //this = JavaPlugin
 ```
 
 Пример Executor`a:
@@ -73,7 +73,7 @@ arg("amount).toInt()
 <br><br>
 
 ### AutowiredExecutor
-Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён.
+Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён. Примитивные типы заменять объектным аналогом (int -> Integer).
 
 ```java
 new ArgumentSet(new TestAutowired(), new ExactStringArg("testAutowired"), new SomeObjectArg().optional())
