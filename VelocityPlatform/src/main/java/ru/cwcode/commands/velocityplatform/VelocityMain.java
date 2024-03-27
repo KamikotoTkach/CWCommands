@@ -30,8 +30,8 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @Plugin(
-      id = "cw-commands",
-      name = "CWCommands",
+      id = "cwcommands",
+      name = "CwCommands",
       version = "1.1.1",
       description = "A Pretty Commands Lib",
       url = "https://cwcode.ru/vk",
