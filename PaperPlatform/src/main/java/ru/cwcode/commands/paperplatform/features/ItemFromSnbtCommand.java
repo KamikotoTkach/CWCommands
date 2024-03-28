@@ -4,9 +4,9 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.inventory.ItemStack;
 import ru.cwcode.commands.paperplatform.executor.Executor;
-import tkachgeek.tkachutils.items.ItemStackUtils;
-import tkachgeek.tkachutils.messages.MessageReturn;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.items.ItemStackUtils;
+import ru.cwcode.cwutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 public class ItemFromSnbtCommand extends Executor {
   @Override

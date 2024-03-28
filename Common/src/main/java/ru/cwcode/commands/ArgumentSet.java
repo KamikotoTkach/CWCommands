@@ -15,7 +15,7 @@ import ru.cwcode.commands.preconditions.processor.PermissionPrecondition;
 import ru.cwcode.commands.preconditions.processor.PreconditionProcessor;
 import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
 import ru.cwcode.commands.preconditions.processor.PreconditionResult;
-import tkachgeek.tkachutils.text.StringUtils;
+import ru.cwcode.cwutils.text.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;

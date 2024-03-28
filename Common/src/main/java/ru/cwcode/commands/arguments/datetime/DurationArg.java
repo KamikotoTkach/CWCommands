@@ -2,7 +2,7 @@ package ru.cwcode.commands.arguments.datetime;
 
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.datetime.StringToDuration;
+import ru.cwcode.cwutils.datetime.StringToDuration;
 
 import java.util.List;
 

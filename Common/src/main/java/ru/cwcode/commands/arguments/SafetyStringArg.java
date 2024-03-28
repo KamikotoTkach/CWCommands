@@ -1,7 +1,7 @@
 package ru.cwcode.commands.arguments;
 
 import ru.cwcode.commands.arguments.basic.StringArg;
-import tkachgeek.tkachutils.text.StringUtils;
+import ru.cwcode.cwutils.text.StringUtils;
 
 public class SafetyStringArg extends StringArg {
   public SafetyStringArg() {

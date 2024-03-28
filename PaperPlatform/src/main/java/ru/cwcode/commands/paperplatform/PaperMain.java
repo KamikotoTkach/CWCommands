@@ -30,8 +30,8 @@ import ru.cwcode.commands.paperplatform.paper.PaperSender;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.preconditions.Precondition;
 import ru.cwcode.commands.preconditions.PredicatePrecondition;
-import tkachgeek.tkachutils.collections.CollectionUtils;
-import tkachgeek.tkachutils.server.ServerUtils;
+import ru.cwcode.cwutils.collections.CollectionUtils;
+import ru.cwcode.cwutils.server.ServerUtils;
 
 import java.util.Arrays;
 import java.util.List;

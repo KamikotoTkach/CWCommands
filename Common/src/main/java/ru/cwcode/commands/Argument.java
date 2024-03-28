@@ -9,8 +9,8 @@ import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.arguments.ExactStringArg;
 import ru.cwcode.commands.color.ColorGenerationStrategy;
-import tkachgeek.tkachutils.messages.Message;
-import tkachgeek.tkachutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.Message;
+import ru.cwcode.cwutils.messages.MessageReturn;
 
 import java.util.Collection;
 import java.util.List;

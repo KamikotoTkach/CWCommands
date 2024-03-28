@@ -6,8 +6,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.paperplatform.PaperMain;
-import tkachgeek.tkachutils.confirmable.ConfirmAPI;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.confirmable.ConfirmAPI;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.Objects;
 

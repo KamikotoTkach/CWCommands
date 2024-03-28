@@ -3,7 +3,7 @@ package ru.cwcode.commands.arguments.basic;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.CompletionStyle;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.numbers.NumbersUtils;
+import ru.cwcode.cwutils.numbers.NumbersUtils;
 
 import java.util.Collections;
 import java.util.List;

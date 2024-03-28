@@ -6,10 +6,10 @@ import ru.cwcode.commands.ArgumentParser;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.collections.EnumUtils;
-import tkachgeek.tkachutils.messages.MessageReturn;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
-import tkachgeek.tkachutils.text.SpacesHider;
+import ru.cwcode.cwutils.collections.EnumUtils;
+import ru.cwcode.cwutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.text.SpacesHider;
 
 import java.util.Optional;
 

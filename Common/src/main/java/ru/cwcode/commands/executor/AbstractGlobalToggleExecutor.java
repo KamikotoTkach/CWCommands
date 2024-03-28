@@ -3,8 +3,8 @@ package ru.cwcode.commands.executor;
 import ru.cwcode.commands.ArgumentSet;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.messages.MessageReturn;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 public abstract class AbstractGlobalToggleExecutor extends AbstractExecutor {
   boolean state;

@@ -6,8 +6,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
-import tkachgeek.tkachutils.confirmable.velocity.ConfirmAPI;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.confirmable.velocity.ConfirmAPI;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.Objects;
 

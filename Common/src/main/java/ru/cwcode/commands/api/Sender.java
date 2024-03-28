@@ -2,7 +2,7 @@ package ru.cwcode.commands.api;
 
 import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.text.Component;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 public interface Sender {
   boolean hasPermission(String str);

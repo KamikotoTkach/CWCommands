@@ -2,7 +2,7 @@ package ru.cwcode.commands.velocityplatform.velocity;
 
 import com.velocitypowered.api.command.RawCommand;
 import ru.cwcode.commands.Command;
-import tkachgeek.tkachutils.text.StringUtils;
+import ru.cwcode.cwutils.text.StringUtils;
 
 import java.util.List;
 

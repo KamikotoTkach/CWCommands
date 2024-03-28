@@ -10,10 +10,10 @@ import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Logger;
 import ru.cwcode.commands.api.Platform;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.collections.CollectionUtils;
-import tkachgeek.tkachutils.messages.MessageReturn;
-import tkachgeek.tkachutils.messages.TargetableMessageReturn;
-import tkachgeek.tkachutils.reflection.ReflectionUtils;
+import ru.cwcode.cwutils.collections.CollectionUtils;
+import ru.cwcode.cwutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.TargetableMessageReturn;
+import ru.cwcode.cwutils.reflection.ReflectionUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;

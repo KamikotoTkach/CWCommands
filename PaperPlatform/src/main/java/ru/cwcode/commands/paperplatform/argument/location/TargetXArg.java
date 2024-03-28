@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
-import tkachgeek.tkachutils.numbers.NumbersUtils;
+import ru.cwcode.cwutils.numbers.NumbersUtils;
 
 import java.util.Collections;
 import java.util.List;

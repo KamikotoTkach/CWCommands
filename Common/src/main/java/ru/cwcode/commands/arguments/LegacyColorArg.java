@@ -2,7 +2,7 @@ package ru.cwcode.commands.arguments;
 
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
-import tkachgeek.tkachutils.colors.ColorUtils;
+import ru.cwcode.cwutils.colors.ColorUtils;
 
 import java.util.List;
 

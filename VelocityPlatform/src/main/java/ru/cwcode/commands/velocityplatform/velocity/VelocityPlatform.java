@@ -8,7 +8,7 @@ import ru.cwcode.commands.api.Logger;
 import ru.cwcode.commands.api.Platform;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
-import tkachgeek.tkachutils.messages.MessageReturn;
+import ru.cwcode.cwutils.messages.MessageReturn;
 
 public class VelocityPlatform extends Platform {
    private final VelocityMain plugin;

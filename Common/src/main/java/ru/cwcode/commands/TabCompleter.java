@@ -3,7 +3,7 @@ package ru.cwcode.commands;
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
-import tkachgeek.tkachutils.text.StringUtils;
+import ru.cwcode.cwutils.text.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
