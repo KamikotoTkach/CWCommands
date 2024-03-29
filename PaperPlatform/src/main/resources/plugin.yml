@@ -1,4 +1,4 @@
-name: CwCommands
+name: CWCommands
 main: ru.cwcode.commands.paperplatform.PaperMain
 version: ${project.version}
 api-version: 1.14
