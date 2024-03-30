@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>ru.cwcode.commands</groupId>
-    <artifactId>CwCommands</artifactId>
+    <artifactId>CWCommands</artifactId>
     <version>1.1.1</version>
     <packaging>pom</packaging>
 
-    <name>CwCommands</name>
+    <name>CWCommands</name>
 
     <licenses>
         <license>
