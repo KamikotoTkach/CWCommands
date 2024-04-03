@@ -11,6 +11,7 @@ _Velocity & Paper 1.16.5+_
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>PaperCommands</artifactId>
     <version>1.1.1</version>
+    <scope>provided</scope>
   </dependency>
   ```
 * Velocity:
@@ -19,6 +20,7 @@ _Velocity & Paper 1.16.5+_
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>VelocityCommands</artifactId>
     <version>1.1.1</version>
+    <scope>provided</scope>
   </dependency>
   ```
 * Common
@@ -27,6 +29,7 @@ _Velocity & Paper 1.16.5+_
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>Common</artifactId>
     <version>1.1.1</version>
+    <scope>provided</scope>
   </dependency>
   ```
 
