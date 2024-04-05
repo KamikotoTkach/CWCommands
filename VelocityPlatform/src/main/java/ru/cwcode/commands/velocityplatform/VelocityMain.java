@@ -31,8 +31,8 @@ import java.util.Arrays;
 
 @Plugin(
       id = "cwcommands",
-      name = "CwCommands",
-      version = "1.1.1",
+      name = "CWCommands",
+      version = "1.1.2",
       description = "A Pretty Commands Lib",
       url = "https://cwcode.ru/vk",
       authors = {"TkachGeek", "Soul_KRT"}
@@ -51,8 +51,9 @@ public class VelocityMain {
    public void onProxyInitialization(ProxyInitializeEvent event) {
       VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
       CommandsAPI.setPlatform(platform);
+      
       try {
-         new Command("commandsTest", "*")
+         new Command("commandsTestv", "*")
                .subCommands(
                      new Command("velocity")
                            .arguments(

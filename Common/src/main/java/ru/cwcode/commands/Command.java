@@ -553,16 +553,15 @@ public class Command implements Permissible{
   @NotNull
   private String getFullCommandPath(String label) {
     StringBuilder writtenString = new StringBuilder();
-    writtenString.insert(0, label);
     
     Command rootCommand = this;
     
     while (rootCommand.isSubcommand) {
+      writtenString.insert(0, " " +rootCommand.name);
       rootCommand = rootCommand.parent;
-      writtenString.insert(0, rootCommand.name + " ");
     }
     
-    writtenString.insert(0, "  /");
+    writtenString.insert(0, "  /" + label);
     return writtenString.toString();
   }
   

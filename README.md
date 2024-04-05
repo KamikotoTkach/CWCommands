@@ -1,4 +1,4 @@
-# TkachCommands 1.1.1
+# TkachCommands 1.1.2
  _(aka CWCommands, PaperCommands, VelocityCommands)_\
 _Velocity & Paper 1.16.5+_
 
