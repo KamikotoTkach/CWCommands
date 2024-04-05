@@ -2,8 +2,39 @@
  _(aka CWCommands, PaperCommands, VelocityCommands)_\
 _Velocity & Paper 1.16.5+_
 
-Библиотека на команды. Возможно, когда-то сделаю нормальную документацию, но лень, и пока это останется только для личного использования.
+Библиотека на команды.
+
+Подключение:
+* Paper:
+  ```xml
+  <dependency>
+    <groupId>ru.cwcode.commands</groupId>
+    <artifactId>PaperCommands</artifactId>
+    <version>1.1.1</version>
+    <scope>provided</scope>
+  </dependency>
+  ```
+* Velocity:
+  ```xml
+  <dependency>
+    <groupId>ru.cwcode.commands</groupId>
+    <artifactId>VelocityCommands</artifactId>
+    <version>1.1.1</version>
+    <scope>provided</scope>
+  </dependency>
+  ```
+* Common
+  ```xml
+  <dependency>
+    <groupId>ru.cwcode.commands</groupId>
+    <artifactId>Common</artifactId>
+    <version>1.1.1</version>
+    <scope>provided</scope>
+  </dependency>
+  ```
+
 <br><br>
+
 ### Фиачурес:
 - Авто-генерируемый хелп
 - Авто-валидация аргуметов
