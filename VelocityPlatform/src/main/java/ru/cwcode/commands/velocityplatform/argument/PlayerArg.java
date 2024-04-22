@@ -11,4 +11,9 @@ public class PlayerArg extends OnlinePlayers {
   public String argumentName() {
     return "игрок";
   }
+  
+  @Override
+  public String map() {
+    return raw;
+  }
 }
