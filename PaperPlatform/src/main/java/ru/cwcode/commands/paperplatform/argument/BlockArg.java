@@ -9,9 +9,26 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BlockArg extends EnumArg {
+public class BlockArg extends Argument {
+  static List<String> blocks = Arrays.stream(Material.values()).filter(Material::isBlock).map(Enum::name).collect(Collectors.toList());
   
-  public BlockArg() {
-    super((Enum[]) Arrays.stream(Material.values()).filter(Material::isBlock).toArray(), "блок");
+  @Override
+  public boolean valid(String raw) {
+    return blocks.contains(raw);
+  }
+  
+  @Override
+  public List<String> completions(Sender sender) {
+    return blocks;
+  }
+  
+  @Override
+  public String argumentName() {
+    return "блок";
+  }
+  
+  @Override
+  public Material map() {
+    return Material.matchMaterial(raw);
   }
 }

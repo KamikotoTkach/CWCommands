@@ -9,12 +9,26 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-public class MaterialArg extends EnumArg {
+public class MaterialArg extends Argument {
+  static List<String> materials = Arrays.stream(Material.values()).map(Enum::name).collect(Collectors.toList());
   
-  public MaterialArg() {
-    super(Material.values(), "материал");
+  @Override
+  public boolean valid(String raw) {
+    return materials.contains(raw);
   }
-  public MaterialArg(Predicate<Material> predicate) {
-    super((Enum[]) Arrays.stream(Material.values()).filter(predicate).toArray(), "материал");
+  
+  @Override
+  public List<String> completions(Sender sender) {
+    return materials;
+  }
+  
+  @Override
+  public String argumentName() {
+    return "материал";
+  }
+  
+  @Override
+  public Material map() {
+    return Material.matchMaterial(raw);
   }
 }
