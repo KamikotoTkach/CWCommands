@@ -14,7 +14,7 @@ public class VelocityCommand implements RawCommand {
       tabCompleter = new VelocityTabCompleter(command);
       commandParser = new VelocityCommandParser(command);
    }
-
+   
    @Override
    public List<String> suggest(Invocation invocation) {
       VelocitySender sender = new VelocitySender(invocation.source());
