@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>Common</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.0</version>
 
     <name>Common</name>
     <description>Common of commands library (Minecraft)</description>
