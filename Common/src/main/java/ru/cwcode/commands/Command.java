@@ -82,11 +82,11 @@ public class Command implements Permissible{
       if (debug.is(DebugMode.DETAILED))
         debug.print("§7В §f" + name + "§7 зарегистрирован аргументсет §f" + set);
       
-      if (set.optionalStart > 0) {
+      if (set.optionalStart >= 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
           argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)).hidden());
           
-          if (debug.is(DebugMode.DETAILED)) debug.print("§7Адаптация опциональх аргументов: §f" + set);
+          if (debug.is(DebugMode.DETAILED)) debug.print("§7Адаптация опциональных аргументов: §f" + set);
         }
       }
     }
