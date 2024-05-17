@@ -2,6 +2,7 @@ package ru.cwcode.commands.executor;
 
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.arguments.ExactStringArg;
+import ru.cwcode.cwutils.collections.CollectionUtils;
 import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
@@ -19,7 +20,7 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
                                  .map(Argument::map)
                                  .collect(Collectors.toList());
     
-    Method matchingMethod = Arrays.stream(getClass().getMethods()).filter(method -> {
+    Method matchingMethod = Arrays.stream(getClass().getDeclaredMethods()).filter(method -> {
       if (objects.size() != method.getParameterCount()) return false;
       
       Class<?>[] parameterTypes = method.getParameterTypes();
@@ -29,7 +30,9 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
       }
       
       return true;
-    }).findFirst().orElseThrow(() -> new MessageReturn("No such method"));
+    }).findFirst().orElseThrow(() -> new MessageReturn("No such method (" + CollectionUtils.toString(objects.stream()
+                                                                                                            .map(x -> x.getClass().getSimpleName())
+                                                                                                            .collect(Collectors.toList())) + ")"));
     
     try {
       matchingMethod.invoke(this, objects.toArray());
