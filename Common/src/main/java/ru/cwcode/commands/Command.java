@@ -165,6 +165,8 @@ public class Command implements Permissible{
     if (permissions == null) permissions = new DefaultPermissionGenerationStrategy();
     if (color == null) color = DefaultColorGenerationStrategy.INSTANCE;
     
+    this.name = this.name.toLowerCase();
+    
     updatePermissions(permission);
     
     CommandsAPI.getPlatform().registerCommand(this);
@@ -450,7 +452,7 @@ public class Command implements Permissible{
   }
   
   private void showDetailedHelp(Sender sender, String label, ArgumentSearchResult argumentSearchResult) {
-    Component written = Component.text(getFullCommandPath(label), getColorScheme().written(true));
+    Component written = Component.text("  /" + getFullCommandPath(label), getColorScheme().written(true));
     List<Component> toSend = new ArrayList<>();
     
     toSend.add(Component.empty());
@@ -471,7 +473,7 @@ public class Command implements Permissible{
   private void sendAutoHelp(Sender sender, String label, String[] args) {
     ColorGenerationStrategy color = getColorScheme();
     
-    Component written = Component.text(getFullCommandPath(label));
+    Component written = Component.text("  /"+ getFullCommandPath(label));
     
     List<Component> toSend = new ArrayList<>();
     
@@ -551,7 +553,7 @@ public class Command implements Permissible{
   }
   
   @NotNull
-  private String getFullCommandPath(String label) {
+  public String getFullCommandPath(String label) {
     StringBuilder writtenString = new StringBuilder();
     
     Command rootCommand = this;
@@ -561,7 +563,7 @@ public class Command implements Permissible{
       rootCommand = rootCommand.parent;
     }
     
-    writtenString.insert(0, "  /" + label);
+    writtenString.insert(0,  label);
     return writtenString.toString();
   }
   
