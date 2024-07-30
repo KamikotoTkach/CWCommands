@@ -1,5 +1,5 @@
-# TkachCommands 1.3.0
- _(aka CWCommands, PaperCommands, VelocityCommands)_\
+# CWCommands 1.3.0
+ _(aka TkachCommands, PaperCommands, VelocityCommands)_\
 _Velocity & Paper 1.16.5+_
 
 Библиотека на команды.
