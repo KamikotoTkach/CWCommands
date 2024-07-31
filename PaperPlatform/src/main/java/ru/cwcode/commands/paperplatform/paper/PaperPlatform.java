@@ -19,10 +19,14 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Optional;
 
 public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger();
+  
+  HashMap<String, PaperCommand> registeredCommands = new HashMap<>();
   
   @Override
   public void registerCommand(Command command) {
@@ -36,7 +40,6 @@ public class PaperPlatform extends Platform {
     
     PaperCommand paperCommand = new PaperCommand(command);
     pluginCommand.setExecutor(paperCommand.getCommandParser());
-    pluginCommand.setTabCompleter(paperCommand.getTabCompleter());
     
     CommandMap commandMap = ReflectionUtils.getFieldValue(Bukkit.getPluginManager(), "commandMap", CommandMap.class);
     
@@ -50,6 +53,18 @@ public class PaperPlatform extends Platform {
     if (pluginCommand.getDescription().isEmpty()) pluginCommand.setDescription(command.description());
     
     if (pluginCommand.getPermission() == null) pluginCommand.setPermission(command.getPermission());
+    
+    
+    String prefix = pluginCommand.getPlugin().getName().toLowerCase();
+    
+    registeredCommands.put(command.getName(), paperCommand);
+    registeredCommands.put(prefix + ":" + command.getName(), paperCommand);
+    
+    for (String alias : command.aliases()) {
+      registeredCommands.put(alias, paperCommand);
+      registeredCommands.put(prefix + ":" + alias, paperCommand);
+    }
+    
   }
   
   private void registerNewAliases(Command command, org.bukkit.command.Command paperCommand, CommandMap commandMap, Plugin plugin) {
@@ -100,5 +115,9 @@ public class PaperPlatform extends Platform {
     
     CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
     exception.printStackTrace();
+  }
+  
+  public Optional<PaperCommand> getRegisteredCommand(String name) {
+    return Optional.ofNullable(registeredCommands.get(name));
   }
 }

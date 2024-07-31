@@ -5,9 +5,8 @@ import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
 import ru.cwcode.cwutils.text.StringUtils;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public abstract class TabCompleter {
   private final Command command;
@@ -21,10 +20,10 @@ public abstract class TabCompleter {
     this.maxLinesPerCompletions = maxLinesPerCompletions;
   }
   
-  public List<String> onTabComplete(@NotNull Sender sender, String[] args) {
+  public List<Completion> onTabComplete(@NotNull Sender sender, String[] args) {
     //Benchmark.stage("TabComplete", "searchedCommand");
     
-    final List<String> complete = new ArrayList<>();
+    final List<Completion> suggestions = new ArrayList<>();
     
     final CommandParser.Result parseResult = CommandParser.parse(this.command, sender, args);
     
@@ -36,7 +35,7 @@ public abstract class TabCompleter {
     if (args.length > deep) {
       args = Arrays.copyOfRange(args, deep, args.length);
     } else {
-      return complete;
+      return suggestions;
     }
     
     //Benchmark.stage("TabComplete", "addedSubcommands");
@@ -45,25 +44,28 @@ public abstract class TabCompleter {
     
     if (arguments.size() == 1) {
       for (Command cmd : foundedCommand.getSubcommandsFor(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
-        complete.add(cmd.name);
-        complete.addAll(cmd.aliases);
+        suggestions.add(new Completion(cmd)); //todo: в статик метод Suggestion
+        suggestions.addAll(cmd.aliases.stream()
+                                      .map(x -> new Completion(x, cmd.description(), cmd.getColorScheme()))
+                                      .collect(Collectors.toList()));
       }
     }
     
     //Benchmark.stage("TabComplete", "addedArgumentSets");
     
     for (ArgumentSet set : foundedCommand.getArgumentSetsFor(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
-      complete.addAll(set.getCompletesFor(arguments, sender));
+      suggestions.addAll(set.getCompletesFor(arguments, sender, command));
     }
     
     //Benchmark.stage("TabComplete", "gettedSuggestions");
     
-    List<String> suggestions = StringUtils.getSuggestions(complete, arguments.get(arguments.size() - 1), maxLinesPerCompletions);
+    HashSet<String> filteredCompletions = new HashSet<>(StringUtils.getSuggestions(suggestions.stream().map(Completion::suggestion).collect(Collectors.toList()), arguments.get(arguments.size() - 1), maxLinesPerCompletions));
+    List<Completion> filteredSuggestions = suggestions.stream().filter(x -> filteredCompletions.contains(x.suggestion())).collect(Collectors.toList());
     
     //for (String suggestion : suggestions) {
     //  sender.sendMessage(suggestion);
     //}
     //Benchmark.newIteration("TabComplete");
-    return suggestions;
+    return filteredSuggestions;
   }
 }

@@ -49,6 +49,7 @@ public final class PaperMain extends JavaPlugin {
   public void onEnable() {
     plugin = this;
     CommandsAPI.setPlatform(new PaperPlatform());
+    Bukkit.getPluginManager().registerEvents(new TabCompleteListener(),this);
     
     sendLogo();
     

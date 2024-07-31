@@ -20,7 +20,7 @@ public class VelocitySender implements Sender {
   
   @Override
   public boolean hasPermission(String str) {
-    return sender.hasPermission(str);
+    return str == null || str.isEmpty() || sender.hasPermission(str);
   }
   
   @Override

@@ -304,7 +304,7 @@ public class ArgumentSet implements Permissible {
     return ArgumentFitnessResult.SUCCESS;
   }
   
-  protected List<String> getCompletesFor(List<String> written, Sender sender) {
+  protected List<Completion> getCompletesFor(List<String> written, Sender sender, Command command) {
     int skipBecauseSpaced = 0;
     
     if (arguments.length == 0) return Collections.emptyList();
@@ -322,14 +322,18 @@ public class ArgumentSet implements Permissible {
         if (!arguments[i].valid(sender, written.get(i), written)) return Collections.emptyList();
       }
       
-      List<String> completionOfLastArg = new ArrayList<>();
+      List<Completion> completionOfLastArg = new ArrayList<>();
       
-      for (var completionLine : arguments[written.size() - 1].completions(sender, written)) {
+      Argument argument = arguments[written.size() - 1];
+      Collection<Completion> argumentCompletions = argument.completionsWithTooltip(sender, written, command);
+      
+      for (var completionLine : argumentCompletions) {
         if (skipBecauseSpaced > 0) {
-          List<String> parts = List.of(completionLine.split(" "));
+          List<String> parts = List.of(completionLine.suggestion().split(" "));
           
           if (skipBecauseSpaced < parts.size()) {
-            completionOfLastArg.add(String.join(" ", parts.subList(skipBecauseSpaced, parts.size())));
+            String completion = String.join(" ", parts.subList(skipBecauseSpaced, parts.size()));
+            completionOfLastArg.add(new Completion(completion, null, command.getColorScheme()));
           }
         } else completionOfLastArg.add(completionLine);
       }

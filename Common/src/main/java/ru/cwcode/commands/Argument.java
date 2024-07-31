@@ -14,6 +14,7 @@ import ru.cwcode.cwutils.messages.MessageReturn;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public abstract class Argument {
    protected String raw;
@@ -69,6 +70,14 @@ public abstract class Argument {
 
    public Collection<String> completions(Sender sender, List<String> written) {
       return completions(sender);
+   }
+   
+   public Collection<Completion> completionsWithTooltip(Sender sender, List<String> written, Command command) {
+      String hint = hint();
+      
+      return completions(sender).stream()
+                                .map(completion -> new Completion(completion, hint, command.getColorScheme()))
+                                .collect(Collectors.toList());
    }
 
    /**
@@ -152,7 +161,6 @@ public abstract class Argument {
       return "";
    }
 
-
    public Argument newInstance() throws MessageReturn {
       try {
          return this.getClass().getDeclaredConstructor().newInstance();
@@ -179,6 +187,7 @@ public abstract class Argument {
                       .append(Component.text(" нельзя представить как ", colorScheme.main()))
                       .append(Component.text(argumentName(), colorScheme.accent(true)));
    }
+   
    @ApiStatus.OverrideOnly
    public Object map() {
       return raw;
