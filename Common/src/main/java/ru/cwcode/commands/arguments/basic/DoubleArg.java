@@ -49,6 +49,11 @@ public class DoubleArg extends Argument {
     return this;
   }
   
+  public DoubleArg positive() {
+    this.min = 0;
+    return this;
+  }
+  
   @Override
   public boolean valid(String raw) {
     try {
@@ -69,7 +74,7 @@ public class DoubleArg extends Argument {
       case DIAPASON:
         return Collections.singletonList(min + " -> " + max);
       case LIST:
-        return DoubleStream.iterate(min, d -> d <= max, d -> d + step)
+        return DoubleStream.iterate(this.min, d -> d <= max, d -> d + step)
                            .limit(1000)
                            .mapToObj(Double::toString).collect(Collectors.toList());
     }
@@ -90,7 +95,7 @@ public class DoubleArg extends Argument {
   protected String hint() {
     StringBuilder builder = new StringBuilder();
     
-    boolean minFlag = min != Double.MIN_VALUE;
+    boolean minFlag = min > Double.MIN_VALUE;
     if (minFlag) {
       builder.append("От ").append(min);
     }
