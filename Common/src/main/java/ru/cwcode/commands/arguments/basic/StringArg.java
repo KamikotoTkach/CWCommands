@@ -76,7 +76,7 @@ public class StringArg extends Argument {
       
       boolean maxFlag = max != INITIAL_MAX_STRING_LENGTH;
       
-      if (maxFlag) return l10n.get("argument.string.minmax", min, max);
-      return l10n.get("argument.string.min", min);
+      if (maxFlag) return l10n.get("argument.string.hint.minmax", min, max);
+      return l10n.get("argument.string.hint.min", min);
    }
 }

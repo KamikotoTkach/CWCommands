@@ -289,12 +289,12 @@ public class Command implements Permissible{
       result = getPermissions().processSubCommand(permissions, permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print(l10n.get("command.debug.registeredSubcommand", name, result.getPermission()));
+        debug.print(l10n.get("command.debug.subcommandPermissionSet", name, result.getPermission()));
     } else {
       result = getPermissions().processCommand(permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print(l10n.get("command.debug.registeredCommand", name, result.getPermission()));
+        debug.print(l10n.get("command.debug.commandPermissionSet", name, result.getPermission()));
     }
     
     permissions = result.getNextPermissions();

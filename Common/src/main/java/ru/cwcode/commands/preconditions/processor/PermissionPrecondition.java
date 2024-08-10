@@ -27,6 +27,6 @@ public class PermissionPrecondition extends Precondition {
   
   @Override
   public String cannotExecuteFeedback(Sender sender) {
-    return l10n.get("precondition.processor.permission.cannotExecute", permissible.getPermission());
+    return l10n.get("precondition.permission.cannotExecute", permissible.getPermission());
   }
 }
