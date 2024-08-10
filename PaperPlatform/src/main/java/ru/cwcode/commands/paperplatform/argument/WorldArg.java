@@ -8,6 +8,8 @@ import ru.cwcode.commands.api.Sender;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class WorldArg extends Argument {
   
   @Override
@@ -26,7 +28,7 @@ public class WorldArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "мир";
+    return l10n.get("argument.world.name");
   }
   
   @Override

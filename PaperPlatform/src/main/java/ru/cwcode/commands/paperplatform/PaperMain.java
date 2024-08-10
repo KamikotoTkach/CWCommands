@@ -40,7 +40,6 @@ import java.util.List;
 public final class PaperMain extends JavaPlugin {
   
   public static JavaPlugin plugin;
-  public static L10n l10n;
   
   @Override
   public void onDisable() {
@@ -50,10 +49,10 @@ public final class PaperMain extends JavaPlugin {
   @Override
   public void onEnable() {
     plugin = this;
-    CommandsAPI.setPlatform(new PaperPlatform());
     
-    l10n = new L10n(this.getFile(), this);
-    getLogger().warning(l10n.get("test","one", 2));
+    CommandsAPI.setPlatform(new PaperPlatform());
+    CommandsAPI.setL10n(new L10n(this.getFile(), this));
+    
     sendLogo();
     
     if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;

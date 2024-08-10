@@ -8,6 +8,8 @@ import java.util.Arrays;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class EnchantmentArg extends Argument {
   static Set<String> enchants = Arrays.stream(Enchantment.values()).map(Enchantment::toString).collect(Collectors.toSet());
   
@@ -23,7 +25,7 @@ public class EnchantmentArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "зачарование";
+    return l10n.get("argument.enchantment.name");
   }
   
   @Override

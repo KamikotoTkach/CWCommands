@@ -1,5 +1,6 @@
 package ru.cwcode.commands.paperplatform.argument;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class PlayerArg extends OnlinePlayers {
   @Override
@@ -9,7 +10,7 @@ public class PlayerArg extends OnlinePlayers {
   
   @Override
   public String argumentName() {
-    return "игрок";
+    return l10n.get("argument.player.name");
   }
   
   @Override

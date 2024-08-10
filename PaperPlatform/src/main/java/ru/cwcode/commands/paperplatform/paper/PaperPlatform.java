@@ -21,6 +21,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger();
   
@@ -30,7 +32,7 @@ public class PaperPlatform extends Platform {
     PluginCommand pluginCommand = Bukkit.getPluginCommand(command.getName());
     
     if (pluginCommand == null) {
-      logger.warn("Команда `" + command.getName() + "` не может быть зарегистрирована по причине отсутствия в plugin.yml");
+      logger.warn(l10n.get("paperPlatform.commandIsNotRegistered", command.getName()));
       return;
     }
     
@@ -68,7 +70,7 @@ public class PaperPlatform extends Platform {
       
       registerAlias.invoke(commandMap, plugin.getName(), paperCommand);
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-      logger.warn("Не удалось зарегистрировать алиасы для `" + command.getName() + "`");
+      logger.warn(l10n.get("paperPlatform.cannotRegisterAliases", command.getName()));
     }
   }
   
@@ -94,11 +96,11 @@ public class PaperPlatform extends Platform {
     }
     
     String localizedMessage = exception.getLocalizedMessage();
-    if (localizedMessage == null) localizedMessage = "Неизвестная ошибка";
+    if (localizedMessage == null) localizedMessage = l10n.get("paperPlatform.unknownError");
     
     sender.sendMessage(Component.text(localizedMessage, command.getColorScheme().main()));
     
-    CommandsAPI.getPlatform().getLogger().warn("Ошибка при исполнении " + this.getClass().getName());
+    CommandsAPI.getPlatform().getLogger().warn(l10n.get("paperPlatform.executionError", this.getClass().getName()));
     exception.printStackTrace();
   }
 }

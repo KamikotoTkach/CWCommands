@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class PotionEffectArg extends Argument {
   static Set<String> effects = Arrays.stream(PotionEffectType.values()).map(PotionEffectType::getName).collect(Collectors.toSet());
   
@@ -23,7 +25,7 @@ public class PotionEffectArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "эффект";
+    return l10n.get("argument.potionEffect.name");
   }
   
   @Override

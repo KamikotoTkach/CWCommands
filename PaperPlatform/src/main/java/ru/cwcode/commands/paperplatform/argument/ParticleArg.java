@@ -8,9 +8,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class ParticleArg extends EnumArg {
   
   public ParticleArg() {
-    super(Particle.values(), "частица");
+    super(Particle.values(), l10n.get("argument.particle.name"));
   }
 }

@@ -9,6 +9,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class MaterialArg extends Argument {
   static List<String> materials = Arrays.stream(Material.values()).map(Enum::name).collect(Collectors.toList());
   
@@ -24,7 +26,7 @@ public class MaterialArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "материал";
+    return l10n.get("argument.material.name");
   }
   
   @Override

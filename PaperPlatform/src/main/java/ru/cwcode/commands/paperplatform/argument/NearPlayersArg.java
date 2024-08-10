@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class NearPlayersArg extends Argument {
   int radius;
   int limit;
@@ -59,7 +61,7 @@ public class NearPlayersArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "ближайший игрок";
+    return l10n.get("argument.nearPlayer.name");
   }
   
   @Override
