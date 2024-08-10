@@ -21,6 +21,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.logging.Logger;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class ArgumentSet implements Permissible {
   protected final Argument[] arguments;
   protected final AbstractExecutor executor;
@@ -65,7 +67,7 @@ public class ArgumentSet implements Permissible {
     for (Argument argument : arguments) {
       if (argument instanceof SpacedArgument) {
         if (pos != len) {
-          Logger.getGlobal().warning("Аргумент " + argument.getClass().getName() + " должен быть последним в списке аргументов");
+          Logger.getGlobal().warning(l10n.get("argumentSet.spaced.mustBeLast", getClass().getName()));
         } else {
           spacedLastArgument = true;
         }
@@ -77,7 +79,7 @@ public class ArgumentSet implements Permissible {
         }
       } else {
         if (optionalStart != -1) {
-          Logger.getGlobal().warning("Аргумент " + argument.getClass().getName() + " не может быть не опциональным, поскольку перед ним уже был опциональный");
+          Logger.getGlobal().warning(l10n.get("argumentSet.spaced.cannotBeLast", getClass().getName()));
           optionalStart = -10;
         }
       }
@@ -227,15 +229,15 @@ public class ArgumentSet implements Permissible {
   
   public void execute(Sender sender, String[] args, Command command) {
     if (timeToConfirm != 0) {
-      sender.sendMessage(Component.text("Введите ", command.getColorScheme().main())
+      sender.sendMessage(Component.text(l10n.get("argumentSet.confirm.1"), command.getColorScheme().main())
                                   .append(Component.text(confirmableString, command.getColorScheme().accent(true)))
-                                  .append(Component.text(" для подтверждения", command.getColorScheme().main()))
+                                  .append(Component.text(l10n.get("argumentSet.confirm.2"), command.getColorScheme().main()))
                                   .clickEvent(ClickEvent.runCommand(confirmableString))
       );
       
       sender.confirm(confirmableString, timeToConfirm,
                      () -> executor.prepare(sender, args, this, command),
-                     () -> sender.sendMessage(Component.text("Время подтверждения вышло", command.getColorScheme().main())));
+                     () -> sender.sendMessage(Component.text(l10n.get("argumentSet.confirm.expired"), command.getColorScheme().main())));
     } else {
       executor.prepare(sender, args, this, command);
     }

@@ -12,6 +12,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
   @Override
   public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
@@ -30,9 +32,9 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
       }
       
       return true;
-    }).findFirst().orElseThrow(() -> new MessageReturn("No such method (" + CollectionUtils.toString(objects.stream()
-                                                                                                            .map(x -> x.getClass().getSimpleName())
-                                                                                                            .collect(Collectors.toList())) + ")"));
+    }).findFirst().orElseThrow(() -> new MessageReturn(l10n.get("error.noSuchMethod", CollectionUtils.toString(objects.stream()
+                                                                                                                      .map(x -> x.getClass().getSimpleName())
+                                                                                                                      .collect(Collectors.toList())))));
     
     try {
       matchingMethod.invoke(this, objects.toArray());

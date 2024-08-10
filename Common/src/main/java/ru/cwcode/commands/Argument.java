@@ -15,6 +15,8 @@ import ru.cwcode.cwutils.messages.MessageReturn;
 import java.util.Collection;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public abstract class Argument {
    protected String raw;
    private String tag = "";
@@ -101,7 +103,7 @@ public abstract class Argument {
       try {
          if (notNull()) return Integer.parseInt(raw);
       } catch (Exception exception) {
-         CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в int в " + argumentName());
+         CommandsAPI.getPlatform().getLogger().warn(l10n.get("argument.cast.integer.error",raw, argumentName()));
       }
       return null;
    }
@@ -110,7 +112,7 @@ public abstract class Argument {
       try {
          if (notNull()) return Float.parseFloat(raw);
       } catch (Exception exception) {
-         CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в float в " + argumentName());
+         CommandsAPI.getPlatform().getLogger().warn(l10n.get("argument.cast.float.error",raw, argumentName()));
       }
 
       return null;
@@ -118,7 +120,7 @@ public abstract class Argument {
 
    public String toString() {
       if (notNull()) return raw;
-      CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + (raw != null ? raw : "~null~") + "` в строку в " + argumentName());
+      CommandsAPI.getPlatform().getLogger().warn(l10n.get("argument.cast.string.error", (raw != null ? raw : "~null~"), argumentName()));
       return null;
    }
 
@@ -126,7 +128,7 @@ public abstract class Argument {
       try {
          if (notNull()) return Double.parseDouble(raw);
       } catch (Exception exception) {
-         CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в double в " + argumentName());
+         CommandsAPI.getPlatform().getLogger().warn(l10n.get("argument.cast.double.error",raw, argumentName()));
       }
       return null;
    }
@@ -135,7 +137,7 @@ public abstract class Argument {
       try {
          if (notNull()) return Boolean.parseBoolean(raw);
       } catch (Exception exception) {
-         CommandsAPI.getPlatform().getLogger().warn("Не удалось преобразовать `" + raw + "` в boolean в " + argumentName());
+         CommandsAPI.getPlatform().getLogger().warn(l10n.get("argument.cast.boolean.error",raw, argumentName()));
       }
 
       return null;
@@ -158,7 +160,7 @@ public abstract class Argument {
          return this.getClass().getDeclaredConstructor().newInstance();
       } catch (Exception ignored) {
          throw new MessageReturn(
-               Message.from("Не удалось получить новый экземпляр аргумента " + this.argumentName())
+               Message.from(l10n.get("argument.newInstance.error", argumentName()))
          );
       }
    }
@@ -176,9 +178,10 @@ public abstract class Argument {
       ColorGenerationStrategy colorScheme = command.getColorScheme();
 
       return Component.text(written, colorScheme.accent(true))
-                      .append(Component.text(" нельзя представить как ", colorScheme.main()))
+                      .append(Component.text(l10n.get("argument.invalid.error"), colorScheme.main()))
                       .append(Component.text(argumentName(), colorScheme.accent(true)));
    }
+   
    @ApiStatus.OverrideOnly
    public Object map() {
       return raw;

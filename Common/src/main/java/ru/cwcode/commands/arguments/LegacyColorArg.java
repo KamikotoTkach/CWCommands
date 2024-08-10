@@ -6,6 +6,8 @@ import ru.cwcode.cwutils.colors.ColorUtils;
 
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class LegacyColorArg extends Argument {
   
   @Override
@@ -20,6 +22,6 @@ public class LegacyColorArg extends Argument {
   
   @Override
   public String argumentName() {
-    return "цвет";
+    return l10n.get("argument.color.name");
   }
 }

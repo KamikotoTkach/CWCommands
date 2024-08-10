@@ -10,12 +10,14 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class DoubleArg extends Argument {
   double min = -Double.MAX_VALUE;
   double max = Double.MAX_VALUE;
   CompletionStyle style = CompletionStyle.PLACEHOLDER;
   double step = 1.0;
-  String placeholder = "дробное число";
+  String placeholder = l10n.get("argument.double.placeholder");
   
   public DoubleArg(String placeholder) {
     this.placeholder = placeholder;
@@ -93,14 +95,14 @@ public class DoubleArg extends Argument {
   
   @Override
   protected String hint() {
-    StringBuilder builder = new StringBuilder();
     
     boolean minFlag = min > Double.MIN_VALUE;
-    if (minFlag) {
-      builder.append("От ").append(min);
-    }
-    if (max != Double.MAX_VALUE) builder.append(minFlag ? " до " : "До ").append(max);
+    boolean maxFlag = max < Double.MAX_VALUE;
     
-    return builder.toString();
+    if (minFlag && maxFlag) return l10n.get("argument.double.hint.minmax", min, max);
+    if (!minFlag && maxFlag) return l10n.get("argument.double.hint.max", max);
+    if (minFlag && !maxFlag) return l10n.get("argument.double.hint.min", min);
+    
+    return placeholder;
   }
 }

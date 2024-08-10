@@ -6,11 +6,14 @@ import ru.cwcode.commands.api.Sender;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.regex.Pattern;
+
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class StringArg extends Argument {
    static final int INITIAL_MAX_STRING_LENGTH = 10000;
-   protected String placeholder = "текст";
+   protected String placeholder =  l10n.get("argument.string.placeholder");
    int min = 1;
    int max = INITIAL_MAX_STRING_LENGTH;
    CompletionStyle style = CompletionStyle.PLACEHOLDER;
@@ -56,14 +59,10 @@ public class StringArg extends Argument {
 
    @Override
    public List<String> completions(Sender sender) {
-      switch (style) {
-         case PLACEHOLDER:
-            return Collections.singletonList(placeholder);
-         case DIAPASON:
-            return Collections.singletonList("Строка от " + min + " до " + max + " символов " + (pattern == null ? "" : pattern.toString()));
-         default:
-            return Collections.emptyList();
-      }
+     if (Objects.requireNonNull(style) == CompletionStyle.PLACEHOLDER) {
+       return Collections.singletonList(placeholder);
+     }
+     return Collections.emptyList();
    }
 
    @Override
@@ -74,11 +73,10 @@ public class StringArg extends Argument {
    @Override
    protected String hint() {
       if (pattern != null) return pattern.pattern();
-
-      StringBuilder builder = new StringBuilder();
-      builder.append("От ").append(min);
-      if (max != INITIAL_MAX_STRING_LENGTH) builder.append(" до ").append(max);
-      builder.append(" символов");
-      return builder.toString();
+      
+      boolean maxFlag = max != INITIAL_MAX_STRING_LENGTH;
+      
+      if (maxFlag) return l10n.get("argument.string.minmax", min, max);
+      return l10n.get("argument.string.min", min);
    }
 }

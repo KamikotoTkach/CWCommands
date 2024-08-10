@@ -31,6 +31,7 @@ import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.preconditions.Precondition;
 import ru.cwcode.commands.preconditions.PredicatePrecondition;
 import ru.cwcode.cwutils.collections.CollectionUtils;
+import ru.cwcode.cwutils.l10n.L10n;
 import ru.cwcode.cwutils.server.ServerUtils;
 
 import java.util.Arrays;
@@ -39,6 +40,7 @@ import java.util.List;
 public final class PaperMain extends JavaPlugin {
   
   public static JavaPlugin plugin;
+  public static L10n l10n;
   
   @Override
   public void onDisable() {
@@ -50,6 +52,8 @@ public final class PaperMain extends JavaPlugin {
     plugin = this;
     CommandsAPI.setPlatform(new PaperPlatform());
     
+    l10n = new L10n(this.getFile(), this);
+    getLogger().warning(l10n.get("test","one", 2));
     sendLogo();
     
     if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;

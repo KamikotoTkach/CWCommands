@@ -24,6 +24,8 @@ import java.util.*;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class Command implements Permissible{
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
   String name;
@@ -80,13 +82,13 @@ public class Command implements Permissible{
       argumentSets.add(set);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7В §f" + name + "§7 зарегистрирован аргументсет §f" + set);
+        debug.print(l10n.get("command.debug.registeredArgumentSet", name, set));
       
       if (set.optionalStart >= 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
           argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)).hidden());
           
-          if (debug.is(DebugMode.DETAILED)) debug.print("§7Адаптация опциональных аргументов: §f" + set);
+          if (debug.is(DebugMode.DETAILED)) debug.print(l10n.get("command.debug.optionalAdapt", set));
         }
       }
     }
@@ -149,7 +151,7 @@ public class Command implements Permissible{
       subcommand.debug = debug;
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7В §f" + name + "§7 зарегистрирована подкоманда §f" + subcommand.name);
+        debug.print(l10n.get("command.debug.registeredSubcommand", getName(), subcommand.getName()));
     }
     
     return this;
@@ -287,12 +289,12 @@ public class Command implements Permissible{
       result = getPermissions().processSubCommand(permissions, permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7Подкоманде §f" + name + " §7установлены права §f" + result.getPermission());
+        debug.print(l10n.get("command.debug.registeredSubcommand", name, result.getPermission()));
     } else {
       result = getPermissions().processCommand(permission, name);
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7Команде §f" + name + " §7установлены права §f" + result.getPermission());
+        debug.print(l10n.get("command.debug.registeredCommand", name, result.getPermission()));
     }
     
     permissions = result.getNextPermissions();
@@ -308,7 +310,7 @@ public class Command implements Permissible{
       argumentSet.updatePermissionPrecondition();
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print("§7Аргументсету §f" + permissions + "/" + argumentSet + " §7установлены права §f" + argumentSet.permission);
+        debug.print(l10n.get("command.debug.argumentSetPermissionSet", name+argumentSet, argumentSet.permission));
     }
   }
   
@@ -328,7 +330,7 @@ public class Command implements Permissible{
     founded.execute(sender, args, this);
     
     if (debug.is(DebugMode.REDUCED))
-      debug.print("§7Выполнение §f" + founded + " заняло §f" + (System.nanoTime() - start) + "ns §7(" + (System.nanoTime() - start) / 1000000 + "ms)");
+      debug.print(l10n.get("command.debug.executionTook", founded, (System.nanoTime() - start), (System.nanoTime() - start) / 1000000));
   }
   
   protected List<Command> getSubcommandsFor(Sender sender, PreconditionRequirements requirements) {
@@ -517,9 +519,9 @@ public class Command implements Permissible{
     sender.sendMessage("");
     
     if (toSend.isEmpty()) {
-      sender.sendMessage(Component.text("Для вас нет доступных продолжений этой команды", color.main()));
+      sender.sendMessage(Component.text(l10n.get("command.noContinuation"), color.main()));
     } else {
-      sender.sendMessage(Component.text("Возможные продолжения команды:", color.main()));
+      sender.sendMessage(Component.text(l10n.get("command.continuations"), color.main()));
       sender.sendMessage("");
       
       for (Component row : toSend) {
@@ -541,7 +543,7 @@ public class Command implements Permissible{
   private void sendDescription(Sender sender, ColorGenerationStrategy color) {
     if (description != null) {
       sender.sendMessage("");
-      sender.sendMessage(Component.text("Описание:", color.main()));
+      sender.sendMessage(Component.text(l10n.get("command.description"), color.main()));
       
       boolean firstLine = true;
       

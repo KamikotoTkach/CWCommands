@@ -5,6 +5,7 @@ import ru.cwcode.commands.Command;
 public class PaperCommand {
   PaperTabCompleter tabCompleter;
   PaperCommandParser commandParser;
+  
   public PaperCommand(Command command) {
     tabCompleter = new PaperTabCompleter(command);
     commandParser = new PaperCommandParser(command);

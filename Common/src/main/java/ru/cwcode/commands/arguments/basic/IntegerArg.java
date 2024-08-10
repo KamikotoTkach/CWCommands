@@ -10,11 +10,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class IntegerArg extends Argument {
    int min = Integer.MIN_VALUE;
    int max = Integer.MAX_VALUE;
    CompletionStyle style = CompletionStyle.PLACEHOLDER;
-   String placeholder = "Целое число";
+   String placeholder =  l10n.get("argument.integer.placeholder");
 
    public IntegerArg() {
    }
@@ -82,14 +84,13 @@ public class IntegerArg extends Argument {
    
    @Override
    protected String hint() {
-      StringBuilder builder = new StringBuilder();
-
-      boolean minFlag = min != Integer.MIN_VALUE;
-      if (minFlag) {
-         builder.append("От ").append(min);
-      }
-      if (max != Integer.MAX_VALUE) builder.append(minFlag ? " до " : "До ").append(max);
-
-      return builder.toString();
+      boolean minFlag = min > Integer.MIN_VALUE;
+      boolean maxFlag = max < Integer.MAX_VALUE;
+      
+      if (minFlag && maxFlag) return l10n.get("argument.integer.hint.minmax", min, max);
+      if (!minFlag && maxFlag) return l10n.get("argument.integer.hint.max", max);
+      if (minFlag && !maxFlag) return l10n.get("argument.integer.hint.min", min);
+      
+      return placeholder;
    }
 }

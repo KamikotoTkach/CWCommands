@@ -5,6 +5,8 @@ import ru.cwcode.commands.Permissible;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.preconditions.Precondition;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+//todo move up
 public class PermissionPrecondition extends Precondition {
   Permissible permissible;
   
@@ -25,6 +27,6 @@ public class PermissionPrecondition extends Precondition {
   
   @Override
   public String cannotExecuteFeedback(Sender sender) {
-    return "Требуется право `" + permissible.getPermission() + "`";
+    return l10n.get("precondition.processor.permission.cannotExecute", permissible.getPermission());
   }
 }

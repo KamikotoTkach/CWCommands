@@ -6,6 +6,8 @@ import ru.cwcode.commands.api.Sender;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class BooleanArg extends Argument {
   private String trueValue;
   private String falseValue;
@@ -65,7 +67,7 @@ public class BooleanArg extends Argument {
   
   @Override
   protected String hint() {
-    return trueValue + " или " + falseValue;
+    return l10n.get("", trueValue, falseValue);
   }
   
   public void setTrueValue(String trueValue) {

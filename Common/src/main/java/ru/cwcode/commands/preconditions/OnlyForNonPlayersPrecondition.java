@@ -2,6 +2,8 @@ package ru.cwcode.commands.preconditions;
 
 import ru.cwcode.commands.api.Sender;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class OnlyForNonPlayersPrecondition extends Precondition {
   static OnlyForNonPlayersPrecondition instance;
   
@@ -25,6 +27,6 @@ public class OnlyForNonPlayersPrecondition extends Precondition {
   
   @Override
   public String cannotExecuteFeedback(Sender sender) {
-    return "Только для не-игроков";
+    return l10n.get("precondition.onlyForNonPlayer.cannotExecute");
   }
 }
