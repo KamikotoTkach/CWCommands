@@ -67,7 +67,7 @@ public class BooleanArg extends Argument {
   
   @Override
   protected String hint() {
-    return l10n.get("", trueValue, falseValue);
+    return l10n.get("argument.boolean.hint", trueValue, falseValue);
   }
   
   public void setTrueValue(String trueValue) {
