@@ -59,7 +59,7 @@ public class PaperSender implements Sender {
               .expired(onExpired)
               .register(PaperMain.plugin);
   }
-
+  
   @Override
   public Audience getAudience() {
     return sender;

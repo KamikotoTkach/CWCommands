@@ -29,7 +29,7 @@ public class ExtraCommandBuilder<E, K, S extends Sender> {
                                                                            Function<S, Collection<String>> keys) {
     
     return new ExtraCommandBuilder<>(
-      new RepositoryAccessor<>(elementToKey, keyToElement, s -> s, s -> s, keys)
+       new RepositoryAccessor<>(elementToKey, keyToElement, s -> s, s -> s, keys)
     );
   }
   
@@ -40,7 +40,7 @@ public class ExtraCommandBuilder<E, K, S extends Sender> {
                                                                          Function<S, Collection<K>> keys) {
     
     return new ExtraCommandBuilder<>(
-      new RepositoryAccessor<>(elementToKey, keyToElement, keyToString, stringToKey, keys)
+       new RepositoryAccessor<>(elementToKey, keyToElement, keyToString, stringToKey, keys)
     );
   }
   

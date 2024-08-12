@@ -1,10 +1,12 @@
 # CWCommands 1.3.1
- _(aka TkachCommands, PaperCommands, VelocityCommands)_\
+
+_(aka TkachCommands, PaperCommands, VelocityCommands)_\
 _Velocity & Paper 1.16.5+_
 
 Библиотека на команды.
 
 Подключение:
+
 * Paper:
   ```xml
   <dependency>
@@ -36,6 +38,7 @@ _Velocity & Paper 1.16.5+_
 <br><br>
 
 ### Фиачурес:
+
 - Авто-генерируемый хелп
 - Авто-валидация аргуметов
 - Авто таб-комплишен
@@ -49,6 +52,7 @@ _Velocity & Paper 1.16.5+_
 - Preconditions (предусловия)
 
 ### Использование:
+
 ```java
     new Command("rootCommandName", "rootPermission")
        .subCommands(
@@ -68,6 +72,7 @@ _Velocity & Paper 1.16.5+_
 ```
 
 Пример Executor`a:
+
 ```java
 public class ExecutorExample extends Executor {
   @Override
@@ -87,7 +92,9 @@ public class ExecutorExample extends Executor {
     player.getInventory().addItem(ItemRepo.getItem(argS(1)).asQuantity(amount));
   }
 ```
+
 Аргументы можно именовать и получать по их имени в экзекуторе
+
 ```java
 new IntegerArg().tag("amount");
 //---
@@ -98,13 +105,16 @@ arg("amount).toInt()
 <br><br>
 ![image](https://github.com/KamikotoTkach/TkachCommands/assets/110531613/bc1b3be2-f4f2-44a5-8677-cdee313e8a6d)
 <br><br>
-Что примерно соответствует этому коду: 
+Что примерно соответствует этому коду:
 <br><br>
 ![image](https://github.com/KamikotoTkach/TkachCommands/assets/110531613/1fc3f972-0b54-4473-88ae-ac5bd84cbc12)
 <br><br>
 
 ### AutowiredExecutor
-Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён. Примитивные типы заменять объектным аналогом (int -> Integer).
+
+Ищет подходящий метод в зависимости от аргументов и мапит аргументы в объекты. Для правильной работы кастомных
+аргументов им нужно переопределить метод Argument::map. Во всех стандартных аргументах он переопределён. Примитивные
+типы заменять объектным аналогом (int -> Integer).
 
 ```java
 new ArgumentSet(new TestAutowired(), new ExactStringArg("testAutowired"), new SomeObjectArg().optional())
@@ -127,7 +137,9 @@ public class TestAutowired extends AutowiredExecutor {
 ```
 
 ### Preconditions
-Предусловия проверяются перед непосредственным исполнением экзекутора и по их результату или выполняется экзекутор или отправителю команды пишется что не так
+
+Предусловия проверяются перед непосредственным исполнением экзекутора и по их результату или выполняется экзекутор или
+отправителю команды пишется что не так
 
 ```java
 new Command("command")
@@ -157,24 +169,26 @@ public class LoadedPlayerData extends Precondition {
 ```
 
 ### Встроенные аргументы
+
 Формат: Название класса : тип, в который мапится в AutowiredExecutor
 
 Модуль Common:
-  * Basic:
+
+* Basic:
     - **IntegerArg** : int
     - **DoubleArg** : double
-    - **BooleanArg** : boolean 
+    - **BooleanArg** : boolean
     - **StringArg** : string
-  * Datetime:
+* Datetime:
     - **DurationArg** : Duration
     - **TimeArg** : string
-  * Spaced:
+* Spaced:
     - **SpacedStringArg** : string
     - **SpacedListArg** : string
     - **SpacedDynamicList** : string
     - **SpacedDynamicArg** : string
     - **SafetySpacedStringArg** : string
-  * Another:
+* Another:
     - **ComplexArg** (обёртка для нескольких аргументов в одном)
     - **DynamicList** : string
     - **EmptyArg** : string
@@ -186,10 +200,11 @@ public class LoadedPlayerData extends Precondition {
     - **SafetyStringArg** : string
 
 Модуль Paper:
-  * Location:
+
+* Location:
     - **LocationArg** (комплексный аргумент из TargetXArg-ов xyz/xyz+world)
     - **TargetXArg**(LocationPart) : xyz->double, pitch yaw - > float, world -> org.bukkit.World
-  * Another:
+* Another:
     - **BlockArg** : enum instance
     - **EnchantmentArg** : org.bukkit.enchantments.Enchantment
     - **MaterialArg** : enum instance
@@ -204,7 +219,8 @@ public class LoadedPlayerData extends Precondition {
     - **WorldArg** : org.bukkit.World
 
 Модуль Velocity:
-- **OnlinePlayersArg** : proxy player 
+
+- **OnlinePlayersArg** : proxy player
 - **OninePlayersWithoutSender** : proxy player
 - **OnlinePlayerWithPermissionArg** : proxy player
 - **PlayerArg** : proxy player

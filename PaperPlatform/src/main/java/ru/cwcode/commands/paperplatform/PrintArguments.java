@@ -3,7 +3,6 @@ package ru.cwcode.commands.paperplatform;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.event.HoverEvent;
 import ru.cwcode.commands.paperplatform.executor.Executor;
-import ru.cwcode.cwutils.messages.MessageReturn;
 
 public class PrintArguments extends Executor {
   @Override

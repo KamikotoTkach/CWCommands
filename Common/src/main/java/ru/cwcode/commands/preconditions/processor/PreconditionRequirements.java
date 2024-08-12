@@ -1,9 +1,9 @@
 package ru.cwcode.commands.preconditions.processor;
 
 public class PreconditionRequirements {
-  public static PreconditionRequirements ONLY_CAN_PERFORM = new PreconditionRequirements(true,false);
-  public static PreconditionRequirements ONLY_CAN_SEE = new PreconditionRequirements(false,true);
-  public static PreconditionRequirements CAN_PERFORM_AND_CAN_SEE = new PreconditionRequirements(true,true);
+  public static PreconditionRequirements ONLY_CAN_PERFORM = new PreconditionRequirements(true, false);
+  public static PreconditionRequirements ONLY_CAN_SEE = new PreconditionRequirements(false, true);
+  public static PreconditionRequirements CAN_PERFORM_AND_CAN_SEE = new PreconditionRequirements(true, true);
   private final boolean canPerform;
   private final boolean canSee;
   

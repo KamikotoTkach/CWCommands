@@ -29,6 +29,11 @@ public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger(PaperMain.plugin);
   
   @Override
+  public Logger getLogger() {
+    return this.logger;
+  }
+  
+  @Override
   public void registerCommand(Command command) {
     
     PluginCommand pluginCommand = Bukkit.getPluginCommand(command.getName());
@@ -57,7 +62,6 @@ public class PaperPlatform extends Platform {
   }
   
   private void registerNewAliases(Command command, org.bukkit.command.Command paperCommand, CommandMap commandMap, Plugin plugin) {
-    
     try {
       Field activeAliases = paperCommand.getClass().getSuperclass().getDeclaredField("activeAliases");
       activeAliases.setAccessible(true);
@@ -74,11 +78,6 @@ public class PaperPlatform extends Platform {
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
       logger.warn(l10n.get("paperPlatform.cannotRegisterAliases", command.getName()));
     }
-  }
-  
-  @Override
-  public Logger getLogger() {
-    return this.logger;
   }
   
   @Override

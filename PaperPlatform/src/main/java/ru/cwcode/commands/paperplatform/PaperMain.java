@@ -28,7 +28,6 @@ import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
-import ru.cwcode.commands.preconditions.Precondition;
 import ru.cwcode.commands.preconditions.PredicatePrecondition;
 import ru.cwcode.cwutils.collections.CollectionUtils;
 import ru.cwcode.cwutils.l10n.L10n;
@@ -71,18 +70,18 @@ public final class PaperMain extends JavaPlugin {
                ),
             new Command("preconditionTest")
                .arguments(
-                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyIfFlying"))
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("onlyIfFlying"))
                      .canExecute(sender -> ((PaperSender) sender).getPlayer().isFlying()),
                   
-                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyIfNotFlying"))
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("onlyIfNotFlying"))
                      .preconditions(
                         new PredicatePrecondition(sender -> !((PaperSender) sender).getPlayer().isFlying(), "Игрок должен стоять на земле")
                      ),
                   
-                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyForPlayer"))
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("onlyForPlayer"))
                      .blockForNonPlayers(),
                   
-                  new ArgumentSet(new PrintArguments(),new ExactStringArg("onlyForNonPlayer"))
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("onlyForNonPlayer"))
                      .blockForPlayers()
                ),
             new Command("bukkit")

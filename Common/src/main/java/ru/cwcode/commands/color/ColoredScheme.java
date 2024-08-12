@@ -19,7 +19,7 @@ public class ColoredScheme implements ColorGenerationStrategy {
   private final TextColor accentWithNoPermissions;
   
   public ColoredScheme(TextColor baseColor, TextColor baseNoPermissionColor) {
-
+    
     main = generateColor(baseColor, TextColor.fromHexString("#00a6f0"));
     
     argument = generateColor(baseColor, TextColor.fromHexString("#00baff"));
@@ -36,6 +36,7 @@ public class ColoredScheme implements ColorGenerationStrategy {
     permissionsWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#C83000"));
     accentWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF9C84"));
   }
+  
   public ColoredScheme(TextColor baseColor) {
     this(baseColor, baseColor);
   }

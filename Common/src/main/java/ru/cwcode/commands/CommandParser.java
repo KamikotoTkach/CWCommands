@@ -2,7 +2,6 @@ package ru.cwcode.commands;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.Sender;
-import ru.cwcode.commands.preconditions.CommandPreconditionResult;
 
 import java.util.Arrays;
 

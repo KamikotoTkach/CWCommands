@@ -4,13 +4,16 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.ClickEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.cwcode.commands.executor.AbstractExecutor;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.arguments.ComplexArg;
 import ru.cwcode.commands.arguments.ExactStringArg;
 import ru.cwcode.commands.arguments.spaced.SpacedArgument;
 import ru.cwcode.commands.color.ColorGenerationStrategy;
-import ru.cwcode.commands.preconditions.*;
+import ru.cwcode.commands.executor.AbstractExecutor;
+import ru.cwcode.commands.preconditions.OnlyForNonPlayersPrecondition;
+import ru.cwcode.commands.preconditions.OnlyForPlayersPrecondition;
+import ru.cwcode.commands.preconditions.Precondition;
+import ru.cwcode.commands.preconditions.PredicatePrecondition;
 import ru.cwcode.commands.preconditions.processor.PermissionPrecondition;
 import ru.cwcode.commands.preconditions.processor.PreconditionProcessor;
 import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
@@ -246,7 +249,7 @@ public class ArgumentSet implements Permissible {
   @Override
   public String toString() {
     return executor.getClass().getSimpleName() + ": " + getArgumentsString() +
-       (spacedLastArgument ? "..." : "");
+           (spacedLastArgument ? "..." : "");
   }
   
   private String getArgumentsString() {
@@ -265,8 +268,8 @@ public class ArgumentSet implements Permissible {
   
   public boolean shouldShowInHelp(List<String> args) {
     return !isEmpty() && (args.isEmpty() || args.get(0).isEmpty()
-       || !firstArgIsExactStringArg()
-       || (StringUtils.startWithIgnoreCase(((ExactStringArg) arguments[0]).getExactString(), args.get(0))));
+                          || !firstArgIsExactStringArg()
+                          || (StringUtils.startWithIgnoreCase(((ExactStringArg) arguments[0]).getExactString(), args.get(0))));
   }
   
   private boolean isEmpty() {

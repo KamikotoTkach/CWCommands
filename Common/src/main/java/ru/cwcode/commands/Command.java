@@ -26,7 +26,7 @@ import java.util.stream.Collectors;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
-public class Command implements Permissible{
+public class Command implements Permissible {
   protected List<ArgumentSet> argumentSets = new ArrayList<>();
   String name;
   ColorGenerationStrategy color = null;
@@ -310,18 +310,18 @@ public class Command implements Permissible{
       argumentSet.updatePermissionPrecondition();
       
       if (debug.is(DebugMode.DETAILED))
-        debug.print(l10n.get("command.debug.argumentSetPermissionSet", name+argumentSet, argumentSet.permission));
+        debug.print(l10n.get("command.debug.argumentSetPermissionSet", name + argumentSet, argumentSet.permission));
     }
   }
   
   private void updatePermissionPrecondition() {
-      for (Precondition precondition : preconditions) {
-        if (precondition instanceof PermissionPrecondition) {
-          return;
-        }
+    for (Precondition precondition : preconditions) {
+      if (precondition instanceof PermissionPrecondition) {
+        return;
       }
-      
-      preconditions.addFirst(new PermissionPrecondition(this));
+    }
+    
+    preconditions.addFirst(new PermissionPrecondition(this));
   }
   
   protected void onExecute(Sender sender, String[] args, ArgumentSet founded) {
@@ -361,7 +361,7 @@ public class Command implements Permissible{
     
     for (Command command : subcommands) {
       if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg))
-         && command.checkPreconditions(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
+          && command.checkPreconditions(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
         return command;
       }
     }
@@ -411,7 +411,7 @@ public class Command implements Permissible{
   }
   
   protected void onError(Sender sender, String label, String[] args, ArgumentSearchResult argumentSearchResult) {
-    if(argumentSearchResult.getErrorMessage() != null) {
+    if (argumentSearchResult.getErrorMessage() != null) {
       showErrorMessage(sender, label, argumentSearchResult);
     } else if (argumentSearchResult.canShowDetailedHelp()) {
       showDetailedHelp(sender, label, argumentSearchResult);
@@ -475,7 +475,7 @@ public class Command implements Permissible{
   private void sendAutoHelp(Sender sender, String label, String[] args) {
     ColorGenerationStrategy color = getColorScheme();
     
-    Component written = Component.text("  /"+ getFullCommandPath(label));
+    Component written = Component.text("  /" + getFullCommandPath(label));
     
     List<Component> toSend = new ArrayList<>();
     
@@ -561,11 +561,11 @@ public class Command implements Permissible{
     Command rootCommand = this;
     
     while (rootCommand.isSubcommand) {
-      writtenString.insert(0, " " +rootCommand.name);
+      writtenString.insert(0, " " + rootCommand.name);
       rootCommand = rootCommand.parent;
     }
     
-    writtenString.insert(0,  label);
+    writtenString.insert(0, label);
     return writtenString.toString();
   }
   

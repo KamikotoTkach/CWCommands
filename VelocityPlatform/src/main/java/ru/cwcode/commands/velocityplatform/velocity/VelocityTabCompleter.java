@@ -4,7 +4,7 @@ import ru.cwcode.commands.Command;
 import ru.cwcode.commands.TabCompleter;
 
 public class VelocityTabCompleter extends TabCompleter {
-   public VelocityTabCompleter(Command command) {
-      super(command);
-   }
+  public VelocityTabCompleter(Command command) {
+    super(command);
+  }
 }

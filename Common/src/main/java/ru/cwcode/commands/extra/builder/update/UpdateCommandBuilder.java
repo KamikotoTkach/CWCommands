@@ -29,13 +29,13 @@ public class UpdateCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   public void register(Command command) {
     for (UpdatableField<E, Object, S> field : fields.values()) {
       command.arguments(
-        new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> update(s, e, field), 1),
-                        new ExactStringArg("update"),
-                        repositoryAccessor.keyArgument(),
-                        new ExactStringArg("set"),
-                        new ExactStringArg(field.name),
-                        field.argument
-        ));
+         new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> update(s, e, field), 1),
+                         new ExactStringArg("update"),
+                         repositoryAccessor.keyArgument(),
+                         new ExactStringArg("set"),
+                         new ExactStringArg(field.name),
+                         field.argument
+         ));
     }
   }
   

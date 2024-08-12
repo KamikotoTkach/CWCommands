@@ -6,6 +6,7 @@ import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.preconditions.Precondition;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 //todo move up
 public class PermissionPrecondition extends Precondition {
   Permissible permissible;

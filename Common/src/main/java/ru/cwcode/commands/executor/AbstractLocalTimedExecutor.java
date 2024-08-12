@@ -6,7 +6,6 @@ import ru.cwcode.commands.api.Sender;
 import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
-import java.util.Date;
 import java.util.WeakHashMap;
 
 public abstract class AbstractLocalTimedExecutor extends AbstractExecutor {

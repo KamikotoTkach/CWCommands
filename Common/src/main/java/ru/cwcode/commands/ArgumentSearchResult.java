@@ -8,8 +8,10 @@ import java.util.List;
 
 public class ArgumentSearchResult {
   List<ArgumentFitnessResult> notValid = new ArrayList<>();
-  @Nullable ArgumentSet founded = null;
-  @Nullable String errorMessage = null;
+  @Nullable
+  ArgumentSet founded = null;
+  @Nullable
+  String errorMessage = null;
   
   public ArgumentSearchResult founded(ArgumentSet set) {
     founded = set;

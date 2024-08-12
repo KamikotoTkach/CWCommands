@@ -39,6 +39,7 @@ public class PreconditionResult {
   void setCannotPerformMessage(@Nullable String cannotPerformMessage) {
     this.cannotPerformMessage = cannotPerformMessage;
   }
+  
   public boolean isSatisfy(PreconditionRequirements requirements) {
     return (canPerform || !requirements.canPerform()) && (canSee || !requirements.canSee());
   }

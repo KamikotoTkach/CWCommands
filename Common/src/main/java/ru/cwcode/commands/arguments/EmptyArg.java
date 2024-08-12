@@ -1,4 +1,5 @@
 package ru.cwcode.commands.arguments;
+
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
 

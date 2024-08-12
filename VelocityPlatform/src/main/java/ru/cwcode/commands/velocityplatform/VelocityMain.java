@@ -30,86 +30,86 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 
 @Plugin(
-      id = "cwcommands",
-      name = "CWCommands",
-      version = "1.1.2",
-      description = "A Pretty Commands Lib",
-      url = "https://cwcode.ru/vk",
-      authors = {"TkachGeek", "Soul_KRT"}
+   id = "cwcommands",
+   name = "CWCommands",
+   version = "1.1.2",
+   description = "A Pretty Commands Lib",
+   url = "https://cwcode.ru/vk",
+   authors = {"TkachGeek", "Soul_KRT"}
 )
 
 public class VelocityMain {
-   @Inject
-   private ProxyServer server;
-   @Inject
-   private Logger logger;
-   @Inject
-   @DataDirectory
-   private Path dataFolder;
-
-   @Subscribe
-   public void onProxyInitialization(ProxyInitializeEvent event) {
-      VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
-      CommandsAPI.setPlatform(platform);
-      
-      try {
-         new Command("commandsTestv", "*")
-               .subCommands(
-                     new Command("velocity")
-                           .arguments(
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("onlinePlayersWithPermission"), new OnlinePlayerWithPermissionArg("*", "admin"))
-
-                           ),
-
-                     new Command("basic")
-                           .subCommands(
-                                 new Command("string")
-                                       .subCommands(
-                                             new Command("spaced")
-                                                   .arguments(
-                                                         new ArgumentSet(new PrintArguments(), new ExactStringArg("simple"), new SpacedStringArg()),
-                                                         new ArgumentSet(new PrintArguments(), new ExactStringArg("list"), new SpacedListArg("list", Arrays.asList("one two", "three four"))),
-                                                         new ArgumentSet(new PrintArguments(), new ExactStringArg("safeString"), new SafetySpacedStringArg())
-                                                   )
-                                       )
-                                       .arguments(
-                                             new ArgumentSet(new PrintArguments(), new ExactStringArg("simple"), new StringArg()),
-                                             new ArgumentSet(new PrintArguments(), new ExactStringArg("list"), new ListArg("list", Arrays.asList("one", "two"))),
-                                             new ArgumentSet(new PrintArguments(), new ExactStringArg("safeString"), new SafetyStringArg())
-                                       ),
-                                 new Command("auto")
-                                       .arguments(
-                                             new ArgumentSet(new PrintArguments(), new IntegerArg()),
-                                             new ArgumentSet(new PrintArguments(), new DoubleArg()),
-                                             new ArgumentSet(new PrintArguments(), new BooleanArg())
-                                       )
-                           ).arguments(
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("int"), new IntegerArg()),
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("double"), new DoubleArg()),
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("boolean"), new BooleanArg())
-                           ),
-
-                     new Command("datetime")
-                           .arguments(
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg()),
-                                 new ArgumentSet(new PrintArguments(), new ExactStringArg("time"), new TimeArg())
-                           )
-               )
+  @Inject
+  private ProxyServer server;
+  @Inject
+  private Logger logger;
+  @Inject
+  @DataDirectory
+  private Path dataFolder;
+  
+  @Subscribe
+  public void onProxyInitialization(ProxyInitializeEvent event) {
+    VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
+    CommandsAPI.setPlatform(platform);
+    
+    try {
+      new Command("commandsTestv", "*")
+         .subCommands(
+            new Command("velocity")
                .arguments(
-                     new ArgumentSet(new PrintArguments(), new ExactStringArg("empty"), new EmptyArg()),
-                     new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(ChronoUnit.values(), "chronoUnits")),
-                     new ArgumentSet(new PrintArguments(), new ExactStringArg("hexColor"), new HexColorArg("color"))
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("onlinePlayersWithPermission"), new OnlinePlayerWithPermissionArg("*", "admin"))
+               
+               ),
+            
+            new Command("basic")
+               .subCommands(
+                  new Command("string")
+                     .subCommands(
+                        new Command("spaced")
+                           .arguments(
+                              new ArgumentSet(new PrintArguments(), new ExactStringArg("simple"), new SpacedStringArg()),
+                              new ArgumentSet(new PrintArguments(), new ExactStringArg("list"), new SpacedListArg("list", Arrays.asList("one two", "three four"))),
+                              new ArgumentSet(new PrintArguments(), new ExactStringArg("safeString"), new SafetySpacedStringArg())
+                           )
+                     )
+                     .arguments(
+                        new ArgumentSet(new PrintArguments(), new ExactStringArg("simple"), new StringArg()),
+                        new ArgumentSet(new PrintArguments(), new ExactStringArg("list"), new ListArg("list", Arrays.asList("one", "two"))),
+                        new ArgumentSet(new PrintArguments(), new ExactStringArg("safeString"), new SafetyStringArg())
+                     ),
+                  new Command("auto")
+                     .arguments(
+                        new ArgumentSet(new PrintArguments(), new IntegerArg()),
+                        new ArgumentSet(new PrintArguments(), new DoubleArg()),
+                        new ArgumentSet(new PrintArguments(), new BooleanArg())
+                     )
+               ).arguments(
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("int"), new IntegerArg()),
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("double"), new DoubleArg()),
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("boolean"), new BooleanArg())
+               ),
+            
+            new Command("datetime")
+               .arguments(
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg()),
+                  new ArgumentSet(new PrintArguments(), new ExactStringArg("time"), new TimeArg())
                )
-               .setColorScheme(NamedTextColor.GREEN)
-               .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
-               .register();
-
-      } catch (Exception ex) {
-         this.logger.warn(ex.getLocalizedMessage());
-      }
-   }
-
-   public static VelocityPlatform getPlatform() {
-      return ((VelocityPlatform) CommandsAPI.getPlatform());
-   }
+         )
+         .arguments(
+            new ArgumentSet(new PrintArguments(), new ExactStringArg("empty"), new EmptyArg()),
+            new ArgumentSet(new PrintArguments(), new ExactStringArg("enum"), new EnumArg(ChronoUnit.values(), "chronoUnits")),
+            new ArgumentSet(new PrintArguments(), new ExactStringArg("hexColor"), new HexColorArg("color"))
+         )
+         .setColorScheme(NamedTextColor.GREEN)
+         .setPermissions(PermissionGenerationStrategy.ALL_DENIED)
+         .register();
+      
+    } catch (Exception ex) {
+      this.logger.warn(ex.getLocalizedMessage());
+    }
+  }
+  
+  public static VelocityPlatform getPlatform() {
+    return ((VelocityPlatform) CommandsAPI.getPlatform());
+  }
 }

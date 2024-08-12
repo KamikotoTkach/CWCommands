@@ -1,10 +1,10 @@
 package ru.cwcode.commands.paperplatform.argument;
+
 import org.bukkit.potion.PotionEffectType;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.api.Sender;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 

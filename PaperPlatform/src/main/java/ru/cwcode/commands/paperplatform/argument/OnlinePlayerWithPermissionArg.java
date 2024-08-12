@@ -1,4 +1,5 @@
 package ru.cwcode.commands.paperplatform.argument;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import ru.cwcode.commands.Argument;

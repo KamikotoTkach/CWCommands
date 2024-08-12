@@ -7,13 +7,16 @@ import ru.cwcode.commands.api.Sender;
 import java.util.function.Predicate;
 
 public class PredicatePrecondition extends Precondition {
-  @NotNull Predicate<Sender> predicate;
-  @Nullable String cannotExecuteFeedback = null;
+  @NotNull
+  Predicate<Sender> predicate;
+  @Nullable
+  String cannotExecuteFeedback = null;
   
   public PredicatePrecondition(@NotNull Predicate<Sender> predicate, @Nullable String cannotExecuteFeedback) {
     this.predicate = predicate;
     this.cannotExecuteFeedback = cannotExecuteFeedback;
   }
+  
   public PredicatePrecondition(@NotNull Predicate<Sender> predicate) {
     this.predicate = predicate;
   }

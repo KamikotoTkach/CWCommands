@@ -63,13 +63,13 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
     this.command = command;
     
     command.arguments(
-      new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, this::click, 1), new ExactStringArg("handleClick"), repositoryAccessor.keyArgument(), new StringArg())
-        .hidden()
-        .preconditions(new HiddenCommandPrecondition()),
-      
-      new ArgumentSet(new SimpleExecutor<>(this::showList),
-                      new ExactStringArg("list"),
-                      new PageArgument<>(repositoryAccessor).optional()));
+       new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, this::click, 1), new ExactStringArg("handleClick"), repositoryAccessor.keyArgument(), new StringArg())
+          .hidden()
+          .preconditions(new HiddenCommandPrecondition()),
+       
+       new ArgumentSet(new SimpleExecutor<>(this::showList),
+                       new ExactStringArg("list"),
+                       new PageArgument<>(repositoryAccessor).optional()));
   }
   
   private void click(S sender, E element, ArgumentParser argumentParser) {

@@ -24,8 +24,8 @@ public class DeleteCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   @Override
   public void register(Command command) {
     command.arguments(
-      new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> onExecute.accept(s, e), 1),
-                      new ExactStringArg("delete"),
-                      repositoryAccessor.keyArgument()));
+       new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> onExecute.accept(s, e), 1),
+                       new ExactStringArg("delete"),
+                       repositoryAccessor.keyArgument()));
   }
 }

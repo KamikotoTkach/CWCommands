@@ -32,8 +32,8 @@ public class CreateCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   @Override
   public void register(Command command) {
     command.arguments(
-      new ArgumentSet(new SimpleExecutor<S>((s, argumentParser) -> onExecute.accept(argumentParser, s)),
-                      new ExactStringArg("create"),
-                      arguments));
+       new ArgumentSet(new SimpleExecutor<S>((s, argumentParser) -> onExecute.accept(argumentParser, s)),
+                       new ExactStringArg("create"),
+                       arguments));
   }
 }

@@ -39,6 +39,22 @@ public class VelocityPlatform extends Platform {
   }
   
   @Override
+  public void registerCommand(Command command) {
+    try {
+      CommandManager commandManager = this.server.getCommandManager();
+      commandManager.register(
+         commandManager.metaBuilder(command.getName())
+                       .aliases(command.aliases().toArray(new String[0]))
+                       .plugin(this.plugin)
+                       .build(),
+         new VelocityCommand(command)
+      );
+    } catch (Exception e) {
+      logger.warn(l10n.get("velocityPlatform.commandIsNotRegistered", command.getName()));
+    }
+  }
+  
+  @Override
   public void handleExecutionException(Exception exception, Command command, Sender sender) {
     if (exception instanceof MessageReturn) {
       MessageReturn messageReturn = (MessageReturn) exception;
@@ -58,21 +74,5 @@ public class VelocityPlatform extends Platform {
     
     CommandsAPI.getPlatform().getLogger().warn(l10n.get("velocityPlatform.executionError", this.getClass().getName()));
     exception.printStackTrace();
-  }
-  
-  @Override
-  public void registerCommand(Command command) {
-    try {
-      CommandManager commandManager = this.server.getCommandManager();
-      commandManager.register(
-         commandManager.metaBuilder(command.getName())
-                       .aliases(command.aliases().toArray(new String[0]))
-                       .plugin(this.plugin)
-                       .build(),
-         new VelocityCommand(command)
-      );
-    } catch (Exception e) {
-      logger.warn(l10n.get("velocityPlatform.commandIsNotRegistered", command.getName()));
-    }
   }
 }

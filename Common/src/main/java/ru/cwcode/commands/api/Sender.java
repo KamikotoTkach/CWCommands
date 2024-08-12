@@ -20,7 +20,7 @@ public interface Sender {
   default boolean isOp() {
     return hasPermission("*");
   }
-
+  
   Audience getAudience();
   
   void confirm(String confirmableString, long timeToConfirm, Runnable onConfirm, Runnable onExpired);

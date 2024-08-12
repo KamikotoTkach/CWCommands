@@ -13,47 +13,47 @@ import java.util.List;
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class OnlinePlayerWithPermissionArg extends Argument {
-   String permission;
-   String argumentName = null;
-
-   public OnlinePlayerWithPermissionArg(String permission) {
-      this.permission = permission;
-   }
-
-   public OnlinePlayerWithPermissionArg(String permission, String argumentName) {
-      this.permission = permission;
-      this.argumentName = permission;
-   }
-
-   @Override
-   public boolean valid(String raw) {
-      Player player = VelocityMain.getPlatform().getServer().getPlayer(raw).orElse(null);
-      return player != null && player.hasPermission(permission);
-   }
-
-   @Override
-   public List<String> completions(Sender sender) {
-      List<String> list = new ArrayList<>();
-      if (sender.isPlayer() && sender instanceof VelocitySender velocitySender) {
-         ServerConnection server = velocitySender.getPlayer().getCurrentServer().orElse(null);
-         if (server != null) {
-            for (Player player : server.getServer().getPlayersConnected()) {
-               if (player.hasPermission(permission)) {
-                  list.add(player.getUsername());
-               }
-            }
-         }
+  String permission;
+  String argumentName = null;
+  
+  public OnlinePlayerWithPermissionArg(String permission) {
+    this.permission = permission;
+  }
+  
+  public OnlinePlayerWithPermissionArg(String permission, String argumentName) {
+    this.permission = permission;
+    this.argumentName = permission;
+  }
+  
+  @Override
+  public boolean valid(String raw) {
+    Player player = VelocityMain.getPlatform().getServer().getPlayer(raw).orElse(null);
+    return player != null && player.hasPermission(permission);
+  }
+  
+  @Override
+  public List<String> completions(Sender sender) {
+    List<String> list = new ArrayList<>();
+    if (sender.isPlayer() && sender instanceof VelocitySender velocitySender) {
+      ServerConnection server = velocitySender.getPlayer().getCurrentServer().orElse(null);
+      if (server != null) {
+        for (Player player : server.getServer().getPlayersConnected()) {
+          if (player.hasPermission(permission)) {
+            list.add(player.getUsername());
+          }
+        }
       }
-      return list;
-   }
-
-   @Override
-   public String argumentName() {
-      return argumentName == null ? l10n.get("argument.onlinePlayerWithPermission.name", permission) : argumentName;
-   }
-   
-   @Override
-   public Object map() {
-      return VelocityMain.getPlatform().getServer().getPlayer(raw);
-   }
+    }
+    return list;
+  }
+  
+  @Override
+  public String argumentName() {
+    return argumentName == null ? l10n.get("argument.onlinePlayerWithPermission.name", permission) : argumentName;
+  }
+  
+  @Override
+  public Object map() {
+    return VelocityMain.getPlatform().getServer().getPlayer(raw);
+  }
 }
