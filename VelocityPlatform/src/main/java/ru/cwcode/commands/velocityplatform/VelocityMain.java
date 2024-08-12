@@ -24,6 +24,8 @@ import ru.cwcode.commands.arguments.spaced.SpacedStringArg;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.velocityplatform.argument.OnlinePlayerWithPermissionArg;
 import ru.cwcode.commands.velocityplatform.velocity.VelocityPlatform;
+import ru.cwcode.cwutils.l10n.L10n;
+import ru.cwcode.cwutils.l10n.VelocityL10nPlatform;
 
 import java.nio.file.Path;
 import java.time.temporal.ChronoUnit;
@@ -51,6 +53,20 @@ public class VelocityMain {
   public void onProxyInitialization(ProxyInitializeEvent event) {
     VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
     CommandsAPI.setPlatform(platform);
+    CommandsAPI.setL10n(
+       new L10n(
+          new VelocityL10nPlatform(
+             this,
+             this.logger,
+             server.getPluginManager()
+                   .ensurePluginContainer(this)
+                   .getDescription()
+                   .getSource()
+                   .map(Path::toFile)
+                   .orElseThrow()
+          )
+       )
+    );
     
     try {
       new Command("commandsTestv", "*")

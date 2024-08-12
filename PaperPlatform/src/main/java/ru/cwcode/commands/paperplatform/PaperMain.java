@@ -31,6 +31,7 @@ import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.preconditions.PredicatePrecondition;
 import ru.cwcode.cwutils.collections.CollectionUtils;
 import ru.cwcode.cwutils.l10n.L10n;
+import ru.cwcode.cwutils.l10n.PaperL10nPlatform;
 import ru.cwcode.cwutils.server.ServerUtils;
 
 import java.util.Arrays;
@@ -50,7 +51,7 @@ public final class PaperMain extends JavaPlugin {
     plugin = this;
     
     CommandsAPI.setPlatform(new PaperPlatform());
-    CommandsAPI.setL10n(new L10n(this.getFile(), this));
+    CommandsAPI.setL10n(new L10n(new PaperL10nPlatform(this, this.getFile())));
     
     sendLogo();
     
