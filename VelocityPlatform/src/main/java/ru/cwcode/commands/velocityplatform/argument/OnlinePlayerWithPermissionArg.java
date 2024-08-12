@@ -10,6 +10,8 @@ import ru.cwcode.commands.velocityplatform.velocity.VelocitySender;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class OnlinePlayerWithPermissionArg extends Argument {
    String permission;
    String argumentName = null;
@@ -47,7 +49,7 @@ public class OnlinePlayerWithPermissionArg extends Argument {
 
    @Override
    public String argumentName() {
-      return argumentName == null ? "Игрок с " + permission : argumentName;
+      return argumentName == null ? l10n.get("argument.onlinePlayerWithPermission.name", permission) : argumentName;
    }
    
    @Override

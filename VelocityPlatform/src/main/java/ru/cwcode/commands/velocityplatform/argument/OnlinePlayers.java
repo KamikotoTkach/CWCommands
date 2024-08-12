@@ -12,6 +12,8 @@ import ru.cwcode.commands.velocityplatform.velocity.VelocitySender;
 import java.util.ArrayList;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public class OnlinePlayers extends Argument {
    public OnlinePlayers() {
    }
@@ -37,12 +39,12 @@ public class OnlinePlayers extends Argument {
 
    @Override
    public String argumentName() {
-      return "игрок в сети";
+      return l10n.get("argument.onlinePlayer.name");
    }
 
    @Override
    public Component invalidMessage(Command command, Sender sender, String written) {
-      return Component.text("игрок " + written + " не онлайн", command.getColorScheme().main());
+      return Component.text(l10n.get("argument.onlinePlayer.invalid", written), command.getColorScheme().main());
    }
    
    @Override

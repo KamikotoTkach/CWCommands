@@ -7,10 +7,12 @@ import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.CommandsAPI;
-import ru.cwcode.commands.api.Logger;
 import ru.cwcode.commands.api.Platform;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.paperplatform.PaperMain;
 import ru.cwcode.cwutils.collections.CollectionUtils;
+import ru.cwcode.cwutils.logger.Logger;
+import ru.cwcode.cwutils.logger.PaperLogger;
 import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 import ru.cwcode.cwutils.reflection.ReflectionUtils;
@@ -24,7 +26,7 @@ import java.util.List;
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class PaperPlatform extends Platform {
-  private final Logger logger = new PaperLogger();
+  private final Logger logger = new PaperLogger(PaperMain.plugin);
   
   @Override
   public void registerCommand(Command command) {
