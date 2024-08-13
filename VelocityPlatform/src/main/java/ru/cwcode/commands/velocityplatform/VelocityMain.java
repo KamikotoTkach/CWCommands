@@ -57,6 +57,7 @@ public class VelocityMain {
        new L10n(
           new VelocityL10nPlatform(
              this,
+             this.dataFolder,
              this.logger,
              server.getPluginManager()
                    .ensurePluginContainer(this)
