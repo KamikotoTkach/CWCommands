@@ -10,7 +10,7 @@ import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class ListDecorator<S extends Sender> {
   BiFunction<ListContext, S, Component> header = (listContext, s) -> null;
-  BiFunction<ListContext, S, Component> noElements = (listContext, s) -> Component.text(l10n.get("extra.list.decorator"), listContext.colorScheme().accent(true));
+  BiFunction<ListContext, S, Component> noElements = (listContext, s) -> Component.text(l10n.get("extra.list.decorator.noElements"), listContext.colorScheme().accent(true));
   BiFunction<ListContext, S, Component> footer = (listContext, s) -> {
     return Component.text(" <<< ").clickEvent(ClickEvent.runCommand(listContext.firstPageCommand()))
                     .append(Component.text("< ").clickEvent(ClickEvent.runCommand(listContext.prevPageCommand())))
