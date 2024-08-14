@@ -29,7 +29,7 @@ public abstract class AbstractLocalToggleExecutor extends AbstractExecutor {
   }
   
   @Override
-  public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
+  public void executeForPlayer() {
   
   }
   

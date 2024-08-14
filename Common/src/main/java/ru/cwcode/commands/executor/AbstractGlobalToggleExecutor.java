@@ -25,7 +25,7 @@ public abstract class AbstractGlobalToggleExecutor extends AbstractExecutor {
   }
   
   @Override
-  public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
+  public void executeForPlayer() {
   
   }
   

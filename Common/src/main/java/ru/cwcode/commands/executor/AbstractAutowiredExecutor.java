@@ -16,7 +16,7 @@ import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
   @Override
-  public void executeForPlayer() throws MessageReturn, TargetableMessageReturn {
+  public void executeForPlayer() {
     List<Object> objects = Arrays.stream(parser.args)
                                  .filter(arg -> arg.getClass() != ExactStringArg.class)
                                  .map(Argument::map)
@@ -39,7 +39,7 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
     try {
       matchingMethod.invoke(this, objects.toArray());
     } catch (IllegalAccessException | InvocationTargetException e) {
-      throw new RuntimeException(e);
+      handleError(e);
     }
   }
 }
