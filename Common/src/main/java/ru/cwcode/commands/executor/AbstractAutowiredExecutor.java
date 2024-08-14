@@ -38,7 +38,14 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
     
     try {
       matchingMethod.invoke(this, objects.toArray());
-    } catch (IllegalAccessException | InvocationTargetException e) {
+    } catch (IllegalAccessException e) {
+      handleError(e);
+    } catch (InvocationTargetException e) {
+      if (e.getCause() instanceof Exception) {
+        handleError((Exception) e.getCause());
+        return;
+      }
+      
       handleError(e);
     }
   }
