@@ -1,4 +1,4 @@
-# CWCommands 1.3.2
+# CWCommands 1.3.3
 
 _(aka TkachCommands, PaperCommands, VelocityCommands)_\
 _Velocity & Paper 1.16.5+_
@@ -12,7 +12,7 @@ _Velocity & Paper 1.16.5+_
   <dependency>
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>PaperCommands</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <scope>provided</scope>
   </dependency>
   ```
@@ -21,7 +21,7 @@ _Velocity & Paper 1.16.5+_
   <dependency>
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>VelocityCommands</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <scope>provided</scope>
   </dependency>
   ```
@@ -30,7 +30,7 @@ _Velocity & Paper 1.16.5+_
   <dependency>
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>Common</artifactId>
-    <version>1.3.2</version>
+    <version>1.3.3</version>
     <scope>provided</scope>
   </dependency>
   ```
