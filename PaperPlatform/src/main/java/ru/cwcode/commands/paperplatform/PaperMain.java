@@ -37,6 +37,8 @@ import ru.cwcode.cwutils.server.ServerUtils;
 import java.util.Arrays;
 import java.util.List;
 
+import static ru.cwcode.commands.api.CommandsAPI.l10n;
+
 public final class PaperMain extends JavaPlugin {
   
   public static JavaPlugin plugin;
@@ -170,7 +172,7 @@ public final class PaperMain extends JavaPlugin {
     console.sendMessage(Component.text(" / __| |___  __| |_\\ \\    / /__ _ _| |__", randomColor));
     console.sendMessage(Component.text("| (__| / _ \\/ _| / /\\ \\/\\/ / _ \\ '_| / /", randomColor));
     console.sendMessage(Component.text(" \\___|_\\___/\\__|_\\_\\ \\_/\\_/\\___/_| |_\\_\\", randomColor));
-    console.sendMessage(Component.text("Заказать приватный плагин - cwcode.ru/vk", randomColor));
+    console.sendMessage(Component.text(l10n.get("startup.logo.tooltip"), randomColor));
     console.sendMessage("");
   }
 }
