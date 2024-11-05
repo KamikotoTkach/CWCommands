@@ -21,12 +21,19 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger(PaperMain.plugin);
+  
+  HashMap<String, Command> registeredCommands = new HashMap<>();
+  
+  public HashMap<String, Command> registeredCommands() {
+    return registeredCommands;
+  }
   
   @Override
   public Logger getLogger() {
@@ -75,6 +82,9 @@ public class PaperPlatform extends Platform {
       registerAlias.setAccessible(true);
       
       registerAlias.invoke(commandMap, plugin.getName(), paperCommand);
+      
+      registeredCommands.put(command.getName(), command);
+      
     } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
       logger.warn(l10n.get("paperPlatform.cannotRegisterAliases", command.getName()));
     }

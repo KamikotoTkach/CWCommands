@@ -24,6 +24,7 @@ import ru.cwcode.commands.paperplatform.argument.*;
 import ru.cwcode.commands.paperplatform.argument.location.LocationArg;
 import ru.cwcode.commands.paperplatform.argument.location.LocationPart;
 import ru.cwcode.commands.paperplatform.argument.location.TargetXArg;
+import ru.cwcode.commands.paperplatform.brigadier.BrigadierListener;
 import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
@@ -44,16 +45,15 @@ public final class PaperMain extends JavaPlugin {
   public static JavaPlugin plugin;
   
   @Override
-  public void onDisable() {
-    // Plugin shutdown logic
-  }
-  
-  @Override
   public void onEnable() {
     plugin = this;
     
-    CommandsAPI.setPlatform(new PaperPlatform());
+    PaperPlatform platform = new PaperPlatform();
+    
+    CommandsAPI.setPlatform(platform);
     CommandsAPI.setL10n(new L10n(new PaperL10nPlatform(this, this.getFile())));
+    
+    registerBrigadierHook(platform);
     
     sendLogo();
     
@@ -68,7 +68,7 @@ public final class PaperMain extends JavaPlugin {
                   new ArgumentSet(new ItemToBase64Command(), new ExactStringArg("mainItemToBase64")),
                   new ArgumentSet(new ItemToGsonCommand(), new ExactStringArg("mainItemToGson")),
                   
-                  new ArgumentSet(new ItemFromSnbtCommand(), new ExactStringArg("itemFromSnbt"), new StringArg("snbt")),
+                  new ArgumentSet(new ItemFromSnbtCommand(), new ExactStringArg("itemFromSnbt"), new SpacedStringArg("snbt")),
                   new ArgumentSet(new ItemFromBase64Command(), new ExactStringArg("itemFromBase64"), new StringArg("base64"))
                ),
             new Command("preconditionTest")
@@ -160,6 +160,19 @@ public final class PaperMain extends JavaPlugin {
     } catch (Exception ex) {
       this.getLogger().warning(ex.getLocalizedMessage());
     }
+  }
+  
+  private void registerBrigadierHook(PaperPlatform platform) {
+    try {
+      Class.forName("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent");
+      Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
+      registerBrigadierHook0(platform);
+    } catch (ClassNotFoundException e) {
+    }
+  }
+  
+  private void registerBrigadierHook0(PaperPlatform platform) {
+    Bukkit.getPluginManager().registerEvents(new BrigadierListener(platform),this);
   }
   
   private void sendLogo() {
