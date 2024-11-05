@@ -178,7 +178,7 @@ public abstract class Argument {
     ColorGenerationStrategy colorScheme = command.getColorScheme();
     
     return Component.text(written, colorScheme.accent(true))
-                    .append(Component.text(l10n.get("argument.invalid.error"), colorScheme.main()))
+                    .append(Component.text(" " + l10n.get("argument.invalid.error") + " ", colorScheme.main()))
                     .append(Component.text(argumentName(), colorScheme.accent(true)));
   }
   
