@@ -68,7 +68,7 @@ _Velocity & Paper 1.16.5+_
                             .setMin(1)
                             .optional()).help("help текст")
     //, new ArgumentSet...
-    ).register(); //this = JavaPlugin
+    ).register();
 ```
 
 Пример Executor`a:
