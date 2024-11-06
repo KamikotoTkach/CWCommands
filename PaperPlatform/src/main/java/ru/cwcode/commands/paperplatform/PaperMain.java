@@ -45,13 +45,17 @@ public final class PaperMain extends JavaPlugin {
   public static JavaPlugin plugin;
   
   @Override
+  public void onLoad() {
+    CommandsAPI.setL10n(new L10n(new PaperL10nPlatform(this, this.getFile())));
+  }
+  
+  @Override
   public void onEnable() {
     plugin = this;
     
     PaperPlatform platform = new PaperPlatform();
     
     CommandsAPI.setPlatform(platform);
-    CommandsAPI.setL10n(new L10n(new PaperL10nPlatform(this, this.getFile())));
     
     registerBrigadierHook(platform);
     
