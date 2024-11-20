@@ -6,12 +6,13 @@ import ru.cwcode.commands.api.Sender;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class BlockArg extends Argument {
-  static List<String> blocks = Arrays.stream(Material.values()).filter(Material::isBlock).map(Enum::name).collect(Collectors.toList());
+  static Set<String> blocks = Arrays.stream(Material.values()).filter(Material::isBlock).map(x->x.name()).collect(Collectors.toSet());
   
   @Override
   public boolean valid(String raw) {
@@ -19,7 +20,7 @@ public class BlockArg extends Argument {
   }
   
   @Override
-  public List<String> completions(Sender sender) {
+  public Set<String> completions(Sender sender) {
     return blocks;
   }
   

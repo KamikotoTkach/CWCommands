@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>VelocityCommands</artifactId>
-    <version>1.4.0</version>
+    <version>1.4.1</version>
     <packaging>jar</packaging>
 
     <name>VelocityCommands</name>
@@ -224,7 +224,7 @@
         <dependency>
             <groupId>ru.cwcode.commands</groupId>
             <artifactId>Common</artifactId>
-            <version>1.4.0</version>
+            <version>1.4.1</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
