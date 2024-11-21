@@ -10,6 +10,7 @@ import ru.cwcode.commands.paperplatform.paper.PaperSender;
 
 import java.util.Optional;
 
+@Deprecated
 public abstract class GlobalToggleExecutor extends AbstractGlobalToggleExecutor {
   public GlobalToggleExecutor(boolean initialState) {
     super(initialState);

@@ -29,7 +29,7 @@ import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
-import ru.cwcode.commands.preconditions.PredicatePrecondition;
+import ru.cwcode.commands.preconditions.impl.PredicatePrecondition;
 import ru.cwcode.cwutils.collections.CollectionUtils;
 import ru.cwcode.cwutils.l10n.L10n;
 import ru.cwcode.cwutils.l10n.PaperL10nPlatform;

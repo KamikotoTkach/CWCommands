@@ -1,4 +1,4 @@
-package ru.cwcode.commands.preconditions.processor;
+package ru.cwcode.commands.preconditions.impl;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.Permissible;
@@ -7,7 +7,6 @@ import ru.cwcode.commands.preconditions.Precondition;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
-//todo move up
 public class PermissionPrecondition extends Precondition {
   Permissible permissible;
   

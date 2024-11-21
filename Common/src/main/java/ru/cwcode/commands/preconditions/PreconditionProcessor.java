@@ -1,7 +1,6 @@
-package ru.cwcode.commands.preconditions.processor;
+package ru.cwcode.commands.preconditions;
 
 import ru.cwcode.commands.api.Sender;
-import ru.cwcode.commands.preconditions.Precondition;
 
 import java.util.Collection;
 

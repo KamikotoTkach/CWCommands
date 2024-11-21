@@ -1,6 +1,7 @@
-package ru.cwcode.commands.preconditions;
+package ru.cwcode.commands.preconditions.impl;
 
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.preconditions.Precondition;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 

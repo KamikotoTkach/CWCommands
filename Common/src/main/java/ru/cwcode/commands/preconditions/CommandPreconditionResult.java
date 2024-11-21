@@ -1,7 +1,6 @@
 package ru.cwcode.commands.preconditions;
 
 import ru.cwcode.commands.Command;
-import ru.cwcode.commands.preconditions.processor.PreconditionResult;
 
 public class CommandPreconditionResult {
   Command command;

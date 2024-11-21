@@ -1,8 +1,9 @@
-package ru.cwcode.commands.preconditions;
+package ru.cwcode.commands.preconditions.impl;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.preconditions.Precondition;
 
 import java.util.function.Predicate;
 

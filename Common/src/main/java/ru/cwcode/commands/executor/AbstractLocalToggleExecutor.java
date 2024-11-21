@@ -8,6 +8,7 @@ import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.WeakHashMap;
 
+@Deprecated
 public abstract class AbstractLocalToggleExecutor extends AbstractExecutor {
   WeakHashMap<Sender, Boolean> state = new WeakHashMap<>();
   boolean initialState;

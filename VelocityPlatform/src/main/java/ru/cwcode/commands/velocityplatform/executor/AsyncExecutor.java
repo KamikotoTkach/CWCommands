@@ -6,6 +6,7 @@ import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.velocityplatform.VelocityMain;
 
+@Deprecated
 public abstract class AsyncExecutor extends Executor {
   @Override
   public void prepare(Sender sender, String[] args, ArgumentSet argumentSet, Command command) {

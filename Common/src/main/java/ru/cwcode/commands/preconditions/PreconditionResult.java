@@ -1,4 +1,4 @@
-package ru.cwcode.commands.preconditions.processor;
+package ru.cwcode.commands.preconditions;
 
 import org.jetbrains.annotations.Nullable;
 

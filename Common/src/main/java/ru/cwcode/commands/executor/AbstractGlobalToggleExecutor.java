@@ -6,6 +6,7 @@ import ru.cwcode.commands.api.Sender;
 import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
+@Deprecated
 public abstract class AbstractGlobalToggleExecutor extends AbstractExecutor {
   boolean state;
   

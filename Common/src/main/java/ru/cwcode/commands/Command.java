@@ -14,11 +14,11 @@ import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.permissions.ProcessResult;
 import ru.cwcode.commands.preconditions.CommandPreconditionResult;
 import ru.cwcode.commands.preconditions.Precondition;
-import ru.cwcode.commands.preconditions.PredicatePrecondition;
-import ru.cwcode.commands.preconditions.processor.PermissionPrecondition;
-import ru.cwcode.commands.preconditions.processor.PreconditionProcessor;
-import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
-import ru.cwcode.commands.preconditions.processor.PreconditionResult;
+import ru.cwcode.commands.preconditions.impl.PredicatePrecondition;
+import ru.cwcode.commands.preconditions.impl.PermissionPrecondition;
+import ru.cwcode.commands.preconditions.PreconditionProcessor;
+import ru.cwcode.commands.preconditions.PreconditionRequirements;
+import ru.cwcode.commands.preconditions.PreconditionResult;
 
 import java.util.*;
 import java.util.function.Predicate;

@@ -1,4 +1,4 @@
-package ru.cwcode.commands.preconditions.processor;
+package ru.cwcode.commands.preconditions;
 
 public class PreconditionRequirements {
   public static PreconditionRequirements ONLY_CAN_PERFORM = new PreconditionRequirements(true, false);

@@ -8,6 +8,7 @@ import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.WeakHashMap;
 
+@Deprecated
 public abstract class AbstractLocalTimedExecutor extends AbstractExecutor {
   WeakHashMap<Sender, Long> lastExecutionTime = new WeakHashMap<>();
   long delay;

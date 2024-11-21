@@ -6,9 +6,7 @@ public class DefaultPermissionGenerationStrategy implements PermissionGeneration
     if (currentPermission == null) {
       return new ProcessResult(commandName);
     } else if (currentPermission.startsWith("$")) {
-      ProcessResult result = new ProcessResult(currentPermission);
-      result.setPermission(currentPermission.substring(1));
-      return result;
+      return new ProcessResult(currentPermission.substring(1), currentPermission);
     } else if (!currentPermission.isEmpty()) {
       return new ProcessResult(currentPermission);
     } else {
@@ -19,15 +17,11 @@ public class DefaultPermissionGenerationStrategy implements PermissionGeneration
   @Override
   public ProcessResult processSubCommand(String previousPermissions, String currentPermission, String commandName) {
     if (currentPermission.startsWith("$")) {
-      ProcessResult result = new ProcessResult(currentPermission);
-      result.setPermission(currentPermission.substring(1));
-      return result;
+      return new ProcessResult(currentPermission.substring(1), currentPermission);
     }
     
     if (previousPermissions.startsWith("$")) {
-      ProcessResult result = new ProcessResult(previousPermissions);
-      result.setPermission(previousPermissions.substring(1));
-      return result;
+      return new ProcessResult(previousPermissions.substring(1), previousPermissions);
     }
     
     return new ProcessResult(previousPermissions + "." + currentPermission);

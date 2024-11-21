@@ -2,7 +2,7 @@ package ru.cwcode.commands;
 
 import org.jetbrains.annotations.NotNull;
 import ru.cwcode.commands.api.Sender;
-import ru.cwcode.commands.preconditions.processor.PreconditionRequirements;
+import ru.cwcode.commands.preconditions.PreconditionRequirements;
 import ru.cwcode.cwutils.text.StringUtils;
 
 import java.util.ArrayList;
