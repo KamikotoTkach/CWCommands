@@ -16,8 +16,8 @@ public class NearPlayersArg extends Argument {
   int limit;
   
   /**
-   * При радиусе <=0 он не считается,<br>
-   * при limit <= 0 он Integer.MAX_VALUE.<br>
+   * При радиусе меньше или равно 0 он не считается,<br>
+   * при limit меньше или равно 0 он Integer.MAX_VALUE.<br>
    * Для всех игроков используйте {@link OnlinePlayers}, он быстрее
    */
   public NearPlayersArg(int radius, int limit) {
