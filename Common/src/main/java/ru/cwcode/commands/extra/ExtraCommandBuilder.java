@@ -5,6 +5,7 @@ import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.extra.builder.CommandBuilder;
 import ru.cwcode.commands.extra.builder.CreateCommandBuilder;
 import ru.cwcode.commands.extra.builder.DeleteCommandBuilder;
+import ru.cwcode.commands.extra.builder.RunnableCommandBuilder;
 import ru.cwcode.commands.extra.builder.list.ListCommandBuilder;
 import ru.cwcode.commands.extra.builder.update.UpdateCommandBuilder;
 
@@ -61,6 +62,10 @@ public class ExtraCommandBuilder<E, K, S extends Sender> {
   
   public ExtraCommandBuilder<E, K, S> update(Consumer<UpdateCommandBuilder<E, K, S>> builder) {
     return builder(UpdateCommandBuilder::new, builder);
+  }
+  
+  public ExtraCommandBuilder<E, K, S> runnable(Consumer<RunnableCommandBuilder<E, K, S>> builder) {
+    return builder(RunnableCommandBuilder::new, builder);
   }
   
   public ExtraCommandBuilder<E, K, S> create(Consumer<CreateCommandBuilder<E, K, S>> builder) {

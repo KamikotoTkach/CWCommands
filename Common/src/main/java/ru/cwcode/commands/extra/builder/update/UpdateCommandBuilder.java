@@ -14,9 +14,15 @@ import java.util.HashMap;
 
 public class UpdateCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E, K, S> {
   HashMap<String, UpdatableField<E, Object, S>> fields = new HashMap<>();
+  String name = "update";
   
   public UpdateCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  public UpdateCommandBuilder<E, K, S> name(String name) {
+    this.name = name;
+    return this;
   }
   
   public <A extends Argument> UpdateCommandBuilder<E, K, S> field(String name, A argument, TriConsumer<E, Object, S> consumer) {
@@ -30,7 +36,7 @@ public class UpdateCommandBuilder<E, K, S extends Sender> extends CommandBuilder
     for (UpdatableField<E, Object, S> field : fields.values()) {
       command.arguments(
          new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> update(s, e, field), 1),
-                         new ExactStringArg("update"),
+                         new ExactStringArg(name),
                          repositoryAccessor.keyArgument(),
                          new ExactStringArg("set"),
                          new ExactStringArg(field.name),

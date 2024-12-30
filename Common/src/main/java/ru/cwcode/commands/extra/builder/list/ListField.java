@@ -13,23 +13,28 @@ public class ListField<E, S extends Sender> {
   BiConsumer<E, S> onClick = null;
   BiFunction<E, S, Boolean> shouldShow = (e, s) -> true;
   
-  public void setName(String name) {
+  public ListField<E, S> setName(String name) {
     this.name = name;
+    return this;
   }
   
-  public void setText(BiFunction<E, S, Component> text) {
+  public ListField<E, S> setText(BiFunction<E, S, Component> text) {
     this.text = text;
+    return this;
   }
   
-  public void setHover(BiFunction<E, S, Component> hover) {
+  public ListField<E, S> setHover(BiFunction<E, S, Component> hover) {
     this.hover = hover;
+    return this;
   }
   
-  public void setOnClick(BiConsumer<E, S> onClick) {
+  public ListField<E, S> setOnClick(BiConsumer<E, S> onClick) {
     this.onClick = onClick;
+    return this;
   }
   
-  public void setShouldShow(BiFunction<E, S, Boolean> shouldShow) {
+  public ListField<E, S> setShouldShow(BiFunction<E, S, Boolean> shouldShow) {
     this.shouldShow = shouldShow;
+    return this;
   }
 }

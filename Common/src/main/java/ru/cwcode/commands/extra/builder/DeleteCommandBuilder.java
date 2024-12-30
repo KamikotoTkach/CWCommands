@@ -11,9 +11,16 @@ import java.util.function.BiConsumer;
 
 public class DeleteCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E, K, S> {
   BiConsumer<S, E> onExecute;
+  String name = "delete";
   
   public DeleteCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  
+  public DeleteCommandBuilder<E, K, S> name(String name) {
+    this.name = name;
+    return this;
   }
   
   public DeleteCommandBuilder<E, K, S> onExecute(BiConsumer<S, E> onExecute) {
@@ -25,7 +32,7 @@ public class DeleteCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   public void register(Command command) {
     command.arguments(
        new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, (s, e, __) -> onExecute.accept(s, e), 1),
-                       new ExactStringArg("delete"),
+                       new ExactStringArg(name),
                        repositoryAccessor.keyArgument()));
   }
 }

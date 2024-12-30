@@ -13,10 +13,17 @@ import java.util.function.BiConsumer;
 
 public class CreateCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E, K, S> {
   BiConsumer<ArgumentParser, S> onExecute;
+  String name = "create";
+  
   private Argument[] arguments;
   
   public CreateCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  public CreateCommandBuilder<E, K, S> name(String name) {
+    this.name = name;
+    return this;
   }
   
   public <A extends Argument> CreateCommandBuilder<E, K, S> fields(A... arguments) {
@@ -33,7 +40,7 @@ public class CreateCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   public void register(Command command) {
     command.arguments(
        new ArgumentSet(new SimpleExecutor<S>((s, argumentParser) -> onExecute.accept(argumentParser, s)),
-                       new ExactStringArg("create"),
+                       new ExactStringArg(name),
                        arguments));
   }
 }

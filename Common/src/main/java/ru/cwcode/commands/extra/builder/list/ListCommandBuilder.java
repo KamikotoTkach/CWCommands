@@ -26,11 +26,18 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
   List<ListField<E, S>> fields = new ArrayList<>();
   int pageSize = 10;
   Component separator = Component.text(" ");
-  Command command;
   ListDecorator<S> listDecorator = new ListDecorator<>();
+  String name = "list";
+  Command command;
+  boolean showIndex = false;
   
   public ListCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  public ListCommandBuilder<E, K, S> showIndex(boolean showIndex) {
+    this.showIndex = showIndex;
+    return this;
   }
   
   public ListCommandBuilder<E, K, S> field(Consumer<ListField<E, S>> fieldConsumer) {
@@ -53,6 +60,11 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
     return this;
   }
   
+  public ListCommandBuilder<E, K, S> name(String name) {
+    this.name = name;
+    return this;
+  }
+  
   public ListCommandBuilder<E, K, S> pageSize(int pageSize) {
     this.pageSize = pageSize;
     return this;
@@ -68,7 +80,7 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
           .preconditions(new HiddenCommandPrecondition()),
        
        new ArgumentSet(new SimpleExecutor<>(this::showList),
-                       new ExactStringArg("list"),
+                       new ExactStringArg(name),
                        new PageArgument<>(repositoryAccessor).optional()));
   }
   
@@ -87,6 +99,7 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
     int page = argumentParser.isPresent(1) ? argumentParser.get(1).toInt() : 1;
     int skip = (page - 1) * pageSize;
     int limit = pageSize;
+    int currentIndex = 0;
     
     Collection<K> keys = repositoryAccessor.keys(sender);
     
@@ -96,6 +109,8 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
     if (header != null) sender.sendMessage(header);
     
     for (K key : keys) {
+      currentIndex++;
+      
       if (skip > 0) {
         skip--;
         continue; //не лучшее решение, но без выделения лишней памяти
@@ -108,7 +123,10 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
       
       Component row = Component.empty();
       
-      boolean skipSeparator = true;
+      if (showIndex) {
+        row = row.append(listDecorator.indexField.apply(listContext, currentIndex, sender));
+      }
+      
       for (ListField<E, S> field : fields) {
         if (!field.shouldShow.apply(element, sender)) continue;
         
@@ -122,7 +140,6 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
         }
         
         if (onClick != null) {
-          
           String commandStr = String.format("/%s handleClick %s %s",
                                             command.getFullCommandPath(command.getRootCommand().getName()),
                                             repositoryAccessor.keyToString(key),
@@ -131,9 +148,7 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
           text = text.clickEvent(ClickEvent.runCommand(commandStr));
         }
         
-        if (skipSeparator) {
-          skipSeparator = false;
-        } else {
+        if (!row.equals(Component.empty())) {
           row = row.append(separator);
         }
         
