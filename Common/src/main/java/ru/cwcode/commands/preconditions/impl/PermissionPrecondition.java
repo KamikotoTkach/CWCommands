@@ -7,7 +7,7 @@ import ru.cwcode.commands.preconditions.Precondition;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
-public class PermissionPrecondition extends Precondition {
+public class PermissionPrecondition implements Precondition {
   Permissible permissible;
   
   public PermissionPrecondition(@NotNull Permissible permissible) {

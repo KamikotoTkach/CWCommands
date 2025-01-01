@@ -14,7 +14,7 @@ import ru.cwcode.commands.extra.builder.CommandBuilder;
 import ru.cwcode.commands.extra.command.argument.PageArgument;
 import ru.cwcode.commands.extra.command.executor.ExtraExecutor;
 import ru.cwcode.commands.extra.command.executor.SimpleExecutor;
-import ru.cwcode.commands.extra.command.precondition.HiddenCommandPrecondition;
+import ru.cwcode.commands.preconditions.impl.HiddenCommandPrecondition;
 
 import java.util.ArrayList;
 import java.util.Collection;

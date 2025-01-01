@@ -1,9 +1,9 @@
-package ru.cwcode.commands.extra.command.precondition;
+package ru.cwcode.commands.preconditions.impl;
 
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.preconditions.Precondition;
 
-public class HiddenCommandPrecondition extends Precondition {
+public class HiddenCommandPrecondition implements Precondition {
   @Override
   public boolean canSee(Sender sender) {
     return false;

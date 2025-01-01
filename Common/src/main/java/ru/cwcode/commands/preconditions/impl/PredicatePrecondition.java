@@ -7,7 +7,7 @@ import ru.cwcode.commands.preconditions.Precondition;
 
 import java.util.function.Predicate;
 
-public class PredicatePrecondition extends Precondition {
+public class PredicatePrecondition implements Precondition {
   @NotNull
   Predicate<Sender> predicate;
   @Nullable

@@ -5,7 +5,7 @@ import ru.cwcode.commands.preconditions.Precondition;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
-public class OnlyForPlayersPrecondition extends Precondition {
+public class OnlyForPlayersPrecondition implements Precondition {
   static OnlyForPlayersPrecondition instance;
   
   private OnlyForPlayersPrecondition() {
