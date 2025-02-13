@@ -27,6 +27,7 @@ public class VelocityCommand implements RawCommand {
     VelocitySender sender = new VelocitySender(invocation.source());
     String label = invocation.alias();
     String[] args = StringUtils.safetySplit(invocation.arguments(), " ");
+    if (args.length == 1 && args[0].isEmpty()) args = new String[0];
     
     this.commandParser.onCommandExecute(sender, label, args);
   }
