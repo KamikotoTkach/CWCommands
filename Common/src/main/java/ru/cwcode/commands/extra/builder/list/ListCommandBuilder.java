@@ -11,6 +11,7 @@ import ru.cwcode.commands.arguments.ExactStringArg;
 import ru.cwcode.commands.arguments.basic.StringArg;
 import ru.cwcode.commands.extra.RepositoryAccessor;
 import ru.cwcode.commands.extra.builder.CommandBuilder;
+import ru.cwcode.commands.extra.builder.update.UpdateCommandBuilder;
 import ru.cwcode.commands.extra.command.argument.PageArgument;
 import ru.cwcode.commands.extra.command.executor.ExtraExecutor;
 import ru.cwcode.commands.extra.command.executor.SimpleExecutor;
@@ -30,9 +31,15 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
   String name = "list";
   Command command;
   boolean showIndex = false;
+  Consumer<ArgumentSet> argumentSetConsumer = __ -> {};
   
   public ListCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  public ListCommandBuilder<E, K, S> argumentSetEdit(Consumer<ArgumentSet> argumentSet) {
+    this.argumentSetConsumer = argumentSet;
+    return this;
   }
   
   public ListCommandBuilder<E, K, S> showIndex(boolean showIndex) {
@@ -74,14 +81,18 @@ public class ListCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E
   public void register(Command command) {
     this.command = command;
     
-    command.arguments(
-       new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, this::click, 1), new ExactStringArg("handleClick"), repositoryAccessor.keyArgument(), new StringArg())
-          .hidden()
-          .preconditions(new HiddenCommandPrecondition()),
-       
-       new ArgumentSet(new SimpleExecutor<>(this::showList),
-                       new ExactStringArg(name),
-                       new PageArgument<>(repositoryAccessor).optional()));
+    ArgumentSet clickHandler = new ArgumentSet(new ExtraExecutor<>(repositoryAccessor, this::click, 1), new ExactStringArg("handleClick"), repositoryAccessor.keyArgument(), new StringArg())
+      .hidden()
+      .preconditions(new HiddenCommandPrecondition());
+    
+    ArgumentSet list = new ArgumentSet(new SimpleExecutor<>(this::showList),
+                                              new ExactStringArg(name),
+                                              new PageArgument<>(repositoryAccessor).optional());
+    
+    argumentSetConsumer.accept(clickHandler);
+    argumentSetConsumer.accept(list);
+    
+    command.arguments(clickHandler, list);
   }
   
   private void click(S sender, E element, ArgumentParser argumentParser) {

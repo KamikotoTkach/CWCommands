@@ -13,11 +13,13 @@ import ru.cwcode.cwutils.collections.CollectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 public class RunnableCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E, K, S> {
   TriConsumer<S, E, ArgumentParser> onExecute;
   String subcommandName = "run";
   List<Argument> arguments = new ArrayList<>();
+  Consumer<ArgumentSet> argumentSetConsumer = __ -> {};
   
   public RunnableCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
@@ -25,6 +27,11 @@ public class RunnableCommandBuilder<E, K, S extends Sender> extends CommandBuild
   
   public RunnableCommandBuilder<E, K, S> withSubcommandName(String subcommandName) {
     this.subcommandName = subcommandName;
+    return this;
+  }
+  
+  public RunnableCommandBuilder<E, K, S> argumentSetEdit(Consumer<ArgumentSet> argumentSet) {
+    this.argumentSetConsumer = argumentSet;
     return this;
   }
   
@@ -44,10 +51,12 @@ public class RunnableCommandBuilder<E, K, S extends Sender> extends CommandBuild
                                                       repositoryAccessor.keyArgument()),
                                               arguments).toArray(Argument[]::new);
     
-    command.arguments(
-      new ArgumentSet(
-        new ExtraExecutor<>(repositoryAccessor, (sender, element, parser) -> onExecute.accept(sender, element, parser), 1)
-        , args)
-    );
+    ArgumentSet argumentSet = new ArgumentSet(
+      new ExtraExecutor<>(repositoryAccessor, (sender, element, parser) -> onExecute.accept(sender, element, parser), 1)
+      , args);
+    
+    argumentSetConsumer.accept(argumentSet);
+    
+    command.arguments(argumentSet);
   }
 }

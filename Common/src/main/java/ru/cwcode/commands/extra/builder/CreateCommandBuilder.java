@@ -10,15 +10,22 @@ import ru.cwcode.commands.extra.RepositoryAccessor;
 import ru.cwcode.commands.extra.command.executor.SimpleExecutor;
 
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 public class CreateCommandBuilder<E, K, S extends Sender> extends CommandBuilder<E, K, S> {
   BiConsumer<ArgumentParser, S> onExecute;
   String name = "create";
+  Consumer<ArgumentSet> argumentSetConsumer = __ -> {};
   
   private Argument[] arguments;
   
   public CreateCommandBuilder(RepositoryAccessor<E, K, S> builder) {
     super(builder);
+  }
+  
+  public CreateCommandBuilder<E, K, S> argumentSetEdit(Consumer<ArgumentSet> argumentSet) {
+    this.argumentSetConsumer = argumentSet;
+    return this;
   }
   
   public CreateCommandBuilder<E, K, S> name(String name) {
@@ -38,9 +45,11 @@ public class CreateCommandBuilder<E, K, S extends Sender> extends CommandBuilder
   
   @Override
   public void register(Command command) {
-    command.arguments(
-       new ArgumentSet(new SimpleExecutor<S>((s, argumentParser) -> onExecute.accept(argumentParser, s)),
-                       new ExactStringArg(name),
-                       arguments));
+    ArgumentSet argumentSet = new ArgumentSet(new SimpleExecutor<S>((s, argumentParser) -> onExecute.accept(argumentParser, s)),
+                                              new ExactStringArg(name),
+                                              arguments);
+    argumentSetConsumer.accept(argumentSet);
+    
+    command.arguments(argumentSet);
   }
 }
