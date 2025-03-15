@@ -411,6 +411,11 @@ public class Command implements Permissible {
   }
   
   protected void onError(Sender sender, String label, String[] args, ArgumentSearchResult argumentSearchResult) {
+    if (help != null) {
+      help.sendTo(sender, this, label, args);
+      return;
+    }
+    
     if (argumentSearchResult.getErrorMessage() != null) {
       showErrorMessage(sender, label, argumentSearchResult);
     } else if (argumentSearchResult.canShowDetailedHelp()) {
@@ -460,10 +465,16 @@ public class Command implements Permissible {
     toSend.add(Component.empty());
     
     for (ArgumentFitnessResult invalidResult : argumentSearchResult.getInvalidResults()) {
-      toSend.add(written.append(invalidResult.getArgumentSet().toComponent(sender, getColorScheme())));
-      toSend.add(Component.text("↳ ")
-                          .append(invalidResult.getInvalidArgument().invalidMessage(this, sender, invalidResult.getInvalidStringArgument()))
-                          .color(getColorScheme().accent(true)));
+      ArgumentSet argumentSet = invalidResult.getArgumentSet();
+      
+      if (argumentSet.hasHelp()) {
+        toSend.add(argumentSet.help);
+      } else {
+        toSend.add(written.append(argumentSet.toComponent(sender, getColorScheme())));
+        toSend.add(Component.text("↳ ")
+                            .append(invalidResult.getInvalidArgument().invalidMessage(this, sender, invalidResult.getInvalidStringArgument()))
+                            .color(getColorScheme().accent(true)));
+      }
       toSend.add(Component.empty());
     }
     
