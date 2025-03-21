@@ -40,7 +40,7 @@ public class Command implements Permissible {
   Command parent = null;
   Command[] subcommands = new Command[]{};
   //присваивается только в рут-команде
-  DebugMode debug = DebugMode.valueOf(CommandsAPI.getConfig().get("debug.default.mode"));
+  DebugMode debug = DebugMode.valueOf(CommandsAPI.getConfig().get("debug.default.mode", "NONE"));
   
   /**
    * Автоматически устанавливается пермишен name и устанавливаются алиасы
