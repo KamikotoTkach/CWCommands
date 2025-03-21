@@ -24,6 +24,7 @@ import ru.cwcode.commands.arguments.spaced.SpacedStringArg;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.velocityplatform.argument.OnlinePlayerWithPermissionArg;
 import ru.cwcode.commands.velocityplatform.velocity.VelocityPlatform;
+import ru.cwcode.cwutils.config.SimpleConfig;
 import ru.cwcode.cwutils.l10n.L10n;
 import ru.cwcode.cwutils.l10n.VelocityL10nPlatform;
 
@@ -53,21 +54,21 @@ public class VelocityMain {
   public void onProxyInitialization(ProxyInitializeEvent event) {
     VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
     CommandsAPI.setPlatform(platform);
-    CommandsAPI.setL10n(
-       new L10n(
-          new VelocityL10nPlatform(
-             this,
-             this.dataFolder,
-             this.logger,
-             server.getPluginManager()
-                   .ensurePluginContainer(this)
-                   .getDescription()
-                   .getSource()
-                   .map(Path::toFile)
-                   .orElseThrow()
-          )
-       )
+    
+    VelocityL10nPlatform l10nPlatform = new VelocityL10nPlatform(
+      this,
+      this.dataFolder,
+      this.logger,
+      server.getPluginManager()
+            .ensurePluginContainer(this)
+            .getDescription()
+            .getSource()
+            .map(Path::toFile)
+            .orElseThrow()
     );
+    
+    CommandsAPI.setL10n(new L10n(l10nPlatform));
+    CommandsAPI.setConfig(new SimpleConfig("config", l10nPlatform));
     
     try {
       new Command("commandsTestv", "*")

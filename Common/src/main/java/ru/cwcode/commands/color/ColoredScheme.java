@@ -19,22 +19,21 @@ public class ColoredScheme implements ColorGenerationStrategy {
   private final TextColor accentWithNoPermissions;
   
   public ColoredScheme(TextColor baseColor, TextColor baseNoPermissionColor) {
+    this.main = generateColor(baseColor, DefaultColorGenerationStrategy.main);
     
-    main = generateColor(baseColor, TextColor.fromHexString("#00a6f0"));
+    this.argument = generateColor(baseColor, DefaultColorGenerationStrategy.argument);
+    this.optional = generateColor(baseColor, DefaultColorGenerationStrategy.optional);
+    this.subcommand = generateColor(baseColor, DefaultColorGenerationStrategy.subcommand);
+    this.written = generateColor(baseColor, DefaultColorGenerationStrategy.written);
+    this.permissions = generateColor(baseColor, DefaultColorGenerationStrategy.permissions);
+    this.accent = generateColor(baseColor, DefaultColorGenerationStrategy.accent);
     
-    argument = generateColor(baseColor, TextColor.fromHexString("#00baff"));
-    optional = generateColor(baseColor, TextColor.fromHexString("#02d7ff"));
-    subcommand = generateColor(baseColor, TextColor.fromHexString("#0098dc"));
-    written = generateColor(baseColor, TextColor.fromHexString("#007ab5"));
-    permissions = generateColor(baseColor, TextColor.fromHexString("#055080"));
-    accent = generateColor(baseColor, TextColor.fromHexString("#8adaff"));
-    
-    argumentWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF2C00"));
-    optionalWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF1800"));
-    subcommandWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF2C00"));
-    writtenWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF3100"));
-    permissionsWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#C83000"));
-    accentWithNoPermissions = generateColor(baseNoPermissionColor, TextColor.fromHexString("#FF9C84"));
+    this.argumentWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.argumentWithNoPermissions);
+    this.optionalWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.optionalWithNoPermissions);
+    this.subcommandWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.subcommandWithNoPermissions);
+    this.writtenWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.writtenWithNoPermissions);
+    this.permissionsWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.permissionsWithNoPermissions);
+    this.accentWithNoPermissions = generateColor(baseNoPermissionColor, DefaultColorGenerationStrategy.accentWithNoPermissions);
   }
   
   public ColoredScheme(TextColor baseColor) {

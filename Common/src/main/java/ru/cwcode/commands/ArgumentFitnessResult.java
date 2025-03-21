@@ -3,6 +3,7 @@ package ru.cwcode.commands;
 public class ArgumentFitnessResult {
   public static ArgumentFitnessResult SUCCESS = new ArgumentFitnessResult();
   public static ArgumentFitnessResult NOT_FIT = new ArgumentFitnessResult();
+  
   private ArgumentSet argumentSet = null;
   private Argument invalidArgument = null;
   private String invalidStringArgument = null;

@@ -1,21 +1,22 @@
 package ru.cwcode.commands.color;
 
 import net.kyori.adventure.text.format.TextColor;
+import ru.cwcode.commands.api.CommandsAPI;
 
 public class DefaultColorGenerationStrategy implements ColorGenerationStrategy {
-  private static final TextColor main = TextColor.fromHexString("#00a6f0");
-  private static final TextColor argument = TextColor.fromHexString("#00baff");
-  private static final TextColor optional = TextColor.fromHexString("#02d7ff");
-  private static final TextColor subcommand = TextColor.fromHexString("#0098dc");
-  private static final TextColor written = TextColor.fromHexString("#007ab5");
-  private static final TextColor permissions = TextColor.fromHexString("#055080");
-  private static final TextColor accent = TextColor.fromHexString("#8adaff");
-  private static final TextColor argumentWithNoPermissions = TextColor.fromHexString("#FF2C00");
-  private static final TextColor optionalWithNoPermissions = TextColor.fromHexString("#FF1800");
-  private static final TextColor subcommandWithNoPermissions = TextColor.fromHexString("#FF2C00");
-  private static final TextColor writtenWithNoPermissions = TextColor.fromHexString("#FF3100");
-  private static final TextColor permissionsWithNoPermissions = TextColor.fromHexString("#C83000");
-  private static final TextColor accentWithNoPermissions = TextColor.fromHexString("#FF9C84");
+  static final TextColor main = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.main"));
+  static final TextColor argument = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.argument"));
+  static final TextColor optional = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.optional"));
+  static final TextColor subcommand = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.subcommand"));
+  static final TextColor written = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.written"));
+  static final TextColor permissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.permissions"));
+  static final TextColor accent = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.accent"));
+  static final TextColor argumentWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.argumentWithNoPermissions"));
+  static final TextColor optionalWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.optionalWithNoPermissions"));
+  static final TextColor subcommandWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.subcommandWithNoPermissions"));
+  static final TextColor writtenWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.writtenWithNoPermissions"));
+  static final TextColor permissionsWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.permissionsWithNoPermissions"));
+  static final TextColor accentWithNoPermissions = TextColor.fromHexString(CommandsAPI.getConfig().get("color.default.accentWithNoPermissions"));
   public static DefaultColorGenerationStrategy INSTANCE = new DefaultColorGenerationStrategy();
   
   @Override
