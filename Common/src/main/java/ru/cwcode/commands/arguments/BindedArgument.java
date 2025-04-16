@@ -7,7 +7,7 @@ import java.util.Collection;
 import java.util.List;
 
 public abstract class BindedArgument extends Argument {
-  int bind = 0;
+  protected int bind = 0;
   
   @Override
   public boolean valid(String raw) {
