@@ -18,6 +18,7 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
   
   public AbstractAutowiredExecutor() {
     for (Method declaredMethod : this.getClass().getDeclaredMethods()) {
+      if (declaredMethod.isSynthetic()) return;
       rootNode.register(declaredMethod, this);
     }
   }
