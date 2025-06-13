@@ -18,7 +18,7 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
   
   public AbstractAutowiredExecutor() {
     for (Method declaredMethod : this.getClass().getDeclaredMethods()) {
-      if (declaredMethod.isSynthetic()) return;
+      if (declaredMethod.isSynthetic()) continue;
       rootNode.register(declaredMethod, this);
     }
   }
@@ -45,6 +45,7 @@ public abstract class AbstractAutowiredExecutor extends AbstractExecutor {
     BoundMethodCaller foundedMethod = rootNode.find(mappedTypes, mappedParametersCount);
     if (foundedMethod == null) {
       throw new MessageReturn(l10n.get("error.noSuchMethod", CollectionUtils.toString(Arrays.stream(mappedTypes)
+                                                                                            .filter(Objects::nonNull)
                                                                                             .map(Class::getSimpleName)
                                                                                             .collect(Collectors.toList()))));
     }
