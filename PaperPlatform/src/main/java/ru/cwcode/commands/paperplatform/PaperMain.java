@@ -34,7 +34,7 @@ import ru.cwcode.cwutils.collections.CollectionUtils;
 import ru.cwcode.cwutils.config.SimpleConfig;
 import ru.cwcode.cwutils.l10n.L10n;
 import ru.cwcode.cwutils.l10n.PaperL10nPlatform;
-import ru.cwcode.cwutils.server.ServerUtils;
+import ru.cwcode.cwutils.server.PaperServerUtils;
 
 import java.util.Arrays;
 import java.util.List;
@@ -65,7 +65,7 @@ public final class PaperMain extends JavaPlugin {
     
     sendLogo();
     
-    if (ServerUtils.isVersionBeforeOrEqual1_12_2()) return;
+    if (PaperServerUtils.isVersionBeforeOrEqual1_12_2()) return;
     
     try {
       new Command("commandsTest", "*")
