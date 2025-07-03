@@ -31,6 +31,10 @@ public abstract class AbstractExecutor {
       }
     } catch (Exception exception) {
       handleError(exception);
+    } finally {
+      parser = null;
+      sender = null;
+      command = null;
     }
   }
   
