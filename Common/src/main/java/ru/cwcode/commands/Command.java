@@ -101,7 +101,7 @@ public class Command implements Permissible {
    */
   public Command(String name, String permission, AbstractExecutor executor) {
     this(name, permission);
-    arguments(new ArgumentSet(executor, name));
+    arguments(new ArgumentSet(executor, permission));
   }
   
   /**
