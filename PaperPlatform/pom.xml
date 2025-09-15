@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>PaperCommands</artifactId>
-    <version>1.5.3</version>
+    <version>1.5.4</version>
     <packaging>jar</packaging>
 
     <name>PaperCommands</name>
@@ -230,13 +230,13 @@
         <dependency>
             <groupId>ru.cwcode.commands</groupId>
             <artifactId>Common</artifactId>
-            <version>1.5.3</version>
+            <version>1.5.4</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>io.papermc.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21-R0.1-SNAPSHOT</version>
+            <version>1.21.1-R0.1-20250328.161643-128</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
