@@ -11,7 +11,9 @@ import java.util.stream.Collectors;
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class EnchantmentArg extends Argument {
-  static Set<String> enchants = Arrays.stream(Enchantment.values()).map(Enchantment::toString).collect(Collectors.toSet());
+  static Set<String> enchants = Arrays.stream(Enchantment.values())
+                                      .map(x->x.getKey().value())
+                                      .collect(Collectors.toSet());
   
   @Override
   public boolean valid(String raw) {
