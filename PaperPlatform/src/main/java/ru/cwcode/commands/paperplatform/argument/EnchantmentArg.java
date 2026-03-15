@@ -12,7 +12,7 @@ import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
 public class EnchantmentArg extends Argument {
   static Set<String> enchants = Arrays.stream(Enchantment.values())
-                                      .map(x->x.getKey().value())
+                                      .map(Enchantment::getName)
                                       .collect(Collectors.toSet());
   
   @Override
