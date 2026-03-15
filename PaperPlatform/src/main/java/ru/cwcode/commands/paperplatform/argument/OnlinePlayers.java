@@ -6,6 +6,7 @@ import org.bukkit.entity.Player;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.Command;
 import ru.cwcode.commands.api.Sender;
+import ru.cwcode.commands.paperplatform.paper.PaperSender;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,15 +19,34 @@ public class OnlinePlayers extends Argument {
   
   @Override
   public boolean valid(String raw) {
-    return Bukkit.getPlayer(raw) != null;
+    return false;
+  }
+  
+  @Override
+  public boolean valid(Sender sender, String raw, List<String> arguments) {
+    PaperSender s = (PaperSender) sender;
+    boolean isPlayer = s.isPlayer();
+    boolean isBypass = !isPlayer || s.getPlayer().hasPermission("cwcommands.arg.onlineplayers.bypass");
+    
+    Player mathingPlayer = Bukkit.getPlayerExact(raw);
+    if(mathingPlayer == null) return false;
+    
+    if(!isPlayer || isBypass) return true;
+    
+    return ((PaperSender) sender).getPlayer().canSee(mathingPlayer);
   }
   
   @Override
   public List<String> completions(Sender sender) {
+    PaperSender s = (PaperSender) sender;
+    boolean isPlayer = s.isPlayer();
+    boolean isBypass = !isPlayer || s.getPlayer().hasPermission("cwcommands.arg.onlineplayers.bypass");
+    
     List<String> list = new ArrayList<>();
     for (Player player : Bukkit.getOnlinePlayers()) {
-      list.add(player.getName());
+      if (isBypass || s.getPlayer().canSee(player)) list.add(player.getName());
     }
+    
     return list;
   }
   

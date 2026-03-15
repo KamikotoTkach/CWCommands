@@ -16,9 +16,4 @@ public class OnlinePlayersWithoutSender extends OnlinePlayers {
     
     return completions;
   }
-  
-  @Override
-  public String argumentName() {
-    return super.argumentName();
-  }
 }
