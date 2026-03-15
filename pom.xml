@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>CWCommands</artifactId>
-    <version>1.5.7</version>
+    <version>1.5.8</version>
     <packaging>pom</packaging>
 
     <name>CWCommands</name>
