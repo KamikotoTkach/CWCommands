@@ -9,52 +9,54 @@ import ru.cwcode.commands.paperplatform.PaperMain;
 import ru.cwcode.cwutils.confirmable.ConfirmAPI;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 public class PaperSender implements Sender {
-  CommandSender sender;
+  Reference<CommandSender> sender;
   
   public CommandSender getCommandSender() {
-    return sender;
+    return sender.get();
   }
   
   public PaperSender(CommandSender sender) {
-    this.sender = sender;
+    this.sender = new WeakReference<>(sender);
   }
   
   @Override
   public boolean hasPermission(String str) {
-    return sender.hasPermission(str);
+    return sender.get().hasPermission(str);
   }
   
   @Override
   public String getName() {
-    return sender.getName();
+    return sender.get().getName();
   }
   
   @Override
   public void sendMessage(Component line) {
-    sender.sendMessage(line);
+    sender.get().sendMessage(line);
   }
   
   @Override
   public boolean isPlayer() {
-    return sender instanceof Player;
+    return sender.get() instanceof Player;
   }
   
   @Override
   public void sendMessage(TargetableMessageReturn targetable) {
-    sender.sendMessage(targetable.getMessage(sender));
+    sender.get().sendMessage(targetable.getMessage(sender.get()));
   }
   
   @Override
   public void sendMessage(String message) {
-    sender.sendMessage(Component.text(message));
+    sender.get().sendMessage(Component.text(message));
   }
   
   @Override
   public void confirm(String confirmableString, long timeToConfirm, Runnable onConfirm, Runnable onExpired) {
-    ConfirmAPI.requestBuilder(sender, confirmableString, timeToConfirm)
+    ConfirmAPI.requestBuilder(sender.get(), confirmableString, timeToConfirm)
               .success(onConfirm)
               .expired(onExpired)
               .register(PaperMain.plugin);
@@ -62,11 +64,11 @@ public class PaperSender implements Sender {
   
   @Override
   public Audience getAudience() {
-    return sender;
+    return sender.get();
   }
   
   public Player getPlayer() {
-    return (Player) sender;
+    return (Player) sender.get();
   }
   
   @Override
@@ -76,11 +78,11 @@ public class PaperSender implements Sender {
     
     PaperSender that = (PaperSender) o;
     
-    return Objects.equals(sender, that.sender);
+    return Objects.equals(sender.get(), that.sender.get());
   }
   
   @Override
   public int hashCode() {
-    return sender != null ? sender.hashCode() : 0;
+    return sender.get() != null ? sender.get().hashCode() : 0;
   }
 }

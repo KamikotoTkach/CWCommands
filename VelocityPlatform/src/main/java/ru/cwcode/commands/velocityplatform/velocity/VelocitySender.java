@@ -9,33 +9,35 @@ import ru.cwcode.commands.velocityplatform.VelocityMain;
 import ru.cwcode.cwutils.confirmable.velocity.ConfirmAPI;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
+import java.lang.ref.Reference;
+import java.lang.ref.WeakReference;
 import java.util.Objects;
 
 public class VelocitySender implements Sender {
-  CommandSource sender;
+  Reference<CommandSource> sender;
   
   public VelocitySender(CommandSource sender) {
-    this.sender = sender;
+    this.sender = new WeakReference<>(sender);
   }
   
   @Override
   public boolean hasPermission(String str) {
-    return sender.hasPermission(str);
+    return sender.get().hasPermission(str);
   }
   
   @Override
   public String getName() {
-    return sender instanceof Player player ? player.getUsername() : "console";
+    return sender.get() instanceof Player player ? player.getUsername() : "console";
   }
   
   @Override
   public void sendMessage(Component line) {
-    sender.sendMessage(line);
+    sender.get().sendMessage(line);
   }
   
   @Override
   public boolean isPlayer() {
-    return sender instanceof Player;
+    return sender.get() instanceof Player;
   }
   
   @Override
@@ -45,7 +47,7 @@ public class VelocitySender implements Sender {
   
   @Override
   public void sendMessage(String message) {
-    sender.sendMessage(Component.text(message));
+    sender.get().sendMessage(Component.text(message));
   }
   
   @Override
@@ -59,11 +61,11 @@ public class VelocitySender implements Sender {
   
   @Override
   public Audience getAudience() {
-    return sender;
+    return sender.get();
   }
   
   public Player getPlayer() {
-    return (Player) sender;
+    return (Player) sender.get();
   }
   
   @Override
@@ -73,11 +75,11 @@ public class VelocitySender implements Sender {
     
     VelocitySender that = (VelocitySender) o;
     
-    return Objects.equals(sender, that.sender);
+    return Objects.equals(sender.get(), that.sender.get());
   }
   
   @Override
   public int hashCode() {
-    return sender != null ? sender.hashCode() : 0;
+    return sender.get() != null ? sender.get().hashCode() : 0;
   }
 }
