@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>VelocityCommands</artifactId>
-    <version>1.5.11</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>VelocityCommands</name>
@@ -159,16 +159,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
+                    <proc>full</proc>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -177,6 +177,31 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- R3 (LIBS_MULTIPLATFORM.md): own code Java 17, shaded CWUtils 17, its v26 adapters Java 25 -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>check-bytecode</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <arguments>
+                                <argument>${project.basedir}/../tools/CheckBytecode.java</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                                <argument>61</argument>
+                                <argument>69</argument>
+                                <argument>ru.cwcode.cwutils.compat.v26</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -230,7 +255,7 @@
         <dependency>
             <groupId>ru.cwcode.commands</groupId>
             <artifactId>Common</artifactId>
-            <version>1.5.11</version>
+            <version>1.6.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>

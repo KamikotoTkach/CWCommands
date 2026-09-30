@@ -180,7 +180,7 @@ public final class PaperMain extends JavaPlugin {
   }
   
   private void registerBrigadierHook0(PaperPlatform platform) {
-    Bukkit.getPluginManager().registerEvents(new BrigadierListener(platform),this);
+    Bukkit.getPluginManager().registerEvents(new BrigadierListener(() -> platform.registeredCommands().keySet()),this);
   }
   
   private void sendLogo() {

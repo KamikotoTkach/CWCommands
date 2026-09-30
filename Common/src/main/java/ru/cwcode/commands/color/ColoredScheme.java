@@ -44,9 +44,7 @@ public class ColoredScheme implements ColorGenerationStrategy {
     HSVLike hsvH = h.asHSV();
     HSVLike hsvSV = sv.asHSV();
     
-    HSVLike combined = HSVLike.hsvLike(hsvH.h(), hsvSV.s(), hsvSV.v());
-    
-    return TextColor.color(combined);
+    return HsvColors.color(hsvH.h(), hsvSV.s(), hsvSV.v());
   }
   
   public TextColor main() {

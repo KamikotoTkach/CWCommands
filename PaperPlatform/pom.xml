@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>PaperCommands</artifactId>
-    <version>1.5.11</version>
+    <version>1.6.0</version>
     <packaging>jar</packaging>
 
     <name>PaperCommands</name>
@@ -165,16 +165,16 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
+                <version>3.14.1</version>
                 <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
+                    <release>${java.version}</release>
+                    <proc>full</proc>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-shade-plugin</artifactId>
-                <version>3.2.4</version>
+                <version>3.6.1</version>
                 <executions>
                     <execution>
                         <phase>package</phase>
@@ -183,6 +183,40 @@
                         </goals>
                         <configuration>
                             <createDependencyReducedPom>false</createDependencyReducedPom>
+                            <transformers>
+                                <!-- the shaded CWUtils carries Java 25 adapters; without this the Paper 1.20.5-1.21 remapper rejects the jar -->
+                                <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+                                    <manifestEntries>
+                                        <paperweight-mappings-namespace>mojang</paperweight-mappings-namespace>
+                                    </manifestEntries>
+                                </transformer>
+                            </transformers>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <!-- R3 (LIBS_MULTIPLATFORM.md): own code stays at Java 11 bytecode (shaded CWUtils is 17), the brigadier hook is Java 21, CWUtils v26 adapters Java 25 -->
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>3.5.0</version>
+                <executions>
+                    <execution>
+                        <id>check-bytecode</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${java.home}/bin/java</executable>
+                            <arguments>
+                                <argument>${project.basedir}/../tools/CheckBytecode.java</argument>
+                                <argument>${project.build.directory}/${project.build.finalName}.jar</argument>
+                                <argument>61</argument>
+                                <argument>69</argument>
+                                <argument>ru.cwcode.commands.paperplatform.brigadier=65</argument>
+                                <argument>ru.cwcode.cwutils.compat.v26</argument>
+                            </arguments>
                         </configuration>
                     </execution>
                 </executions>
@@ -230,13 +264,20 @@
         <dependency>
             <groupId>ru.cwcode.commands</groupId>
             <artifactId>Common</artifactId>
-            <version>1.5.11</version>
+            <version>1.6.0</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>io.papermc.paper</groupId>
+            <!-- shaded; optional keeps it out of the consumers' dependency tree (the pom is not reduced) -->
+            <groupId>ru.cwcode.commands</groupId>
+            <artifactId>PaperBrigadier</artifactId>
+            <version>1.6.0</version>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.destroystokyo.paper</groupId>
             <artifactId>paper-api</artifactId>
-            <version>1.21.1-R0.1-20250328.161643-128</version>
+            <version>1.16.5-R0.1-20211218.082619-371</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>

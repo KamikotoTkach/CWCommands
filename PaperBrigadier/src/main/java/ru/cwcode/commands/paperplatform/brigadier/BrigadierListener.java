@@ -6,15 +6,16 @@ import com.mojang.brigadier.tree.LiteralCommandNode;
 import com.mojang.brigadier.tree.RootCommandNode;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 
 import java.lang.reflect.Field;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.function.Supplier;
 
 @SuppressWarnings("UnstableApiUsage")
 public class BrigadierListener implements Listener {
-  final PaperPlatform paperPlatform;
+  final Supplier<? extends Collection<String>> aliases;
   // CommandNode#children, CommandNode#literals, CommandNode#arguments fields
   protected static final Field CHILDREN_FIELD;
   protected static final Field LITERALS_FIELD;
@@ -36,15 +37,15 @@ public class BrigadierListener implements Listener {
     }
   }
   
-  public BrigadierListener(PaperPlatform paperPlatform) {
-    this.paperPlatform = paperPlatform;
+  public BrigadierListener(Supplier<? extends Collection<String>> aliases) {
+    this.aliases = aliases;
     
   }
   
   @EventHandler
   public void onCommand(AsyncPlayerSendCommandsEvent<?> event) {
     if (event.isAsynchronous() || !event.hasFiredAsync()) {
-      paperPlatform.registeredCommands().forEach((alias, command) -> {
+      aliases.get().forEach(alias -> {
         
         removeChild(event.getCommandNode(), alias);
         event.getCommandNode().addChild(new LiteralCommandNode<>(alias,
