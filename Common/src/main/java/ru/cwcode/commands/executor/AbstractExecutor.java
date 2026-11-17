@@ -62,6 +62,14 @@ public abstract class AbstractExecutor implements Cloneable {
   }
 
   /**
+   * То же для укороченного варианта набора: за {@code count} значениями пропущено ещё {@code omitted}
+   * optional-аргументов без значения по умолчанию.
+   */
+  public boolean acceptsArgumentCount(int count, int omitted) {
+    return acceptsArgumentCount(count);
+  }
+
+  /**
    * Ошибки описания исполнителя, найденные при его создании; выводятся при регистрации команды.
    */
   public List<String> definitionProblems() {

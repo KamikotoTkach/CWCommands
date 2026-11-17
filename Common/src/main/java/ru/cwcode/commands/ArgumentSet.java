@@ -43,7 +43,12 @@ public class ArgumentSet implements Permissible {
   private boolean hidden = false;
 
   Argument[] omittedDefaults = new Argument[0];
+  int omittedWithoutDefault = 0;
   private final List<String> problems = new ArrayList<>();
+
+  static final String CONFIRM_WORD = "confirm";
+  boolean confirmRequired = false;
+  private boolean confirmWordTyped = false;
 
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
@@ -142,16 +147,35 @@ public class ArgumentSet implements Permissible {
    * (идущие подряд от первого пропущенного) всё равно попадут в исполнитель — см. {@link ArgumentParser}.
    */
   public ArgumentSet(ArgumentSet toClone, Argument... newArgs) {
-    this.arguments = newArgs;
-    this.executor = toClone.executor;
-    this.preconditions = toClone.preconditions;
-    this.permission = toClone.permission;
-    this.spacedLastArgument = newArgs.length > 0 && newArgs[newArgs.length - 1] instanceof SpacedArgument;
+    this(toClone, newArgs, leadingDefaults(toClone.arguments, newArgs.length));
+    this.omittedWithoutDefault = countMapped(toClone.arguments, newArgs.length + omittedDefaults.length);
+  }
+
+  private ArgumentSet(ArgumentSet source, Argument[] arguments, Argument[] omittedDefaults) {
+    this.arguments = arguments;
+    this.executor = source.executor;
+    this.preconditions = source.preconditions;
+    this.permission = source.permission;
+    this.spacedLastArgument = arguments.length > 0 && arguments[arguments.length - 1] instanceof SpacedArgument;
     this.optionalStart = -1;
-    this.help = toClone.help;
-    this.confirmableString = toClone.confirmableString;
-    this.timeToConfirm = toClone.timeToConfirm;
-    this.omittedDefaults = leadingDefaults(toClone.arguments, newArgs.length);
+    this.help = source.help;
+    this.confirmableString = source.confirmableString;
+    this.timeToConfirm = source.timeToConfirm;
+    this.confirmRequired = source.confirmRequired;
+    this.omittedDefaults = omittedDefaults;
+  }
+
+  /**
+   * Скрытый вариант, который исполняется, когда последним словом введено {@code confirm}.
+   */
+  ArgumentSet withConfirmWord() {
+    Argument[] withWord = Arrays.copyOf(arguments, arguments.length + 1);
+    withWord[arguments.length] = new ExactStringArg(CONFIRM_WORD);
+
+    ArgumentSet confirmed = new ArgumentSet(this, withWord, omittedDefaults);
+    confirmed.omittedWithoutDefault = omittedWithoutDefault;
+    confirmed.confirmWordTyped = true;
+    return confirmed.hidden();
   }
 
   private static Argument[] leadingDefaults(Argument[] full, int from) {
@@ -160,6 +184,14 @@ public class ArgumentSet implements Permissible {
       defaults.add(full[i]);
     }
     return defaults.toArray(new Argument[0]);
+  }
+
+  private static int countMapped(Argument[] arguments, int from) {
+    int count = 0;
+    for (int i = from; i < arguments.length; i++) {
+      if (!(arguments[i] instanceof ExactStringArg)) count++;
+    }
+    return count;
   }
 
   /**
@@ -227,8 +259,22 @@ public class ArgumentSet implements Permissible {
   }
   
   /**
-   * Строка, которую нужно написать в чат (или нажать на сообщение), чтобы подтвердить выполнение команды
+   * Набор исполняется, только если последним словом введено {@code confirm}. Без него команда
+   * показывает свою полную строку с {@code confirm} (клик подставляет её в чат). Работает и в консоли.
+   * Несовместимо с аргументом с пробелами в конце.
    */
+  public ArgumentSet requireConfirm() {
+    this.confirmRequired = true;
+    if (spacedLastArgument) problems.add(l10n.get("argumentSet.confirm.spaced"));
+    return this;
+  }
+
+  /**
+   * Строка, которую нужно написать в чат (или нажать на сообщение), чтобы подтвердить выполнение команды
+   *
+   * @deprecated в консоли Velocity команда не исполняется вовсе; используй {@link #requireConfirm()}
+   */
+  @Deprecated
   public ArgumentSet confirmWith(String confirmableString, long timeToConfirm) {
     this.confirmableString = confirmableString;
     this.timeToConfirm = timeToConfirm;
@@ -265,6 +311,16 @@ public class ArgumentSet implements Permissible {
   }
   
   public void execute(Sender sender, String[] args, Command command) {
+    if (confirmRequired && !confirmWordTyped) {
+      String line = "/" + command.getFullCommandPath(command.getRootCommand().getName())
+                    + (args.length == 0 ? "" : " " + String.join(" ", args)) + " " + CONFIRM_WORD;
+
+      sender.sendMessage(Component.text(l10n.get("argumentSet.confirm.required"), command.getColorScheme().main())
+                                  .append(Component.text(line, command.getColorScheme().accent(true)))
+                                  .clickEvent(ClickEvent.suggestCommand(line)));
+      return;
+    }
+
     if (timeToConfirm != 0) {
       sender.sendMessage(Component.text(l10n.get("argumentSet.confirm.1"), command.getColorScheme().main())
                                   .append(Component.text(confirmableString, command.getColorScheme().accent(true)))

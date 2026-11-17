@@ -8,9 +8,14 @@ public class ArgumentParser {
    * у которых задано значение по умолчанию.
    */
   public final Argument[] args;
+  /**
+   * Сколько optional-аргументов без значения по умолчанию пропущено после {@link #args}.
+   */
+  public final int omitted;
 
   public ArgumentParser(String[] raw, ArgumentSet set) {
     Argument[] template = set.arguments;
+    this.omitted = set.omittedWithoutDefault;
 
     if (set.spacedLastArgument && raw.length > template.length) {
       String[] copy = Arrays.copyOfRange(raw, 0, template.length);

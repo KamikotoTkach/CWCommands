@@ -1,5 +1,6 @@
 package ru.cwcode.commands.velocityplatform.executor;
 
+import com.velocitypowered.api.command.CommandSource;
 import com.velocitypowered.api.proxy.Player;
 import net.kyori.adventure.audience.Audience;
 import ru.cwcode.commands.api.CommandsAPI;
@@ -20,6 +21,20 @@ public abstract class AutowiredExecutor extends AbstractAutowiredExecutor {
     return sender.getAudience();
   }
   
+  @Override
+  protected SenderParameter senderParameter(Class<?> type) {
+    if (type == Player.class) return SenderParameter.PLAYER;
+    if (type == CommandSource.class) return SenderParameter.ANY;
+    return super.senderParameter(type);
+  }
+
+  @Override
+  protected Object senderValue(Class<?> type) {
+    if (type == Player.class) return player();
+    if (type == CommandSource.class) return sender.getAudience();
+    return super.senderValue(type);
+  }
+
   @Override
   protected Optional<Player> argP(int index) {
     Player player = VelocityMain.getPlatform().getServer().getPlayer(argS(index)).orElse(null);

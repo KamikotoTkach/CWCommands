@@ -79,18 +79,28 @@ public class Command implements Permissible {
    */
   public Command arguments(ArgumentSet... arguments) {
     for (ArgumentSet set : arguments) {
-      argumentSets.add(set);
-      
+      List<ArgumentSet> variants = new ArrayList<>();
+      variants.add(set);
+
       if (debug.is(DebugMode.DETAILED))
         debug.print(l10n.get("command.debug.registeredArgumentSet", name, set));
-      
+
       if (set.optionalStart >= 0) {
         for (int i = set.arguments.length - 1; i >= set.optionalStart; i--) { //делает все возможные варианты без опциональных аргументов
-          argumentSets.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)).hidden());
-          
+          variants.add(new ArgumentSet(set, Arrays.copyOfRange(set.arguments, 0, i)).hidden());
+
           if (debug.is(DebugMode.DETAILED)) debug.print(l10n.get("command.debug.optionalAdapt", set));
         }
       }
+
+      // варианты с confirm идут первыми: «x confirm» не должен попасть в вариант, где confirm — значение аргумента
+      if (set.confirmRequired) {
+        for (ArgumentSet variant : variants) {
+          argumentSets.add(variant.withConfirmWord());
+        }
+      }
+
+      argumentSets.addAll(variants);
     }
     
     return this;
@@ -194,7 +204,7 @@ public class Command implements Permissible {
 
       AbstractExecutor executor = set.executor();
 
-      if (!executor.acceptsArgumentCount(set.mappedArgumentCount())) {
+      if (!executor.acceptsArgumentCount(set.mappedArgumentCount(), set.omittedWithoutDefault)) {
         reportDefinitionProblem(path, set, l10n.get("command.validation.noMethod",
                                                     executor.getClass().getName(), set.mappedArgumentCount()));
       }

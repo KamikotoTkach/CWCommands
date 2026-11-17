@@ -3,6 +3,7 @@ package ru.cwcode.commands.paperplatform.executor;
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.executor.AbstractAutowiredExecutor;
@@ -19,6 +20,20 @@ public class AutowiredExecutor extends AbstractAutowiredExecutor {
   @Override
   public Audience sender() {
     return sender.getAudience();
+  }
+
+  @Override
+  protected SenderParameter senderParameter(Class<?> type) {
+    if (type == Player.class) return SenderParameter.PLAYER;
+    if (type == CommandSender.class) return SenderParameter.ANY;
+    return super.senderParameter(type);
+  }
+
+  @Override
+  protected Object senderValue(Class<?> type) {
+    if (type == Player.class) return player();
+    if (type == CommandSender.class) return ((PaperSender) sender).getCommandSender();
+    return super.senderValue(type);
   }
   
   @Override

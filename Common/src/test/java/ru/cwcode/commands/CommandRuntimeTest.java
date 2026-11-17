@@ -18,6 +18,7 @@ import ru.cwcode.commands.test.L10PlatformTest;
 import ru.cwcode.commands.test.TestConfigPlatform;
 import ru.cwcode.cwutils.config.SimpleConfig;
 import ru.cwcode.cwutils.l10n.L10n;
+import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.*;
@@ -185,6 +186,95 @@ class CommandRuntimeTest {
     assertTrue(set.executor().acceptsArgumentCount(set.mappedArgumentCount()));
   }
 
+  @Test
+  void senderIsInjectedIntoTheFirstParameter() {
+    Command command = registered(new Command("injected").arguments(new ArgumentSet(new Injected(), new StringArg("value"))));
+
+    run(command, new TestSender("alice"), "x");
+
+    assertEquals(List.of("injected alice:x"), new ArrayList<>(calls));
+  }
+
+  @Test
+  void fullSignatureWinsOverSenderInjection() {
+    Command command = registered(new Command("target").arguments(new ArgumentSet(new Injected(), new SenderArg(), new StringArg("value"))));
+
+    run(command, new TestSender("alice"), "bob", "x");
+
+    assertEquals(List.of("explicit bob:x"), new ArrayList<>(calls));
+  }
+
+  @Test
+  void paddedFullSignatureWinsOverSenderInjection() {
+    Command command = registered(new Command("padded").arguments(new ArgumentSet(new TargetWithOptional(), new SenderArg(), new SenderArg().optional())));
+
+    run(command, new TestSender("alice"), "bob");
+
+    assertEquals(List.of("bob,Optional.empty"), new ArrayList<>(calls));
+  }
+
+  @Test
+  void playerOnlyMethodRefusesNonPlayers() {
+    Command command = registered(new Command("playeronly").arguments(new ArgumentSet(new PlayerOnly())));
+
+    TestSender console = new TestSender("console", false);
+    run(command, console);
+    run(command, new TestSender("alice"));
+
+    assertEquals(List.of("alice"), new ArrayList<>(calls));
+    assertFalse(console.messages.isEmpty());
+  }
+
+  @Test
+  void omittedOptionalArgumentsArriveAsNullAndEmptyOptional() {
+    Command command = registered(new Command("optionals")
+                                   .arguments(new ArgumentSet(new WithOptionals(), new StringArg("a"),
+                                                              new StringArg("b").optional(),
+                                                              new IntegerArg("n").optional())));
+
+    run(command, new TestSender("alice"), "x");
+    run(command, new TestSender("alice"), "x", "y");
+    run(command, new TestSender("alice"), "x", "y", "3");
+
+    assertEquals(List.of("x,null,Optional.empty", "x,y,Optional.empty", "x,y,Optional[3]"), new ArrayList<>(calls));
+  }
+
+  @Test
+  void exactOverloadWinsOverNullPadding() {
+    Command command = registered(new Command("overload")
+                                   .arguments(new ArgumentSet(new Overloaded(), new StringArg("a"), new StringArg("b").optional())));
+
+    run(command, new TestSender("alice"), "x");
+
+    assertEquals(List.of("one:x"), new ArrayList<>(calls));
+  }
+
+  @Test
+  void onlyPublicInstanceMethodsAreDispatched() {
+    WithHelpers executor = new WithHelpers();
+
+    assertTrue(executor.acceptsArgumentCount(0));
+    assertFalse(executor.acceptsArgumentCount(1));
+    assertTrue(executor.definitionProblems().isEmpty(), executor.definitionProblems().toString());
+  }
+
+  @Test
+  void requireConfirmAsksForTheWordAndThenExecutes() {
+    Command command = registered(new Command("confirmed")
+                                   .arguments(new ArgumentSet(new Pair(), new StringArg("a"), new StringArg("b").optional()).requireConfirm()));
+
+    TestSender sender = new TestSender("console", false);
+    run(command, sender, "x");
+
+    assertTrue(calls.isEmpty());
+    assertTrue(sender.messages.stream().anyMatch(message -> message.contains("/confirmed x confirm")), sender.messages.toString());
+
+    run(command, sender, "x", "confirm");
+    run(command, sender, "x", "y", "confirm");
+
+    assertEquals(List.of("x,null", "x,y"), new ArrayList<>(calls));
+  }
+
   private static Command registered(Command command) {
     command.register();
     return command;
@@ -239,9 +329,78 @@ class CommandRuntimeTest {
     }
   }
 
+  public static class Injected extends TestExecutor {
+    public void run(Sender sender, String value) {
+      calls.add("injected " + sender.getName() + ":" + value);
+    }
+
+    public void give(TestSender target, String value) {
+      calls.add("explicit " + target.getName() + ":" + value);
+    }
+  }
+
+  public static class TargetWithOptional extends TestExecutor {
+    public void run(TestSender target, Optional<TestSender> other) {
+      calls.add(target.getName() + "," + other.map(TestSender::getName));
+    }
+  }
+
+  public static class PlayerOnly extends TestExecutor {
+    public void run(TestSender player) {
+      calls.add(player.getName());
+    }
+  }
+
+  public static class WithOptionals extends TestExecutor {
+    public void run(String a, String b, Optional<Integer> n) {
+      calls.add(a + "," + b + "," + n);
+    }
+  }
+
+  public static class Overloaded extends TestExecutor {
+    public void one(String a) {
+      calls.add("one:" + a);
+    }
+
+    public void two(String a, String b) {
+      calls.add("two:" + a + "," + b);
+    }
+  }
+
+  public static class WithHelpers extends TestExecutor {
+    public void run() {
+    }
+
+    private void helper(String value) {
+    }
+
+    void packagePrivate(String value) {
+    }
+
+    public static void utility(String value) {
+    }
+  }
+
   abstract static class TestExecutor extends AbstractAutowiredExecutor {
+    /**
+     * {@link TestSender} играет роль платформенного игрока.
+     */
+    @Override
+    protected SenderParameter senderParameter(Class<?> type) {
+      return type == TestSender.class ? SenderParameter.PLAYER : super.senderParameter(type);
+    }
+
+    @Override
+    protected Object senderValue(Class<?> type) {
+      return type == TestSender.class ? sender : super.senderValue(type);
+    }
+
     @Override
     public void handleError(Exception exception) {
+      if (exception instanceof MessageReturn) {
+        sender.sendMessage(exception.getMessage());
+        return;
+      }
       throw new RuntimeException(exception);
     }
 
@@ -288,6 +447,28 @@ class CommandRuntimeTest {
     }
   }
 
+  static class SenderArg extends Argument {
+    @Override
+    public boolean valid(String raw) {
+      return true;
+    }
+
+    @Override
+    public Collection<String> completions(Sender sender) {
+      return List.of();
+    }
+
+    @Override
+    public String argumentName() {
+      return "target";
+    }
+
+    @Override
+    public Object map() {
+      return new TestSender(raw);
+    }
+  }
+
   static class Deny implements Precondition {
     static final String MESSAGE = "not for you";
 
@@ -302,12 +483,18 @@ class CommandRuntimeTest {
     }
   }
 
-  static class TestSender implements Sender {
+  public static class TestSender implements Sender {
     final String name;
+    final boolean player;
     final List<String> messages = new CopyOnWriteArrayList<>();
 
     TestSender(String name) {
+      this(name, true);
+    }
+
+    TestSender(String name, boolean player) {
       this.name = name;
+      this.player = player;
     }
 
     @Override
@@ -327,7 +514,7 @@ class CommandRuntimeTest {
 
     @Override
     public boolean isPlayer() {
-      return true;
+      return player;
     }
 
     @Override
