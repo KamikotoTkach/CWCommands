@@ -11,18 +11,30 @@ import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 import ru.cwcode.cwutils.text.SpacesHider;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
-public abstract class AbstractExecutor {
+/**
+ * Экземпляр из описания команды — шаблон: каждый вызов исполняется на его поверхностной копии
+ * со своими {@code parser}, {@code sender} и {@code command}. Поэтому один исполнитель безопасно
+ * обслуживает параллельные (Velocity) и вложенные вызовы, а {@code player()}/{@code sender()}
+ * остаются рабочими в async-продолжениях, начатых из метода команды.
+ */
+public abstract class AbstractExecutor implements Cloneable {
   protected ArgumentParser parser;
   protected Sender sender;
   protected Command command = null;
-  
+
   public void prepare(Sender sender, String[] args, ArgumentSet argumentSet, Command command) {
-    this.parser = new ArgumentParser(args, argumentSet);
-    this.sender = sender;
-    this.command = command;
-    
+    AbstractExecutor invocation = copyForInvocation();
+    invocation.parser = new ArgumentParser(args, argumentSet);
+    invocation.sender = sender;
+    invocation.command = command;
+    invocation.run();
+  }
+
+  private void run() {
     try {
       if (sender.isPlayer()) {
         executeForPlayer();
@@ -31,13 +43,31 @@ public abstract class AbstractExecutor {
       }
     } catch (Exception exception) {
       handleError(exception);
-    } finally {
-      parser = null;
-      sender = null;
-      command = null;
     }
   }
-  
+
+  private AbstractExecutor copyForInvocation() {
+    try {
+      return (AbstractExecutor) super.clone();
+    } catch (CloneNotSupportedException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  /**
+   * Может ли исполнитель принять набор из {@code count} значений. Проверяется при регистрации команды.
+   */
+  public boolean acceptsArgumentCount(int count) {
+    return true;
+  }
+
+  /**
+   * Ошибки описания исполнителя, найденные при его создании; выводятся при регистрации команды.
+   */
+  public List<String> definitionProblems() {
+    return Collections.emptyList();
+  }
+
   /**
    * Действие, выполняемое для игроков И НЕ-ИГРОКОВ, если метод executeForNonPlayer не переопределён
    */

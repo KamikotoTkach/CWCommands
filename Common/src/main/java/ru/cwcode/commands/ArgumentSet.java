@@ -22,7 +22,6 @@ import ru.cwcode.cwutils.text.StringUtils;
 
 import java.util.*;
 import java.util.function.Predicate;
-import java.util.logging.Logger;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
@@ -42,7 +41,10 @@ public class ArgumentSet implements Permissible {
   private String confirmableString = "";
   private long timeToConfirm = 0;
   private boolean hidden = false;
-  
+
+  Argument[] omittedDefaults = new Argument[0];
+  private final List<String> problems = new ArrayList<>();
+
   /**
    * Аргумент implements SpacedArgument должен быть 1 и последний<br>
    * Аргументы optional должны быть последние в списке<br>
@@ -62,33 +64,33 @@ public class ArgumentSet implements Permissible {
     this.arguments = unboxComplexArgs(arguments);
     this.executor = executor;
     this.permission = permission;
-    
+
     int pos = 0;
-    int len = arguments.length - 1;
+    int len = this.arguments.length - 1;
     int optionalStart = -1;
-    
-    for (Argument argument : arguments) {
+
+    for (Argument argument : this.arguments) {
       if (argument instanceof SpacedArgument) {
         if (pos != len) {
-          Logger.getGlobal().warning(l10n.get("argumentSet.spaced.mustBeLast", getClass().getName()));
+          problems.add(l10n.get("argumentSet.spaced.mustBeLast", argument.toReadableString()));
         } else {
           spacedLastArgument = true;
         }
       }
-      
+
       if (argument.isOptional()) {
         if (optionalStart == -1) {
           optionalStart = pos;
         }
       } else {
-        if (optionalStart != -1) {
-          Logger.getGlobal().warning(l10n.get("argumentSet.spaced.cannotBeLast", getClass().getName()));
+        if (optionalStart >= 0) {
+          problems.add(l10n.get("argumentSet.spaced.cannotBeLast", argument.toReadableString()));
           optionalStart = -10;
         }
       }
       pos++;
     }
-    
+
     this.optionalStart = optionalStart;
   }
   
@@ -135,16 +137,48 @@ public class ArgumentSet implements Permissible {
     this(executor, "", arguments);
   }
   
+  /**
+   * Вариант набора без хвоста опциональных аргументов. Пропущенные аргументы со значением по умолчанию
+   * (идущие подряд от первого пропущенного) всё равно попадут в исполнитель — см. {@link ArgumentParser}.
+   */
   public ArgumentSet(ArgumentSet toClone, Argument... newArgs) {
     this.arguments = newArgs;
     this.executor = toClone.executor;
     this.preconditions = toClone.preconditions;
     this.permission = toClone.permission;
-    this.spacedLastArgument = toClone.spacedLastArgument;
-    this.optionalStart = toClone.optionalStart;
+    this.spacedLastArgument = newArgs.length > 0 && newArgs[newArgs.length - 1] instanceof SpacedArgument;
+    this.optionalStart = -1;
     this.help = toClone.help;
     this.confirmableString = toClone.confirmableString;
     this.timeToConfirm = toClone.timeToConfirm;
+    this.omittedDefaults = leadingDefaults(toClone.arguments, newArgs.length);
+  }
+
+  private static Argument[] leadingDefaults(Argument[] full, int from) {
+    List<Argument> defaults = new ArrayList<>();
+    for (int i = from; i < full.length && full[i].hasDefaultValue(); i++) {
+      defaults.add(full[i]);
+    }
+    return defaults.toArray(new Argument[0]);
+  }
+
+  /**
+   * Сколько значений получит исполнитель: аргументы без {@link ExactStringArg} плюс подставленные значения по умолчанию.
+   */
+  int mappedArgumentCount() {
+    int count = omittedDefaults.length;
+    for (Argument argument : arguments) {
+      if (!(argument instanceof ExactStringArg)) count++;
+    }
+    return count;
+  }
+
+  List<String> problems() {
+    return problems;
+  }
+
+  AbstractExecutor executor() {
+    return executor;
   }
   
   /**

@@ -17,16 +17,38 @@ import java.util.List;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
-public abstract class Argument {
+public abstract class Argument implements Cloneable {
+  /**
+   * У аргумента из описания команды — значение по умолчанию (или null), у копии вызова — введённое значение.
+   * Описание не меняется при исполнении: каждый вызов работает со своей копией, см. {@link #withRaw(String)}.
+   */
   protected String raw;
   private String tag = "";
   private boolean optional;
-  
+
   protected Argument(String raw) {
     this.raw = raw;
   }
-  
+
   public Argument() {
+  }
+
+  /**
+   * Копия для одного вызова: настройки общие с описанием, значение своё.
+   * Нужна потому, что одно описание команды исполняется параллельно (Velocity) и повторно входимо.
+   */
+  Argument withRaw(String raw) {
+    try {
+      Argument copy = (Argument) super.clone();
+      copy.raw = raw;
+      return copy;
+    } catch (CloneNotSupportedException e) {
+      throw new AssertionError(e);
+    }
+  }
+
+  boolean hasDefaultValue() {
+    return optional && raw != null;
   }
   
   /**

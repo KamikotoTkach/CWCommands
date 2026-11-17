@@ -144,7 +144,10 @@ public class Command implements Permissible {
    * Добавляет подкоманды в команду. Можно использовать несколько раз
    */
   public Command subCommands(Command... subcommands) {
-    this.subcommands = subcommands;
+    Command[] merged = Arrays.copyOf(this.subcommands, this.subcommands.length + subcommands.length);
+    System.arraycopy(subcommands, 0, merged, this.subcommands.length, subcommands.length);
+    this.subcommands = merged;
+
     for (Command subcommand : subcommands) {
       subcommand.isSubcommand = true;
       subcommand.parent = this;
@@ -170,8 +173,46 @@ public class Command implements Permissible {
     this.name = this.name.toLowerCase();
     
     updatePermissions(permission);
-    
+
+    reportDefinitionProblems(new HashSet<>());
+
     CommandsAPI.getPlatform().registerCommand(this);
+  }
+
+  /**
+   * Ошибки описания, которые иначе всплыли бы только у игрока («Нет подходящего метода»)
+   * или вообще молча: аргументы не по порядку, вытесненные методы исполнителя.
+   * Только лог — уже работающие команды не должны перестать регистрироваться.
+   */
+  private void reportDefinitionProblems(Set<AbstractExecutor> reportedExecutors) {
+    String path = "/" + getFullCommandPath(getRootCommand().getName());
+
+    for (ArgumentSet set : argumentSets) {
+      for (String problem : set.problems()) {
+        reportDefinitionProblem(path, set, problem);
+      }
+
+      AbstractExecutor executor = set.executor();
+
+      if (!executor.acceptsArgumentCount(set.mappedArgumentCount())) {
+        reportDefinitionProblem(path, set, l10n.get("command.validation.noMethod",
+                                                    executor.getClass().getName(), set.mappedArgumentCount()));
+      }
+
+      if (reportedExecutors.add(executor)) {
+        for (String problem : executor.definitionProblems()) {
+          reportDefinitionProblem(path, set, problem);
+        }
+      }
+    }
+
+    for (Command subcommand : subcommands) {
+      subcommand.reportDefinitionProblems(reportedExecutors);
+    }
+  }
+
+  private void reportDefinitionProblem(String path, ArgumentSet set, String problem) {
+    CommandsAPI.getPlatform().getLogger().error(l10n.get("command.validation.problem", path, set, problem));
   }
   
   /**
@@ -360,7 +401,7 @@ public class Command implements Permissible {
   protected Command getSubcommandFor(String arg, Sender sender) {
     
     for (Command command : subcommands) {
-      if ((command.name.equalsIgnoreCase(arg) || command.aliases.contains(arg))
+      if ((command.name.equalsIgnoreCase(arg) || command.aliases.stream().anyMatch(arg::equalsIgnoreCase))
           && command.checkPreconditions(sender, PreconditionRequirements.CAN_PERFORM_AND_CAN_SEE)) {
         return command;
       }
@@ -383,42 +424,46 @@ public class Command implements Permissible {
   
   protected ArgumentSearchResult searchForArgumentSet(Sender sender, String... args) {
     ArgumentSearchResult result = new ArgumentSearchResult();
-    
+
+    // Отказ подходящего набора — не конец поиска: следующий набор с теми же аргументами может быть доступен.
+    ArgumentSet deniedSet = null;
+    String deniedMessage = null;
+
     for (ArgumentSet set : argumentSets) {
       PreconditionResult preconditionResult = set.checkPreconditions(sender);
-      
+
+      if (!preconditionResult.canPerform() && preconditionResult.getCannotPerformMessage() == null) continue;
+
       ArgumentFitnessResult fitnessResult = set.isArgumentsFit(sender, args);
-      
-      String errorMessage = null;
-      if (!preconditionResult.canPerform()) {
-        if (preconditionResult.getCannotPerformMessage() != null) {
-          errorMessage = preconditionResult.getCannotPerformMessage();
-        } else continue;
-      }
-      
-      if (fitnessResult.success()) {
-        if (errorMessage == null) {
-          return result.founded(set);
-        } else {
-          return result.error(set, errorMessage);
-        }
-      } else {
+
+      if (!fitnessResult.success()) {
         if (preconditionResult.canSee()) result.add(fitnessResult);
+        continue;
+      }
+
+      if (preconditionResult.canPerform()) return result.founded(set);
+
+      if (deniedSet == null) {
+        deniedSet = set;
+        deniedMessage = preconditionResult.getCannotPerformMessage();
       }
     }
-    
-    return result;
+
+    return deniedSet == null ? result : result.error(deniedSet, deniedMessage);
   }
   
   protected void onError(Sender sender, String label, String[] args, ArgumentSearchResult argumentSearchResult) {
+    if (argumentSearchResult.getErrorMessage() != null) {
+      showErrorMessage(sender, label, argumentSearchResult);
+      return;
+    }
+
     if (help != null) {
       help.sendTo(sender, this, label, args);
       return;
     }
-    
-    if (argumentSearchResult.getErrorMessage() != null) {
-      showErrorMessage(sender, label, argumentSearchResult);
-    } else if (argumentSearchResult.canShowDetailedHelp()) {
+
+    if (argumentSearchResult.canShowDetailedHelp()) {
       showDetailedHelp(sender, label, argumentSearchResult);
     } else {
       showFullHelp(sender, label, args);

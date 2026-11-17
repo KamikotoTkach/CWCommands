@@ -62,7 +62,7 @@ public class DoubleArg extends Argument {
       if (!NumbersUtils.isNumber(raw)) return false;
       
       double parsed = Double.parseDouble(raw);
-      return parsed >= min && parsed < max;
+      return parsed >= min && parsed <= max;
     } catch (NumberFormatException ignored) {
     }
     return false;

@@ -106,12 +106,11 @@ public class PaperPlatform extends Platform {
       return;
     }
     
-    String localizedMessage = exception.getLocalizedMessage();
-    if (localizedMessage == null) localizedMessage = l10n.get("paperPlatform.unknownError");
-    
-    sender.sendMessage(Component.text(localizedMessage, command.getColorScheme().main()));
-    
-    CommandsAPI.getPlatform().getLogger().warn(l10n.get("paperPlatform.executionError", this.getClass().getName()));
-    exception.printStackTrace();
+    String message = userFacingMessage(exception);
+    if (message == null) message = l10n.get("paperPlatform.unknownError");
+
+    sender.sendMessage(Component.text(message, command.getColorScheme().main()));
+
+    logExecutionError(l10n.get("paperPlatform.executionError", exception.getClass().getSimpleName()), command, exception);
   }
 }

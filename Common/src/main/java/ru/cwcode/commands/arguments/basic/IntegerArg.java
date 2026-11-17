@@ -51,7 +51,7 @@ public class IntegerArg extends Argument {
       if (!NumbersUtils.isInteger(raw)) return false;
       
       int parsed = Integer.parseInt(raw);
-      return parsed >= min && parsed < max;
+      return parsed >= min && parsed <= max;
     } catch (NumberFormatException ignored) {
     }
     return false;
@@ -66,7 +66,7 @@ public class IntegerArg extends Argument {
         return Collections.singletonList(min + " -> " + max);
       case LIST:
         //todo: add cache
-        return IntStream.range(min, max).limit(1000).mapToObj(Integer::toString).collect(Collectors.toList());
+        return IntStream.rangeClosed(min, max).limit(1000).mapToObj(Integer::toString).collect(Collectors.toList());
       default:
         return Collections.emptyList();
     }
