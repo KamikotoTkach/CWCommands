@@ -1,6 +1,9 @@
 package probe;
 
 import org.bukkit.Bukkit;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.ArgumentSet;
@@ -41,8 +44,50 @@ public class CommandsProbe extends JavaPlugin {
     check("world", new WorldArg(), Bukkit.getWorlds().get(0).getName(), "no_such_world");
     
     dispatch();
-    
+    registerAfterStartupChecks();
+
     getLogger().info("PROBE " + (failures == 0 ? "OK" : "FAIL count=" + failures));
+  }
+
+  /**
+   * On Paper 1.20.6+ commands reach Brigadier only in LifecycleEvents.COMMANDS, which fires after all plugins
+   * enable — so these commands are dispatched on ServerLoadEvent, not in onEnable.
+   */
+  private void registerAfterStartupChecks() {
+    new Command("cmdprobeyml")
+       .arguments(new ArgumentSet(new ProbeExecutor("yml"), new IntegerArg()))
+       .register();
+    new Command("cmdprobefree")
+       .aliases("cpfree")
+       .arguments(new ArgumentSet(new ProbeExecutor("free"), new IntegerArg()))
+       .register();
+
+    getServer().getPluginManager().registerEvents(new Listener() {
+      @EventHandler
+      public void onLoad(ServerLoadEvent event) {
+        int startupFailures = 0;
+        startupFailures += expect("cmdprobeyml 1", "yml:1");
+        startupFailures += expect("cmdprobefree 2", "free:2");
+        startupFailures += expect("cpfree 3", "free:3");
+        getLogger().info("PROBE registration in plugin.yml: cmdprobeyml=" + (getCommand("cmdprobeyml") != null)
+                         + " cmdprobefree=" + (getCommand("cmdprobefree") != null));
+        getLogger().info("PROBE STARTUP " + (startupFailures == 0 ? "OK" : "FAIL count=" + startupFailures));
+      }
+    }, this);
+  }
+
+  private int expect(String commandLine, String expectedCall) {
+    try {
+      ProbeExecutor.calls.clear();
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+      boolean ok = ProbeExecutor.calls.contains(expectedCall);
+      getLogger().info("PROBE " + (ok ? "ok  " : "FAIL") + " /" + commandLine + " -> " + ProbeExecutor.calls);
+      return ok ? 0 : 1;
+    } catch (Throwable t) {
+      getLogger().severe("PROBE FAIL /" + commandLine + ": " + t);
+      t.printStackTrace();
+      return 1;
+    }
   }
   
   private void check(String name, Argument argument, String known, String unknown) {

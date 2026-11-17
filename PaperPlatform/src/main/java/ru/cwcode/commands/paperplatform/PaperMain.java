@@ -24,7 +24,7 @@ import ru.cwcode.commands.paperplatform.argument.*;
 import ru.cwcode.commands.paperplatform.argument.location.LocationArg;
 import ru.cwcode.commands.paperplatform.argument.location.LocationPart;
 import ru.cwcode.commands.paperplatform.argument.location.TargetXArg;
-import ru.cwcode.commands.paperplatform.brigadier.BrigadierListener;
+import ru.cwcode.commands.paperplatform.brigadier.LifecycleCommandRegistrar;
 import ru.cwcode.commands.paperplatform.features.*;
 import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
 import ru.cwcode.commands.paperplatform.paper.PaperSender;
@@ -61,7 +61,7 @@ public final class PaperMain extends JavaPlugin {
     
     CommandsAPI.setPlatform(platform);
     
-    registerBrigadierHook(platform);
+    registerStartupRegistrar(platform);
     
     sendLogo();
     
@@ -170,17 +170,22 @@ public final class PaperMain extends JavaPlugin {
     }
   }
   
-  private void registerBrigadierHook(PaperPlatform platform) {
+  /**
+   * Lifecycle API и {@code BasicCommand} есть с Paper 1.20.6; на более старых серверах класс
+   * регистратора (Java 21) не загружается, и команды идут через CommandMap.
+   */
+  private void registerStartupRegistrar(PaperPlatform platform) {
     try {
-      Class.forName("com.destroystokyo.paper.event.brigadier.AsyncPlayerSendCommandsEvent");
-      Class.forName("io.papermc.paper.command.brigadier.CommandSourceStack");
-      registerBrigadierHook0(platform);
+      Class.forName("io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents");
+      Class.forName("io.papermc.paper.command.brigadier.BasicCommand");
     } catch (ClassNotFoundException e) {
+      return;
     }
+    registerStartupRegistrar0(platform);
   }
-  
-  private void registerBrigadierHook0(PaperPlatform platform) {
-    Bukkit.getPluginManager().registerEvents(new BrigadierListener(() -> platform.registeredCommands().keySet()),this);
+
+  private void registerStartupRegistrar0(PaperPlatform platform) {
+    platform.setStartupRegistrar(new LifecycleCommandRegistrar(this)::add);
   }
   
   private void sendLogo() {

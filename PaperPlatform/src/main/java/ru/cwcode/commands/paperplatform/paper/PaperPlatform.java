@@ -2,11 +2,10 @@ package ru.cwcode.commands.paperplatform.paper;
 
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
-import org.bukkit.command.CommandMap;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.java.JavaPlugin;
 import ru.cwcode.commands.Command;
-import ru.cwcode.commands.api.CommandsAPI;
 import ru.cwcode.commands.api.Platform;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.commands.paperplatform.PaperMain;
@@ -15,81 +14,88 @@ import ru.cwcode.cwutils.logger.Logger;
 import ru.cwcode.cwutils.logger.PaperLogger;
 import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
-import ru.cwcode.cwutils.reflection.ReflectionUtils;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
+/**
+ * Регистрация команды:
+ * <ol>
+ *   <li>при старте Paper 1.20.6+ — Brigadier через {@link StartupCommandRegistrar}, запись в plugin.yml не нужна;</li>
+ *   <li>иначе — {@code CommandMap}: команда из plugin.yml получает наш исполнитель, без записи — регистрируется сама.</li>
+ * </ol>
+ * Команда из plugin.yml в любом случае получает исполнитель: на ней держатся алиасы из yml.
+ */
 public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger(PaperMain.plugin);
-  
-  HashMap<String, Command> registeredCommands = new HashMap<>();
-  
-  public HashMap<String, Command> registeredCommands() {
-    return registeredCommands;
-  }
-  
+  private StartupCommandRegistrar startupRegistrar;
+
   @Override
   public Logger getLogger() {
     return this.logger;
   }
-  
+
+  public void setStartupRegistrar(StartupCommandRegistrar startupRegistrar) {
+    this.startupRegistrar = startupRegistrar;
+  }
+
   @Override
   public void registerCommand(Command command) {
-    
+    PaperCommand handlers = new PaperCommand(command);
     PluginCommand pluginCommand = Bukkit.getPluginCommand(command.getName());
-    
-    if (pluginCommand == null) {
-      logger.warn(l10n.get("paperPlatform.commandIsNotRegistered", command.getName()));
+
+    if (pluginCommand != null) {
+      pluginCommand.setExecutor(handlers.getCommandParser());
+      pluginCommand.setTabCompleter(handlers.getTabCompleter());
+      if (pluginCommand.getDescription().isEmpty()) pluginCommand.setDescription(command.description());
+      if (pluginCommand.getPermission() == null) pluginCommand.setPermission(command.getPermission());
+    }
+
+    Plugin owner = pluginCommand != null ? pluginCommand.getPlugin() : owner(command);
+    String permission = pluginCommand != null ? pluginCommand.getPermission() : emptyToNull(command.getPermission());
+    List<String> aliases = pluginCommand != null
+                           ? new ArrayList<>(CollectionUtils.combine(pluginCommand.getAliases(), command.aliases()))
+                           : command.aliases();
+
+    if (startupRegistrar != null
+        && startupRegistrar.register(owner, command.getName(), command.description(), aliases, permission,
+                                     (sender, args) -> handlers.getCommandParser().onCommandExecute(new PaperSender(sender), command.getName(), args),
+                                     (sender, args) -> handlers.getTabCompleter().onTabComplete(new PaperSender(sender), args))) {
       return;
     }
-    
-    PaperCommand paperCommand = new PaperCommand(command);
-    pluginCommand.setExecutor(paperCommand.getCommandParser());
-    pluginCommand.setTabCompleter(paperCommand.getTabCompleter());
-    
-    CommandMap commandMap = ReflectionUtils.getFieldValue(Bukkit.getPluginManager(), "commandMap", CommandMap.class);
-    
-    Plugin plugin = pluginCommand.getPlugin();
-    
-    if (!command.aliases().isEmpty()) {
-      command.aliases(new ArrayList<>(CollectionUtils.combine(pluginCommand.getAliases(), command.aliases())));
-      registerNewAliases(command, pluginCommand, commandMap, plugin);
+
+    if (pluginCommand == null) {
+      Bukkit.getCommandMap().register(owner.getName(), new BukkitCommandAdapter(command.getName(), aliases, command.description(), permission, handlers));
+      return;
     }
-    
-    if (pluginCommand.getDescription().isEmpty()) pluginCommand.setDescription(command.description());
-    
-    if (pluginCommand.getPermission() == null) pluginCommand.setPermission(command.getPermission());
+
+    List<String> extraAliases = new ArrayList<>(command.aliases());
+    extraAliases.removeAll(pluginCommand.getAliases());
+    if (!extraAliases.isEmpty()) {
+      String label = extraAliases.remove(0);
+      Bukkit.getCommandMap().register(owner.getName(), new BukkitCommandAdapter(label, extraAliases, command.description(), permission, handlers));
+    }
   }
-  
-  private void registerNewAliases(Command command, org.bukkit.command.Command paperCommand, CommandMap commandMap, Plugin plugin) {
+
+  /**
+   * Плагин, чей класс исполняет команду; если исполнителей нет или класс не из плагина — CWCommands.
+   */
+  private static Plugin owner(Command command) {
     try {
-      Field activeAliases = paperCommand.getClass().getSuperclass().getDeclaredField("activeAliases");
-      activeAliases.setAccessible(true);
-      ((List<String>) activeAliases.get(paperCommand)).addAll(command.aliases());
-      
-      Field aliasesField = paperCommand.getClass().getSuperclass().getDeclaredField("aliases");
-      aliasesField.setAccessible(true);
-      ((List<String>) aliasesField.get(paperCommand)).addAll(command.aliases());
-      
-      Method registerAlias = commandMap.getClass().getMethod("register", String.class, org.bukkit.command.Command.class);
-      registerAlias.setAccessible(true);
-      
-      registerAlias.invoke(commandMap, plugin.getName(), paperCommand);
-      
-      registeredCommands.put(command.getName(), command);
-      
-    } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-      logger.warn(l10n.get("paperPlatform.cannotRegisterAliases", command.getName()));
+      return command.anyExecutor()
+                    .<Plugin>map(executor -> JavaPlugin.getProvidingPlugin(executor.getClass()))
+                    .orElse(PaperMain.plugin);
+    } catch (IllegalArgumentException | IllegalStateException notAPluginClass) {
+      return PaperMain.plugin;
     }
   }
-  
+
+  private static String emptyToNull(String value) {
+    return value == null || value.isEmpty() ? null : value;
+  }
+
   @Override
   public void handleExecutionException(Exception exception, Command command, Sender sender) {
     if (exception instanceof MessageReturn) {
@@ -105,7 +111,7 @@ public class PaperPlatform extends Platform {
       sender.sendMessage(((TargetableMessageReturn) exception).getMessage(((PaperSender) sender).getCommandSender()));
       return;
     }
-    
+
     String message = userFacingMessage(exception);
     if (message == null) message = l10n.get("paperPlatform.unknownError");
 

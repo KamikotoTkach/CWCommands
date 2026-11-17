@@ -226,6 +226,19 @@ public class Command implements Permissible {
   }
   
   /**
+   * Любой исполнитель команды или её подкоманд — по его классу платформа находит плагин-владельца.
+   */
+  public Optional<AbstractExecutor> anyExecutor() {
+    if (!argumentSets.isEmpty()) return Optional.of(argumentSets.get(0).executor());
+
+    for (Command subcommand : subcommands) {
+      Optional<AbstractExecutor> executor = subcommand.anyExecutor();
+      if (executor.isPresent()) return executor;
+    }
+    return Optional.empty();
+  }
+
+  /**
    * Очищает аргументсеты из команды или подкоманды
    */
   public void clearArgumentSets() {

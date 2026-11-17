@@ -1,0 +1,13 @@
+name: CommandsProbe
+version: '1.0'
+main: probe.CommandsProbe
+depend: [CWCommands]
+# low on purpose: Paper rewrites removed Bukkit constants only for plugins with an old api-version (LIBS_MULTIPLATFORM.md 0.1)
+api-version: '1.16'
+
+commands:
+  cmdprobe:
+    permission: "*"
+  # cmdprobefree is deliberately absent: it must work without plugin.yml
+  cmdprobeyml:
+    permission: "*"
