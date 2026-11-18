@@ -1,6 +1,7 @@
 package ru.cwcode.commands.arguments.basic;
 
 import ru.cwcode.commands.Argument;
+import ru.cwcode.commands.ClientShape;
 import ru.cwcode.commands.CompletionStyle;
 import ru.cwcode.commands.api.Sender;
 import ru.cwcode.cwutils.numbers.NumbersUtils;
@@ -91,6 +92,11 @@ public class DoubleArg extends Argument {
   @Override
   public Object map() {
     return toDouble();
+  }
+
+  @Override
+  public ClientShape clientShape() {
+    return ClientShape.decimal(min, max);
   }
   
   @Override

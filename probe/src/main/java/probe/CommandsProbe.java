@@ -7,7 +7,11 @@ import org.bukkit.event.server.ServerLoadEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import ru.cwcode.commands.Argument;
 import ru.cwcode.commands.ArgumentSet;
+import ru.cwcode.commands.BrigadierConformance;
 import ru.cwcode.commands.Command;
+import ru.cwcode.commands.api.CommandsAPI;
+import ru.cwcode.commands.paperplatform.paper.PaperPlatform;
+import ru.cwcode.commands.paperplatform.paper.PaperSender;
 import ru.cwcode.commands.arguments.ExactStringArg;
 import ru.cwcode.commands.arguments.basic.IntegerArg;
 import ru.cwcode.commands.paperplatform.PrintArguments;
@@ -69,6 +73,15 @@ public class CommandsProbe extends JavaPlugin {
         startupFailures += expect("cmdprobeyml 1", "yml:1");
         startupFailures += expect("cmdprobefree 2", "free:2");
         startupFailures += expect("cpfree 3", "free:3");
+        startupFailures += expect("commandsprobe:cmdprobefree 7", "free:7");
+        if (brigadierPath()) {
+          // до 1.20.6 команда идёт через Bukkit: двойной пробел даёт пустое слово, execute run её не видит
+          startupFailures += expect("cmdprobefree  6", "free:6");
+          startupFailures += expect("execute run cmdprobefree 8", "free:8");
+        }
+        startupFailures += expectNoCall("cmdprobefree x:y");
+        startupFailures += expectNoCall("cmdprobefree 9 extra");
+        startupFailures += conformance();
         getLogger().info("PROBE registration in plugin.yml: cmdprobeyml=" + (getCommand("cmdprobeyml") != null)
                          + " cmdprobefree=" + (getCommand("cmdprobefree") != null));
         getLogger().info("PROBE STARTUP " + (startupFailures == 0 ? "OK" : "FAIL count=" + startupFailures));
@@ -90,6 +103,52 @@ public class CommandsProbe extends JavaPlugin {
     }
   }
   
+  private static boolean brigadierPath() {
+    try {
+      Class.forName("io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents");
+      return true;
+    } catch (ClassNotFoundException e) {
+      return false;
+    }
+  }
+
+  /**
+   * Input our parser rejects must reach it (our error, no call) instead of failing in Brigadier.
+   */
+  private int expectNoCall(String commandLine) {
+    try {
+      ProbeExecutor.calls.clear();
+      Bukkit.dispatchCommand(Bukkit.getConsoleSender(), commandLine);
+      boolean ok = ProbeExecutor.calls.isEmpty();
+      getLogger().info("PROBE " + (ok ? "ok  " : "FAIL") + " /" + commandLine + " -> " + ProbeExecutor.calls);
+      return ok ? 0 : 1;
+    } catch (Throwable t) {
+      getLogger().severe("PROBE FAIL /" + commandLine + ": " + t);
+      return 1;
+    }
+  }
+
+  /**
+   * Every CWCommands command on this server through a real Brigadier dispatcher (BrigadierConformance).
+   */
+  private int conformance() {
+    try {
+      int errors = 0;
+      for (Command command : ((PaperPlatform) CommandsAPI.getPlatform()).registeredCommands()) {
+        BrigadierConformance.Report report = BrigadierConformance.check(command, new PaperSender(Bukkit.getConsoleSender()));
+        errors += report.errors().size();
+        getLogger().info("PROBE brigadier " + report);
+        report.errors().forEach(error -> getLogger().warning("PROBE brigadier error " + error));
+      }
+      getLogger().info("PROBE BRIGADIER " + (errors == 0 ? "OK" : "FAIL count=" + errors));
+      return errors == 0 ? 0 : 1;
+    } catch (Throwable t) {
+      getLogger().severe("PROBE FAIL brigadier conformance: " + t);
+      t.printStackTrace();
+      return 1;
+    }
+  }
+
   private void check(String name, Argument argument, String known, String unknown) {
     try {
       Collection<String> completions = argument.completions(null);

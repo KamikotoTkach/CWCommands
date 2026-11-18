@@ -1,6 +1,7 @@
 package ru.cwcode.commands.arguments.basic;
 
 import ru.cwcode.commands.Argument;
+import ru.cwcode.commands.ClientShape;
 import ru.cwcode.commands.api.Sender;
 
 import java.util.Arrays;
@@ -63,6 +64,14 @@ public class BooleanArg extends Argument {
   @Override
   public Object map() {
     return toBoolean();
+  }
+
+  /**
+   * Клиентский bool знает только true/false — свои слова («да/нет») остаются обычным словом.
+   */
+  @Override
+  public ClientShape clientShape() {
+    return "true".equals(trueValue) && "false".equals(falseValue) ? ClientShape.BOOLEAN : ClientShape.WORD;
   }
   
   @Override

@@ -48,5 +48,12 @@
             <version>1.21.1-R0.1-20250328.161643-128</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Построитель дерева; в jar его кладёт PaperCommands вместе с Common -->
+        <dependency>
+            <groupId>ru.cwcode.commands</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.6.0</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 </project>

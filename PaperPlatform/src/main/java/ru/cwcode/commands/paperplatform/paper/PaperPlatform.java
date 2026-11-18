@@ -16,7 +16,9 @@ import ru.cwcode.cwutils.messages.MessageReturn;
 import ru.cwcode.cwutils.messages.TargetableMessageReturn;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static ru.cwcode.commands.api.CommandsAPI.l10n;
 
@@ -31,10 +33,18 @@ import static ru.cwcode.commands.api.CommandsAPI.l10n;
 public class PaperPlatform extends Platform {
   private final Logger logger = new PaperLogger(PaperMain.plugin);
   private StartupCommandRegistrar startupRegistrar;
+  private final List<Command> registered = new CopyOnWriteArrayList<>();
 
   @Override
   public Logger getLogger() {
     return this.logger;
+  }
+
+  /**
+   * Все корневые команды, прошедшие {@link #registerCommand}, — для проверок вроде {@code /commandstest brigadier}.
+   */
+  public List<Command> registeredCommands() {
+    return Collections.unmodifiableList(registered);
   }
 
   public void setStartupRegistrar(StartupCommandRegistrar startupRegistrar) {
@@ -43,6 +53,7 @@ public class PaperPlatform extends Platform {
 
   @Override
   public void registerCommand(Command command) {
+    registered.add(command);
     PaperCommand handlers = new PaperCommand(command);
     PluginCommand pluginCommand = Bukkit.getPluginCommand(command.getName());
 
@@ -60,7 +71,7 @@ public class PaperPlatform extends Platform {
                            : command.aliases();
 
     if (startupRegistrar != null
-        && startupRegistrar.register(owner, command.getName(), command.description(), aliases, permission,
+        && startupRegistrar.register(owner, command, command.description(), aliases, permission, PaperSender::new,
                                      (sender, args) -> handlers.getCommandParser().onCommandExecute(new PaperSender(sender), command.getName(), args),
                                      (sender, args) -> handlers.getTabCompleter().onTabComplete(new PaperSender(sender), args))) {
       return;

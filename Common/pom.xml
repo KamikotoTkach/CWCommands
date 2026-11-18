@@ -150,6 +150,13 @@
         <junit.platform.version>1.8.1</junit.platform.version>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>minecraft-libraries</id>
+            <url>https://libraries.minecraft.net/</url>
+        </repository>
+    </repositories>
+
     <dependencies>
         <dependency>
             <groupId>ru.cwcode.cwutils</groupId>
@@ -160,6 +167,13 @@
             <groupId>net.kyori</groupId>
             <artifactId>adventure-api</artifactId>
             <version>4.7.0</version>
+            <scope>provided</scope>
+        </dependency>
+        <!-- Дерево команд для клиента; brigadier есть в Paper 1.20.6+ и Velocity, байткод Java 8 -->
+        <dependency>
+            <groupId>com.mojang</groupId>
+            <artifactId>brigadier</artifactId>
+            <version>1.3.10</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

@@ -151,6 +151,12 @@ public final class PaperMain extends JavaPlugin {
                   new ArgumentSet(new PrintArguments(), new ExactStringArg("boolean"), new BooleanArg())
                ),
             
+            new Command("brigadier")
+               .arguments(
+                  new ArgumentSet(new BrigadierCheckCommand()),
+                  new ArgumentSet(new BrigadierCheckCommand(), new PlayerArg())
+               ),
+
             new Command("datetime")
                .arguments(
                   new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg()),

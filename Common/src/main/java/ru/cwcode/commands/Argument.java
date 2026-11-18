@@ -116,6 +116,13 @@ public abstract class Argument implements Cloneable {
    * Название аргумента в хелпе
    */
   public abstract String argumentName();
+
+  /**
+   * Тип узла в дереве команд клиента. Только подсветка: значение проверяет {@link #valid}.
+   */
+  public ClientShape clientShape() {
+    return ClientShape.WORD;
+  }
   
   public boolean notNull() {
     return raw != null;
