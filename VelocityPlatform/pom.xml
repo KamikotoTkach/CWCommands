@@ -264,5 +264,25 @@
             <version>3.2.0-20231130.230432-79</version>
             <scope>provided</scope>
         </dependency>
+        <!-- Тесты дерева Brigadier на форке Velocity: тестовые команды берутся из Common -->
+        <dependency>
+            <groupId>ru.cwcode.commands</groupId>
+            <artifactId>Common</artifactId>
+            <version>1.6.0</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 </project>

@@ -102,6 +102,53 @@ public final class BrigadierTree<S> {
   }
 
   /**
+   * Узел для разбора на сервере без типизированных веток: метка и сразу хвост. Подсказки к нему — только
+   * наш {@link TabCompleter}, поэтому скрытые literal не утекают и фильтр {@link #keepOurs} не нужен. Так
+   * регистрируется команда на Velocity, а полное дерево {@link #build} уходит только клиенту.
+   */
+  public LiteralCommandNode<S> buildCatchAll(String label) {
+    LiteralCommandNode<S> node = LiteralArgumentBuilder.<S>literal(label).executes(this::run).build();
+    node.addChild(argument(TAIL, StringArgumentType.greedyString()).suggests(this::suggest).executes(this::run).build());
+    return node;
+  }
+
+  /**
+   * Видна ли корневая команда отправителю — «видно и можно», как у подкоманд. Сбой условия показывает
+   * команду (см. {@link #requirement}).
+   */
+  public Predicate<S> rootVisibility(Command command) {
+    return source -> {
+      try {
+        return command.checkPreconditions(senders.apply(source), CAN_PERFORM_AND_CAN_SEE);
+      } catch (RuntimeException e) {
+        return true;
+      }
+    };
+  }
+
+  /**
+   * Копия дерева под именем {@code name} только с ветками, чьи {@code requires} пропускают {@code source}.
+   * Нужна там, где дерево для клиента собирает не платформа, а мы (Velocity, {@code PlayerAvailableCommandsEvent}).
+   * Условие самого {@code node} не проверяется — это дело вызывающего.
+   */
+  public static <S> LiteralCommandNode<S> visibleCopy(LiteralCommandNode<S> node, String name, S source) {
+    LiteralArgumentBuilder<S> builder = LiteralArgumentBuilder.<S>literal(name).requires(node.getRequirement());
+    if (node.getCommand() != null) builder.executes(node.getCommand());
+    LiteralCommandNode<S> copy = builder.build();
+    copyVisibleChildren(node, copy, source);
+    return copy;
+  }
+
+  private static <S> void copyVisibleChildren(CommandNode<S> from, CommandNode<S> to, S source) {
+    for (CommandNode<S> child : from.getChildren()) {
+      if (!child.canUse(source)) continue;
+      CommandNode<S> copy = child.createBuilder().build();
+      to.addChild(copy);
+      copyVisibleChildren(child, copy, source);
+    }
+  }
+
+  /**
    * Аргументы после метки команды для исполнения. Метка — первый узел последнего контекста, так что
    * алиасы и {@code /execute … run} разбираются одинаково.
    */

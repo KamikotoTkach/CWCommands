@@ -4,6 +4,7 @@ import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.tree.ArgumentCommandNode;
 import com.mojang.brigadier.tree.CommandNode;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import org.junit.jupiter.api.BeforeAll;
@@ -27,6 +28,7 @@ import ru.cwcode.cwutils.l10n.L10n;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.TreeSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -159,6 +161,58 @@ class BrigadierTreeTest {
     List<String> names = new ArrayList<>();
     player.getChildren().forEach(child -> names.add(child.getName()));
     assertEquals(List.of("count", "count_2", BrigadierTree.TAIL), names);
+  }
+
+  @Test
+  void catchAllNodePassesEverythingToOurParserAndSuggestsOnlyOurs() throws CommandSyntaxException {
+    Command command = rich();
+    TabCompleter completer = new TabCompleter(command) {};
+    AtomicReference<String[]> executed = new AtomicReference<>();
+    CommandDispatcher<Sender> dispatcher = new CommandDispatcher<>();
+    TestSender sender = new TestSender("alice");
+    dispatcher.getRoot().addChild(new BrigadierTree<Sender>(source -> source, (source, args) -> executed.set(args), completer::onTabComplete,
+                                                            source -> false).buildCatchAll("rich"));
+
+    for (String input : List.of("rich", "rich give bob 5", "rich  give  bob", "rich secret", "rich Список", "rich say a b c")) {
+      executed.set(null);
+      dispatcher.execute(input, sender);
+      assertArrayEquals(words(input), executed.get(), input);
+    }
+
+    List<String> suggested = new ArrayList<>();
+    dispatcher.getCompletionSuggestions(dispatcher.parse("rich ", sender)).join().getList()
+              .forEach(suggestion -> suggested.add(suggestion.getText()));
+    assertEquals(new TreeSet<>(completer.onTabComplete(sender, new String[]{""})), new TreeSet<>(suggested));
+    assertFalse(suggested.contains("hidden"));
+  }
+
+  @Test
+  void visibleCopyDropsHiddenBranchesAndTakesTheAliasName() {
+    Command command = rich();
+    TestSender sender = new TestSender("alice");
+    BrigadierTree<Sender> tree = new BrigadierTree<>(source -> source, (source, args) -> {}, (source, args) -> List.of(), source -> true);
+    LiteralCommandNode<Sender> full = tree.build(command, "rich", tree.rootVisibility(command));
+
+    LiteralCommandNode<Sender> copy = BrigadierTree.visibleCopy(full, "r", sender);
+
+    assertEquals("r", copy.getName());
+    assertNull(copy.getChild("hidden"));
+    assertNull(copy.getChild("secret"));
+    assertNotNull(copy.getChild("list"));
+    assertNotNull(copy.getChild("give").getChild("player").getChild("count"));
+    assertNotNull(((ArgumentCommandNode<Sender, ?>) copy.getChild(BrigadierTree.TAIL)).getCustomSuggestions(), "the client must ask the server");
+    assertNotNull(copy.getChild("give").getCommand());
+    assertNotNull(full.getChild("hidden"), "the source tree stays whole");
+  }
+
+  @Test
+  void rootVisibilityFollowsRootPreconditions() {
+    Command denied = new Command("denied", new CommandRuntimeTest.Recorder.NoArgs()).preconditions(new Deny());
+    denied.register();
+    BrigadierTree<Sender> tree = new BrigadierTree<>(source -> source, (source, args) -> {}, (source, args) -> List.of(), source -> true);
+
+    assertFalse(tree.rootVisibility(denied).test(new TestSender("alice")));
+    assertTrue(tree.rootVisibility(rich()).test(new TestSender("alice")));
   }
 
   private static String[] words(String input) {

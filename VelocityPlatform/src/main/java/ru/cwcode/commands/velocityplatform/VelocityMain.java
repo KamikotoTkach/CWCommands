@@ -23,6 +23,8 @@ import ru.cwcode.commands.arguments.spaced.SpacedListArg;
 import ru.cwcode.commands.arguments.spaced.SpacedStringArg;
 import ru.cwcode.commands.permissions.PermissionGenerationStrategy;
 import ru.cwcode.commands.velocityplatform.argument.OnlinePlayerWithPermissionArg;
+import ru.cwcode.commands.velocityplatform.argument.PlayerArg;
+import ru.cwcode.commands.velocityplatform.features.BrigadierCheckCommand;
 import ru.cwcode.commands.velocityplatform.velocity.VelocityPlatform;
 import ru.cwcode.cwutils.config.SimpleConfig;
 import ru.cwcode.cwutils.l10n.L10n;
@@ -54,7 +56,8 @@ public class VelocityMain {
   public void onProxyInitialization(ProxyInitializeEvent event) {
     VelocityPlatform platform = new VelocityPlatform(this, this.server, this.logger);
     CommandsAPI.setPlatform(platform);
-    
+    server.getEventManager().register(this, platform.getClientTrees());
+
     VelocityL10nPlatform l10nPlatform = new VelocityL10nPlatform(
       this,
       this.dataFolder,
@@ -107,6 +110,12 @@ public class VelocityMain {
                   new ArgumentSet(new PrintArguments(), new ExactStringArg("boolean"), new BooleanArg())
                ),
             
+            new Command("brigadier")
+               .arguments(
+                  new ArgumentSet(new BrigadierCheckCommand()),
+                  new ArgumentSet(new BrigadierCheckCommand(), new PlayerArg())
+               ),
+
             new Command("datetime")
                .arguments(
                   new ArgumentSet(new PrintArguments(), new ExactStringArg("duration"), new DurationArg()),
@@ -129,5 +138,9 @@ public class VelocityMain {
   
   public static VelocityPlatform getPlatform() {
     return ((VelocityPlatform) CommandsAPI.getPlatform());
+  }
+
+  public Path getDataFolder() {
+    return dataFolder;
   }
 }
