@@ -6,7 +6,7 @@
 
     <groupId>ru.cwcode.commands</groupId>
     <artifactId>CommandsProbe</artifactId>
-    <version>1.6.0</version>
+    <version>1.7.0</version>
     <packaging>jar</packaging>
 
     <name>CommandsProbe</name>
@@ -44,7 +44,7 @@
         <dependency>
             <groupId>ru.cwcode.commands</groupId>
             <artifactId>PaperCommands</artifactId>
-            <version>1.6.0</version>
+            <version>1.7.0</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
